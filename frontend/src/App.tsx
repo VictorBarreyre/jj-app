@@ -3,6 +3,7 @@ import { Header } from './components/layout/Header'
 import { Home } from './pages/Home'
 import { MeasurementFormPage } from './pages/MeasurementFormPage'
 import { MeasurementForm as MeasurementFormType } from './types/measurement-form'
+import { RentalContract } from './types/rental-contract'
 import { Order } from './types/order'
 import { mockOrders } from './data/mockOrders'
 import './App.css'
@@ -14,15 +15,22 @@ function App() {
   const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const handleFormSubmit = (form: MeasurementFormType) => {
-    console.log('Formulaire transmis au PC caisse:', form);
-    alert('Formulaire transmis avec succès !');
+  const handleRentalSubmitComplete = (measurement: MeasurementFormType, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
+    console.log('Prise de mesure:', measurement);
+    console.log('Bon de location créé:', contract);
+    alert(`Bon de location créé avec succès ! Transmis au PC caisse.`);
     setCurrentView('home');
   };
 
-  const handleFormSave = (form: MeasurementFormType) => {
-    console.log('Brouillon sauvegardé:', form);
+  const handleRentalSaveDraft = (measurement: MeasurementFormType, contract?: Partial<RentalContract>) => {
+    console.log('Brouillon - Mesure:', measurement);
+    console.log('Brouillon - Contrat:', contract);
     alert('Brouillon sauvegardé !');
+  };
+
+  const handlePrint = (contractId: string, type: 'jj' | 'client') => {
+    console.log(`Impression ${type} pour contrat:`, contractId);
+    alert(`Impression ${type} lancée !`);
   };
 
   const handleCreateNew = () => {
@@ -86,8 +94,9 @@ function App() {
         
         {currentView === 'measurement' && (
           <MeasurementFormPage 
-            onSubmit={handleFormSubmit}
-            onSave={handleFormSave}
+            onSubmitComplete={handleRentalSubmitComplete}
+            onSaveDraft={handleRentalSaveDraft}
+            onPrint={handlePrint}
           />
         )}
       </main>

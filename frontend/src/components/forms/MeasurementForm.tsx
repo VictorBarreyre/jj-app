@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '@/components/ui/select';
 import { Calendar, User, Phone, Mail, Shirt, Package, MessageSquare } from 'lucide-react';
 import { MeasurementForm as MeasurementFormType, Vendeur, TailleVetement, LongueurVetement, TailleChaussure, TailleChapeau } from '@/types/measurement-form';
 import { VESTE_CATALOG, GILET_CATALOG, PANTALON_CATALOG } from '@/types/product-catalog';
@@ -200,26 +200,30 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                       <SelectValue placeholder="Sélectionner un modèle" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-gray-300 text-gray-900">
-                      <optgroup label="Jaquettes">
+                      <SelectGroup>
+                        <SelectLabel>Jaquettes</SelectLabel>
                         {VESTE_CATALOG.JAQUETTES.map(ref => (
                           <SelectItem key={ref} value={ref}>{ref}</SelectItem>
                         ))}
-                      </optgroup>
-                      <optgroup label="Costumes Ville">
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>Costumes Ville</SelectLabel>
                         {VESTE_CATALOG.COSTUMES_VILLE.map(ref => (
                           <SelectItem key={ref} value={ref}>{ref}</SelectItem>
                         ))}
-                      </optgroup>
-                      <optgroup label="Smoking">
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>Smoking</SelectLabel>
                         {VESTE_CATALOG.SMOKING.map(ref => (
                           <SelectItem key={ref} value={ref}>{ref}</SelectItem>
                         ))}
-                      </optgroup>
-                      <optgroup label="Habit Queue de Pie">
+                      </SelectGroup>
+                      <SelectGroup>
+                        <SelectLabel>Habit Queue de Pie</SelectLabel>
                         {VESTE_CATALOG.HABIT_QUEUE_DE_PIE.map(ref => (
                           <SelectItem key={ref} value={ref}>{ref}</SelectItem>
                         ))}
-                      </optgroup>
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                 </div>
@@ -425,7 +429,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              📤 Transmettre au PC caisse
+              ➡️ Continuer vers le bon de location
             </Button>
           </div>
           {!isFormValid && (

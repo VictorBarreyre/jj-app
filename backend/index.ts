@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { ordersRouter } from './routes/orders';
 import { measurementsRouter } from './routes/measurements';
+import { contractsRouter } from './routes/contracts';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/orders', ordersRouter);
 app.use('/api/measurements', measurementsRouter);
+app.use('/api/contracts', contractsRouter);
 
 // Error handling
 app.use(errorHandler);
