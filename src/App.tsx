@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Header } from './components/layout/Header'
 import { Home } from './components/home/Home'
 import { MeasurementForm } from './components/forms/MeasurementForm'
 import { MeasurementForm as MeasurementFormType } from './types/measurement-form'
@@ -28,6 +29,15 @@ function App() {
     setCurrentView('measurement');
   };
 
+  const handleNavigateHome = () => {
+    setCurrentView('home');
+    setSelectedOrder(null);
+  };
+
+  const handleNavigateMeasurement = () => {
+    setCurrentView('measurement');
+  };
+
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
     console.log('Voir commande:', order);
@@ -47,39 +57,40 @@ function App() {
     }
   };
 
-  const handleBackToHome = () => {
-    setCurrentView('home');
-    setSelectedOrder(null);
-  };
+
+  // Statistiques pour le header
+  const pendingOrdersCount = orders.filter(order => 
+    order.status === 'brouillon' || order.status === 'en_production'
+  ).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-      {currentView === 'home' && (
-        <Home
-          orders={orders}
-          onCreateNew={handleCreateNew}
-          onViewOrder={handleViewOrder}
-          onEditOrder={handleEditOrder}
-          onDeleteOrder={handleDeleteOrder}
-        />
-      )}
+    <div className="min-h-screen">
+      <Header
+        currentView={currentView}
+        onNavigateHome={handleNavigateHome}
+        onNavigateMeasurement={handleNavigateMeasurement}
+        ordersCount={orders.length}
+        pendingOrdersCount={pendingOrdersCount}
+      />
       
-      {currentView === 'measurement' && (
-        <div>
-          <div className="max-w-6xl mx-auto p-4 pb-0">
-            <button
-              onClick={handleBackToHome}
-              className="text-blue-600 hover:text-blue-800 mb-4 flex items-center gap-2"
-            >
-              ← Retour à l'accueil
-            </button>
-          </div>
+      <main>
+        {currentView === 'home' && (
+          <Home
+            orders={orders}
+            onCreateNew={handleCreateNew}
+            onViewOrder={handleViewOrder}
+            onEditOrder={handleEditOrder}
+            onDeleteOrder={handleDeleteOrder}
+          />
+        )}
+        
+        {currentView === 'measurement' && (
           <MeasurementForm 
             onSubmit={handleFormSubmit}
             onSave={handleFormSave}
           />
-        </div>
-      )}
+        )}
+      </main>
     </div>
   )
 }

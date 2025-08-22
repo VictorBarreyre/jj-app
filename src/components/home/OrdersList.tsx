@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Edit, Trash2, Calendar, Phone } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Eye, Edit, Trash2, Calendar, Phone, Package, Search, Filter, Plus } from 'lucide-react';
 import { Order } from '@/types/order';
 
 interface OrdersListProps {
@@ -9,6 +11,7 @@ interface OrdersListProps {
   onView: (order: Order) => void;
   onEdit: (order: Order) => void;
   onDelete: (orderId: string) => void;
+  onCreateNew: () => void;
 }
 
 const statusColors: Record<Order['status'], string> = {
@@ -29,7 +32,33 @@ const statusLabels: Record<Order['status'], string> = {
   'annulee': 'Annulée'
 };
 
-export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps) {
+export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: OrdersListProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  // Filtrage des commandes
+  const filteredOrders = useMemo(() => {
+    let filtered = orders;
+
+    // Filtre par recherche (numéro ou nom)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(order => 
+        order.numero.toLowerCase().includes(query) ||
+        order.client.nom.toLowerCase().includes(query) ||
+        (order.client.prenom && order.client.prenom.toLowerCase().includes(query))
+      );
+    }
+
+    // Filtre par statut
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order => order.status === statusFilter);
+    }
+
+    // Tri par date de création (plus récent en premier)
+    return filtered.sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
+  }, [orders, searchQuery, statusFilter]);
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('fr-FR', {
       day: '2-digit',
@@ -47,9 +76,63 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-6 mt-20">
+      {/* Actions et recherche */}
+      <div className="border-b border-gray-200 pb-6 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Barre de recherche */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-600 w-5 h-5" />
+            <Input
+              placeholder="Rechercher par numéro de commande ou nom client..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 pr-4 py-3 bg-white/70 border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-xl focus:border-amber-500 focus:ring-amber-500/20 transition-all shadow-sm"
+            />
+          </div>
+
+          {/* Filtre par statut */}
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full md:w-56 bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm">
+              <Filter className="w-4 h-4 mr-2 text-amber-600" />
+              <SelectValue placeholder="Filtrer par statut" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-300 text-gray-900">
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="brouillon">Brouillon</SelectItem>
+              <SelectItem value="confirmee">Confirmée</SelectItem>
+              <SelectItem value="en_production">En production</SelectItem>
+              <SelectItem value="prete">Prête</SelectItem>
+              <SelectItem value="livree">Livrée</SelectItem>
+              <SelectItem value="annulee">Annulée</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Bouton nouvelle commande */}
+          <Button 
+            onClick={onCreateNew} 
+            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Nouvelle prise de mesure
+          </Button>
+        </div>
+
+        {/* Indicateur de résultats */}
+        <div className="flex items-center justify-between mt-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Commandes {filteredOrders.length > 0 && `(${filteredOrders.length})`}
+          </h3>
+          {searchQuery && (
+            <Badge variant="outline" className="text-sm">
+              Recherche: "{searchQuery}"
+            </Badge>
+          )}
+        </div>
+      </div>
+
       {/* Version desktop - En-tête du tableau */}
-      <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 font-semibold text-sm text-gray-700 border-b">
+      <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50/50 font-semibold text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
         <div className="col-span-2">Numéro</div>
         <div className="col-span-3 text-left ml-16">Client</div>
         <div className="col-span-2">Statut</div>
@@ -59,15 +142,15 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
         <div className="col-span-1">Actions</div>
       </div>
 
-      {/* Liste des commandes */}
-      <div className="divide-y">
-        {orders.map((order) => (
-          <div key={order.id}>
+      {/* Contenu de la liste */}
+      <div className="space-y-2">
+        {filteredOrders.map((order) => (
+          <div key={order.id} className="border border-gray-200/50 rounded-xl hover:shadow-md transition-all duration-200">
             {/* Version desktop */}
-            <div className="hidden md:grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 transition-colors">
+            <div className="hidden md:grid grid-cols-12 gap-4 p-4 hover:bg-gray-50/30 transition-all duration-200">
               {/* Numéro */}
               <div className="col-span-2">
-                <div className="font-semibold text-blue-700">#{order.numero}</div>
+                <div className="font-semibold text-amber-600">#{order.numero}</div>
                 <div className="text-xs text-gray-500 mt-1">
                   par {order.createdBy}
                 </div>
@@ -79,13 +162,13 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
                   {order.client.nom} {order.client.prenom}
                 </div>
                 {order.client.telephone && (
-                  <div className="flex items-center justify-start gap-1 text-xs text-gray-500 mt-1 w-full">
+                  <div className="flex items-center justify-start gap-1 text-xs text-gray-600 mt-1 w-full">
                     <Phone className="w-3 h-3 flex-shrink-0" />
                     <span>{order.client.telephone}</span>
                   </div>
                 )}
                 {order.dateLivraison && (
-                  <div className="flex items-center justify-start gap-1 text-xs text-orange-600 mt-1 w-full">
+                  <div className="flex items-center justify-start gap-1 text-xs text-amber-600 mt-1 w-full">
                     <Calendar className="w-3 h-3 flex-shrink-0" />
                     <span>Livraison: {formatDate(order.dateLivraison)}</span>
                   </div>
@@ -147,10 +230,10 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
             </div>
 
             {/* Version mobile - Cards */}
-            <div className="md:hidden p-4 hover:bg-gray-50 transition-colors">
+            <div className="md:hidden p-4 hover:bg-gray-50/30 transition-colors">
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div className="font-semibold text-blue-700">#{order.numero}</div>
+                  <div className="font-semibold text-amber-600">#{order.numero}</div>
                   <div className="text-xs text-gray-500">par {order.createdBy}</div>
                 </div>
                 <Badge className={`${statusColors[order.status]} text-white text-xs`}>
@@ -164,7 +247,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
                 </div>
                 
                 {order.client.telephone && (
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <div className="flex items-center gap-1 text-xs text-gray-600">
                     <Phone className="w-3 h-3 flex-shrink-0" />
                     <span>{order.client.telephone}</span>
                   </div>
@@ -176,7 +259,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
                 </div>
 
                 {order.dateLivraison && (
-                  <div className="flex items-center gap-1 text-xs text-orange-600">
+                  <div className="flex items-center gap-1 text-xs text-amber-600">
                     <Calendar className="w-3 h-3 flex-shrink-0" />
                     <span>Livraison: {formatDate(order.dateLivraison)}</span>
                   </div>
@@ -191,12 +274,12 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
               </div>
 
               {/* Actions mobile */}
-              <div className="flex gap-2 pt-2 border-t">
+              <div className="flex gap-2 pt-3 border-t border-gray-200/50">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onView(order)}
-                  className="flex-1"
+                  className="flex-1 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   <Eye className="w-4 h-4 mr-1" />
                   Voir
@@ -205,7 +288,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
                   variant="outline"
                   size="sm"
                   onClick={() => onEdit(order)}
-                  className="flex-1"
+                  className="flex-1 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   <Edit className="w-4 h-4 mr-1" />
                   Modifier
@@ -214,7 +297,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
                   variant="outline"
                   size="sm"
                   onClick={() => onDelete(order.id)}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="bg-red-50 border-red-300 text-red-600 hover:bg-red-100"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -222,15 +305,40 @@ export function OrdersList({ orders, onView, onEdit, onDelete }: OrdersListProps
             </div>
           </div>
         ))}
+        {/* Message si liste vide */}
+        {filteredOrders.length === 0 && (
+          <div className="border border-gray-200/50 rounded-xl p-8 text-center">
+            <div className="text-gray-400 mb-4">
+              {searchQuery || statusFilter !== 'all' ? (
+                <Search className="w-16 h-16 mx-auto mb-2 opacity-50" />
+              ) : (
+                <Package className="w-16 h-16 mx-auto mb-2 opacity-50" />
+              )}
+            </div>
+            <div className="text-lg font-medium text-gray-600 mb-2">
+              {searchQuery || statusFilter !== 'all' ? 
+                'Aucune commande trouvée pour cette recherche' : 
+                'Aucune commande pour le moment'
+              }
+            </div>
+            <div className="text-sm text-gray-500">
+              {searchQuery || statusFilter !== 'all' ? 
+                'Essayez de modifier vos critères de recherche' : 
+                'Créez votre première commande pour commencer'
+              }
+            </div>
+            {!searchQuery && statusFilter === 'all' && (
+              <Button 
+                onClick={onCreateNew} 
+                variant="outline" 
+                className="mt-4"
+              >
+                Créer la première commande
+              </Button>
+            )}
+          </div>
+        )}
       </div>
-
-      {/* Message si liste vide */}
-      {orders.length === 0 && (
-        <div className="p-8 text-center text-gray-500">
-          <div className="text-lg">Aucune commande trouvée</div>
-          <div className="text-sm mt-1">Utilisez les filtres ou créez une nouvelle commande</div>
-        </div>
-      )}
     </div>
   );
 }
