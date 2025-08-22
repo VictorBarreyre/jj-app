@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Home, Plus, Package, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface HeaderProps {
@@ -29,9 +28,7 @@ export function Header({
           {/* Logo et titre */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-amber-500 via-yellow-600 to-amber-700 p-3 rounded-xl shadow-lg">
-                <Package className="w-7 h-7 text-white" />
-              </div>
+             
               <div className="flex items-start flex-col leading-tight ml-4">
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Jean Jacques Cérémonie</h1>
                 <p className="text-sm text-gray-600 hidden sm:block font-medium">Maître tailleur depuis 1985</p>
@@ -40,37 +37,28 @@ export function Header({
           </div>
 
           {/* Navigation desktop */}
-          <nav className="hidden md:flex items-center gap-4">
-            <Button
-              variant={currentView === 'home' ? 'default' : 'ghost'}
+          <nav className="hidden md:flex items-center gap-8">
+            <button
               onClick={onNavigateHome}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+              className={`px-4 py-2 font-medium transition-all duration-200 hover:text-amber-600 ${
                 currentView === 'home' 
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg hover:shadow-xl border-0' 
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
+                  ? 'text-amber-600' 
+                  : 'text-gray-700 hover:text-amber-600'
               }`}
             >
-              <Home className="w-4 h-4" />
               Tableau de bord
-              {ordersCount > 0 && (
-                <Badge className="ml-2 bg-white/90 text-amber-700 font-semibold">
-                  {ordersCount}
-                </Badge>
-              )}
-            </Button>
+            </button>
 
-            <Button
-              variant={currentView === 'measurement' ? 'default' : 'ghost'}
+            <button
               onClick={onNavigateMeasurement}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+              className={`px-4 py-2 font-medium transition-all duration-200 hover:text-amber-600 ${
                 currentView === 'measurement' 
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg hover:shadow-xl border-0' 
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 border border-gray-200'
+                  ? 'text-amber-600' 
+                  : 'text-gray-700 hover:text-amber-600'
               }`}
             >
-              <Plus className="w-4 h-4" />
               Nouvelle prise de mesure
-            </Button>
+            </button>
 
             {/* Indicateur tâches en attente */}
             {pendingOrdersCount > 0 && (
@@ -99,34 +87,33 @@ export function Header({
         {/* Menu mobile */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4 space-y-2">
-            <Button
-              variant={currentView === 'home' ? 'default' : 'ghost'}
+            <button
               onClick={() => {
                 onNavigateHome();
                 setMobileMenuOpen(false);
               }}
-              className="w-full justify-start gap-2"
+              className={`w-full px-4 py-3 text-left font-medium transition-colors ${
+                currentView === 'home' 
+                  ? 'text-amber-600 bg-amber-50' 
+                  : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+              }`}
             >
-              <Home className="w-4 h-4" />
-              Accueil
-              {ordersCount > 0 && (
-                <Badge variant="secondary" className="ml-auto">
-                  {ordersCount}
-                </Badge>
-              )}
-            </Button>
+              Tableau de bord
+            </button>
 
-            <Button
-              variant={currentView === 'measurement' ? 'default' : 'ghost'}
+            <button
               onClick={() => {
                 onNavigateMeasurement();
                 setMobileMenuOpen(false);
               }}
-              className="w-full justify-start gap-2"
+              className={`w-full px-4 py-3 text-left font-medium transition-colors ${
+                currentView === 'measurement' 
+                  ? 'text-amber-600 bg-amber-50' 
+                  : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+              }`}
             >
-              <Plus className="w-4 h-4" />
               Nouvelle prise de mesure
-            </Button>
+            </button>
 
             {/* Indicateur mobile */}
             {pendingOrdersCount > 0 && (
