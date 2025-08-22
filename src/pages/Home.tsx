@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { OrdersList } from './OrdersList';
+import { OrdersList } from '../components/home/OrdersList';
 import { Order } from '@/types/order';
 
 interface HomeProps {

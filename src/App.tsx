@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Header } from './components/layout/Header'
-import { Home } from './components/home/Home'
-import { MeasurementForm } from './components/forms/MeasurementForm'
+import { Home } from './pages/Home'
+import { MeasurementFormPage } from './pages/MeasurementFormPage'
 import { MeasurementForm as MeasurementFormType } from './types/measurement-form'
 import { Order } from './types/order'
 import { mockOrders } from './data/mockOrders'
@@ -85,7 +85,7 @@ function App() {
         )}
         
         {currentView === 'measurement' && (
-          <MeasurementForm 
+          <MeasurementFormPage 
             onSubmit={handleFormSubmit}
             onSave={handleFormSave}
           />

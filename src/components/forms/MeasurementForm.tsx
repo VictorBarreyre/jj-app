@@ -82,9 +82,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
   const isFormValid = form.vendeur && form.client?.nom && form.client?.telephone;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 py-20">
-      {/* Container principal unifié */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-8 space-y-8"> 
+    <div className="space-y-8"> 
 
         {/* 1. Informations de base */}
         <div className="border-b border-gray-200 pb-8">
@@ -436,7 +434,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             </p>
           )}
         </div>
-      </div>
     </div>
   );
 }

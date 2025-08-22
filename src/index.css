@@ -56,6 +56,17 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Masquer la barre de scroll globalement tout en gardant le scroll */
+  html, body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer et Edge */
+  }
+  
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari et Opera */
+  }
 }
 
 /* Custom scrollbar */
