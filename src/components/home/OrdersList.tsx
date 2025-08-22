@@ -118,17 +118,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
           </Button>
         </div>
 
-        {/* Indicateur de résultats */}
-        <div className="flex items-center justify-between mt-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Commandes {filteredOrders.length > 0 && `(${filteredOrders.length})`}
-          </h3>
-          {searchQuery && (
-            <Badge variant="outline" className="text-sm">
-              Recherche: "{searchQuery}"
-            </Badge>
-          )}
-        </div>
+      
       </div>
 
       {/* Version desktop - En-tête du tableau */}
