@@ -1,8 +1,17 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f8fafc, #f9fafb, #f1f5f9);
+}
+
+body {
+  background: linear-gradient(to bottom right, #f8fafc, #f9fafb, #f1f5f9);
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 400;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
 .logo {

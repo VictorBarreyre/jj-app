@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -96,14 +96,14 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
       {/* Informations de base */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Calendar className="w-4 h-4" />
-            Informations de base
+          <CardTitle className="flex items-center gap-2 text-xl font-bold text-primary">
+            <Calendar className="w-5 h-5" />
+            1. Informations de base
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <Label htmlFor="dateEssai">Date d'essai</Label>
+            <Label htmlFor="dateEssai" className="block text-left text-sm font-semibold text-slate-700 mb-2">Date d'essai</Label>
             <Input
               id="dateEssai"
               type="date"
@@ -111,8 +111,8 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onChange={(e) => updateForm('dateEssai', new Date(e.target.value))}
             />
           </div>
-          <div>
-            <Label htmlFor="vendeur">Vendeur</Label>
+          <div className="md:col-span-3">
+            <Label htmlFor="vendeur" className="block text-left text-sm font-semibold text-slate-700 mb-2">Vendeur</Label>
             <Select value={form.vendeur} onValueChange={(value) => updateForm('vendeur', value as Vendeur)}>
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionner un vendeur" />
@@ -130,14 +130,14 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
       {/* Informations client */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <User className="w-4 h-4" />
-            Client
+          <CardTitle className="flex items-center gap-2 text-xl font-bold text-primary">
+            <User className="w-5 h-5" />
+            2. Informations Client
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="nom" className="flex items-center gap-1">
+            <Label htmlFor="nom" className="flex items-center justify-start gap-1 text-sm font-semibold text-slate-700 mb-2">
               <User className="w-3 h-3" />
               Nom *
             </Label>
@@ -150,7 +150,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             />
           </div>
           <div>
-            <Label htmlFor="telephone" className="flex items-center gap-1">
+            <Label htmlFor="telephone" className="flex items-center justify-start gap-1 text-sm font-semibold text-slate-700 mb-2">
               <Phone className="w-3 h-3" />
               Téléphone *
             </Label>
@@ -164,7 +164,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             />
           </div>
           <div>
-            <Label htmlFor="email" className="flex items-center gap-1">
+            <Label htmlFor="email" className="flex items-center justify-start gap-1 text-sm font-semibold text-slate-700 mb-2">
               <Mail className="w-3 h-3" />
               Email
             </Label>
@@ -182,19 +182,21 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
       {/* Sélection de la tenue */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Shirt className="w-4 h-4" />
-            Tenue
+          <CardTitle className="flex items-center gap-2 text-xl font-bold text-primary">
+            <Shirt className="w-5 h-5" />
+            3. Sélection de la Tenue
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           
           {/* Veste */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Veste</h4>
+          <div className="border-2 border-slate-200 rounded-lg p-6 bg-slate-50/50">
+            <h4 className="flex items-center gap-2 text-lg font-bold text-slate-800 mb-4">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-bold">A</div>
+              Veste
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label>Modèle</Label>
                 <Select 
                   value={form.tenue?.veste?.reference} 
                   onValueChange={(value) => updateTenue('veste', 'reference', value)}
@@ -227,7 +229,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 </Select>
               </div>
               <div>
-                <Label>Taille</Label>
                 <Select 
                   value={form.tenue?.veste?.taille} 
                   onValueChange={(value) => updateTenue('veste', 'taille', value)}
@@ -243,7 +244,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 </Select>
               </div>
               <div>
-                <Label>Longueur</Label>
                 <Select 
                   value={form.tenue?.veste?.longueur} 
                   onValueChange={(value) => updateTenue('veste', 'longueur', value)}
@@ -262,11 +262,13 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           </div>
 
           {/* Gilet */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Gilet</h4>
+          <div className="border-2 border-slate-200 rounded-lg p-6 bg-slate-50/50">
+            <h4 className="flex items-center gap-2 text-lg font-bold text-slate-800 mb-4">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">B</div>
+              Gilet
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Modèle</Label>
                 <Select 
                   value={form.tenue?.gilet?.reference} 
                   onValueChange={(value) => updateTenue('gilet', 'reference', value)}
@@ -282,7 +284,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 </Select>
               </div>
               <div>
-                <Label>Taille</Label>
                 <Select 
                   value={form.tenue?.gilet?.taille} 
                   onValueChange={(value) => updateTenue('gilet', 'taille', value)}
@@ -301,11 +302,13 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           </div>
 
           {/* Pantalon */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Pantalon</h4>
+          <div className="border-2 border-slate-200 rounded-lg p-6 bg-slate-50/50">
+            <h4 className="flex items-center gap-2 text-lg font-bold text-slate-800 mb-4">
+              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 text-sm font-bold">C</div>
+              Pantalon
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label>Modèle</Label>
                 <Select 
                   value={form.tenue?.pantalon?.reference} 
                   onValueChange={(value) => updateTenue('pantalon', 'reference', value)}
@@ -321,7 +324,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 </Select>
               </div>
               <div>
-                <Label>Taille</Label>
                 <Select 
                   value={form.tenue?.pantalon?.taille} 
                   onValueChange={(value) => updateTenue('pantalon', 'taille', value)}
@@ -337,7 +339,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 </Select>
               </div>
               <div>
-                <Label>Longueur</Label>
                 <Select 
                   value={form.tenue?.pantalon?.longueur} 
                   onValueChange={(value) => updateTenue('pantalon', 'longueur', value)}
@@ -356,11 +357,13 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           </div>
 
           {/* Accessoires */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Accessoires</h4>
+          <div className="border-2 border-slate-200 rounded-lg p-6 bg-slate-50/50">
+            <h4 className="flex items-center gap-2 text-lg font-bold text-slate-800 mb-4">
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">D</div>
+              Accessoires
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Taille Chapeau</Label>
                 <Select 
                   value={form.tenue?.tailleChapeau} 
                   onValueChange={(value) => updateAccessoire('tailleChapeau', value as TailleChapeau)}
@@ -376,7 +379,6 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 </Select>
               </div>
               <div>
-                <Label>Taille Chaussures</Label>
                 <Select 
                   value={form.tenue?.tailleChaussures} 
                   onValueChange={(value) => updateAccessoire('tailleChaussures', value as TailleChaussure)}
@@ -400,9 +402,9 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
       {/* Notes */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MessageSquare className="w-4 h-4" />
-            Notes vendeur
+          <CardTitle className="flex items-center gap-2 text-xl font-bold text-primary">
+            <MessageSquare className="w-5 h-5" />
+            4. Notes du Vendeur
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -416,18 +418,27 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
       </Card>
 
       {/* Actions */}
-      <div className="flex gap-3 justify-end">
-        <Button variant="outline" onClick={handleSave}>
-          Sauvegarder brouillon
-        </Button>
-        <Button 
-          onClick={handleSubmit} 
-          disabled={!isFormValid}
-          className="min-w-32"
-        >
-          Transmettre au PC caisse
-        </Button>
-      </div>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex gap-4 justify-end">
+            <Button variant="outline" onClick={handleSave} className="px-6">
+              💾 Sauvegarder brouillon
+            </Button>
+            <Button 
+              onClick={handleSubmit} 
+              disabled={!isFormValid}
+              className="px-6 bg-blue-600 hover:bg-blue-700"
+            >
+              📤 Transmettre au PC caisse
+            </Button>
+          </div>
+          {!isFormValid && (
+            <p className="text-sm text-red-600 text-center mt-3">
+              ⚠️ Veuillez remplir les champs obligatoires : Vendeur, Nom client, Téléphone
+            </p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
