@@ -58,6 +58,11 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }:
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto"></div>
           <p className="text-gray-500 mt-2">Chargement...</p>
         </div>
+      ) : items.length === 0 ? (
+        <div className="p-8 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Plus rien en stock !</h3>
+      
+        </div>
       ) : (
         <>
           {/* Version mobile - Cards */}
@@ -94,7 +99,11 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }:
                   </div>
                   <div>
                     <div className="text-xs text-gray-500 mb-1">Disponible</div>
-                    <span className="text-lg font-bold text-amber-600">{item.quantiteDisponible}</span>
+                    {item.quantiteDisponible === 0 ? (
+                      <span className="text-lg font-bold text-red-500">Épuisé 😢</span>
+                    ) : (
+                      <span className="text-lg font-bold text-amber-600">{item.quantiteDisponible}</span>
+                    )}
                   </div>
                 </div>
                 
@@ -162,7 +171,11 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }:
                       </div>
                     </td>
                     <td className="px-4 lg:px-6 py-3 lg:py-4">
-                      <span className="text-lg lg:text-xl font-bold text-amber-600">{item.quantiteDisponible}</span>
+                      {item.quantiteDisponible === 0 ? (
+                        <span className="text-lg lg:text-xl font-bold text-red-500">Épuisé 😢</span>
+                      ) : (
+                        <span className="text-lg lg:text-xl font-bold text-amber-600">{item.quantiteDisponible}</span>
+                      )}
                     </td>
                     <td className="px-4 lg:px-6 py-3 lg:py-4">
                       <Badge className={`${getStatusColor(item)} border text-xs font-semibold`}>

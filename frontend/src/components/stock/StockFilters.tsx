@@ -45,7 +45,7 @@ export function StockFilters({
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
-          <Label className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 block">Recherche</Label>
+          <Label className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 block text-left">Recherche</Label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
@@ -58,7 +58,7 @@ export function StockFilters({
         </div>
         
         <div>
-          <Label className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 block">Catégorie</Label>
+          <Label className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 block text-left">Catégorie</Label>
           <Select value={categoryFilter} onValueChange={onCategoryChange}>
             <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
               <SelectValue />
@@ -74,7 +74,7 @@ export function StockFilters({
         </div>
         
         <div>
-          <Label className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 block">Taille</Label>
+          <Label className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 block text-left">Taille</Label>
           <Input
             placeholder="M, L, 52..."
             value={tailleFilter}
@@ -106,7 +106,7 @@ export function StockFilters({
         </label>
         
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-          <Label className="text-xs sm:text-sm font-semibold text-gray-700">Vérifier disponibilités le:</Label>
+          <Label className="text-xs sm:text-sm font-semibold text-gray-700 text-left">Vérifier disponibilités le:</Label>
           <div className="flex gap-3">
             <Input
               type="date"
