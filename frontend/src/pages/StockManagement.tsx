@@ -106,7 +106,7 @@ export function StockManagement() {
   const getStatusColor = (item: StockItem) => {
     if (item.quantiteDisponible <= 0) return 'bg-red-100 text-red-800 border-red-200';
     if (item.quantiteDisponible <= item.seuilAlerte) return 'bg-orange-100 text-orange-800 border-orange-200';
-    return 'bg-green-100 text-green-800 border-green-200';
+    return 'bg-amber-100 text-amber-800 border-amber-200';
   };
 
   const getStatusText = (item: StockItem) => {
@@ -122,7 +122,7 @@ export function StockManagement() {
           <h1 className="text-3xl font-bold text-gray-900 text-start">Gestion du Stock</h1>
           <div className="flex items-center gap-3">
             <span className="text-lg text-gray-600 font-medium">{filteredItems.length} article{filteredItems.length > 1 ? 's' : ''}</span>
-            <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+            <Button className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
               <Plus className="w-4 h-4 mr-2" />
               Nouvel article
             </Button>
@@ -161,7 +161,7 @@ export function StockManagement() {
       {/* Filtres et recherche */}
       <div className="bg-gradient-to-r from-white/80 to-gray-50/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 shadow-lg">
         <h2 className="flex items-center gap-3 text-xl font-bold text-gray-900 mb-6">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-lg shadow-md">
+          <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Filter className="w-5 h-5 text-white" />
           </div>
           Filtres et recherche
@@ -176,7 +176,7 @@ export function StockManagement() {
                 placeholder="Référence, couleur..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white/70 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all shadow-sm"
+                className="pl-10 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
               />
             </div>
           </div>
@@ -184,7 +184,7 @@ export function StockManagement() {
           <div>
             <Label className="text-sm font-semibold text-gray-700 mb-2 block">Catégorie</Label>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-blue-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -203,14 +203,14 @@ export function StockManagement() {
               placeholder="M, L, 52..."
               value={tailleFilter}
               onChange={(e) => setTailleFilter(e.target.value)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all shadow-sm"
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
             />
           </div>
           
           <div className="flex items-end">
             <Button 
               onClick={loadStockData}
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Search className="w-4 h-4 mr-2" />
               Rechercher
@@ -224,7 +224,7 @@ export function StockManagement() {
               type="checkbox"
               checked={showAlertsOnly}
               onChange={(e) => setShowAlertsOnly(e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 rounded-md"
+              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 rounded-md"
             />
             <span className="text-sm font-semibold text-gray-700">Afficher uniquement les alertes</span>
           </label>
@@ -235,7 +235,7 @@ export function StockManagement() {
               type="date"
               value={checkDate}
               onChange={(e) => setCheckDate(e.target.value)}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl transition-all shadow-sm"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
             />
             <Button 
               onClick={checkAvailabilityAtDate}
@@ -262,7 +262,7 @@ export function StockManagement() {
         
         {loading ? (
           <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto"></div>
             <p className="text-gray-500 mt-2">Chargement...</p>
           </div>
         ) : (
@@ -281,7 +281,7 @@ export function StockManagement() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredItems.map(item => (
-                  <tr key={item.id} className="hover:bg-gradient-to-r hover:from-blue-50/30 hover:to-indigo-50/30 transition-all duration-200">
+                  <tr key={item.id} className="hover:bg-gradient-to-r hover:from-amber-50/30 hover:to-orange-50/30 transition-all duration-200">
                     <td className="px-6 py-4">
                       <div>
                         <div className="font-semibold text-gray-900">{item.reference}</div>
@@ -293,7 +293,7 @@ export function StockManagement() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center">
-                        <TrendingUp className="w-4 h-4 text-green-500 mr-2" />
+                        <TrendingUp className="w-4 h-4 text-amber-600 mr-2" />
                         <span className="font-bold text-gray-900">{item.quantiteStock}</span>
                       </div>
                     </td>
@@ -304,7 +304,7 @@ export function StockManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-xl font-bold text-blue-600">{item.quantiteDisponible}</span>
+                      <span className="text-xl font-bold text-amber-600">{item.quantiteDisponible}</span>
                     </td>
                     <td className="px-6 py-4">
                       <Badge className={`${getStatusColor(item)} border text-xs font-semibold`}>
@@ -316,14 +316,14 @@ export function StockManagement() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline" className="bg-white/70 border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 rounded-xl transition-all shadow-sm">
+                        <Button size="sm" variant="outline" className="bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm">
                           <Edit3 className="w-3 h-3" />
                         </Button>
                         <Button 
                           size="sm" 
                           variant="outline" 
                           onClick={() => loadMovements(item.id)}
-                          className="bg-white/70 border-gray-300 text-gray-700 hover:bg-green-50 hover:border-green-300 hover:text-green-700 rounded-xl transition-all shadow-sm"
+                          className="bg-white/70 border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 rounded-xl transition-all shadow-sm"
                         >
                           <History className="w-3 h-3" />
                         </Button>

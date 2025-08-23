@@ -16,10 +16,10 @@ interface OrdersListProps {
 
 const statusColors: Record<Order['status'], string> = {
   'brouillon': 'bg-gray-500',
-  'confirmee': 'bg-blue-500', 
+  'confirmee': 'bg-amber-500', 
   'en_production': 'bg-orange-500',
-  'prete': 'bg-green-500',
-  'livree': 'bg-emerald-600',
+  'prete': 'bg-amber-600',
+  'livree': 'bg-orange-600',
   'annulee': 'bg-red-500'
 };
 

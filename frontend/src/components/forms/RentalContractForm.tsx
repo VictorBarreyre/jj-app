@@ -265,7 +265,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onPrint, initialData
               <Button
                 variant="outline"
                 onClick={() => onPrint(initialData.id!, 'jj')}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100 rounded-xl transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100 rounded-xl transition-all"
               >
                 <Printer className="w-4 h-4" />
                 Imprimer JJ
@@ -274,7 +274,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onPrint, initialData
               <Button
                 variant="outline"
                 onClick={() => onPrint(initialData.id!, 'client')}
-                className="flex items-center gap-2 px-4 py-2 bg-green-50 border-green-300 text-green-700 hover:bg-green-100 rounded-xl transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-orange-50 border-orange-300 text-orange-700 hover:bg-orange-100 rounded-xl transition-all"
               >
                 <Printer className="w-4 h-4" />
                 Imprimer Client

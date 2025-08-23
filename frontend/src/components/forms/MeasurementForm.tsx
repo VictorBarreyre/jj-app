@@ -187,7 +187,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           {/* Veste */}
           <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-bold">A</div>
+              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">A</div>
               Veste
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -259,7 +259,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           {/* Gilet */}
           <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">B</div>
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
