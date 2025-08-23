@@ -28,7 +28,7 @@ const generateContractNumber = (): string => {
 };
 
 // Fonction utilitaire pour créer automatiquement des mouvements de stock
-const createStockMovements = async (contract: RentalContract, type: 'reservation' | 'retour' | 'annulation') => {
+const createStockMovements = async (contract: any, type: 'reservation' | 'retour' | 'annulation') => {
   if (!contract.articlesStock || contract.articlesStock.length === 0) return;
   
   for (const item of contract.articlesStock) {

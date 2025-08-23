@@ -32,8 +32,8 @@ export function Header({
             <div className="flex items-center gap-3">
              
               <div className="flex items-start flex-col leading-tight ml-4">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Jean Jacques Cérémonie</h1>
-                <p className="text-sm text-gray-600 hidden sm:block font-medium">Maître tailleur depuis 1985</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Jean Jacques Cérémonie</h1>
+                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block font-medium">Maître tailleur depuis 1985</p>
               </div>
             </div>
           </div>

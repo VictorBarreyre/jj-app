@@ -76,10 +76,10 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-6 mt-20">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-4 sm:p-6 mt-16 sm:mt-20">
       {/* Actions et recherche */}
-      <div className="border-b border-gray-200 pb-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="border-b border-gray-200 pb-4 sm:pb-6 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           {/* Barre de recherche */}
           <div className="flex-1 relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-600 w-5 h-5" />
@@ -122,8 +122,8 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
       </div>
 
       {/* Version desktop - En-tête du tableau */}
-      <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50/50 font-semibold text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
-        <div className="col-span-2">Numéro</div>
+      <div className="hidden lg:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
+        <div className="col-span-2 text-left">Numéro</div>
         <div className="col-span-3 text-left ml-16">Client</div>
         <div className="col-span-2">Statut</div>
         <div className="col-span-2">Date création</div>
@@ -137,11 +137,11 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
         {filteredOrders.map((order) => (
           <div key={order.id} className="border border-gray-200/50 rounded-xl hover:shadow-md transition-all duration-200">
             {/* Version desktop */}
-            <div className="hidden md:grid grid-cols-12 gap-4 p-4 hover:bg-gray-50/30 transition-all duration-200">
+            <div className="hidden lg:grid grid-cols-12 gap-4 p-3 lg:p-4 hover:bg-gray-50/30 transition-all duration-200">
               {/* Numéro */}
-              <div className="col-span-2">
-                <div className="font-semibold text-amber-600">#{order.numero}</div>
-                <div className="text-xs text-gray-500 mt-1">
+              <div className="col-span-2 text-left">
+                <div className="font-semibold text-amber-600 text-left">#{order.numero}</div>
+                <div className="text-xs text-gray-500 mt-1 text-left">
                   par {order.createdBy}
                 </div>
               </div>
@@ -220,11 +220,11 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
             </div>
 
             {/* Version mobile - Cards */}
-            <div className="md:hidden p-4 hover:bg-gray-50/30 transition-colors">
+            <div className="md:hidden p-5 hover:bg-gray-50/30 transition-colors">
               <div className="flex justify-between items-start mb-3">
-                <div>
-                  <div className="font-semibold text-amber-600">#{order.numero}</div>
-                  <div className="text-xs text-gray-500">par {order.createdBy}</div>
+                <div className="text-left">
+                  <div className="font-semibold text-amber-600 text-left">#{order.numero}</div>
+                  <div className="text-xs text-gray-500 text-left">par {order.createdBy}</div>
                 </div>
                 <Badge className={`${statusColors[order.status]} text-white text-xs`}>
                   {statusLabels[order.status]}
@@ -232,7 +232,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
               </div>
 
               <div className="space-y-2 mb-3">
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 text-left">
                   {order.client.nom} {order.client.prenom}
                 </div>
                 
@@ -305,7 +305,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
                 <Package className="w-16 h-16 mx-auto mb-2 opacity-50" />
               )}
             </div>
-            <div className="text-lg font-medium text-gray-600 mb-2">
+            <div className="text-base sm:text-lg font-medium text-gray-600 mb-2">
               {searchQuery || statusFilter !== 'all' ? 
                 'Aucune commande trouvée pour cette recherche' : 
                 'Aucune commande pour le moment'

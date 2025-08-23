@@ -23,13 +23,13 @@ export function Home({ orders, onCreateNew, onViewOrder, onEditOrder, onDeleteOr
   }, [orders]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <div className="pt-16 ml-4 mr-4 mb-8">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <div className="pt-4 sm:pt-16 mx-4 mb-6 sm:mb-8">
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-3xl font-bold text-gray-900 text-start">Gestion des commandes</h1>
-          <span className="text-lg text-gray-600 font-medium">{orders.length} commande{orders.length > 1 ? 's' : ''}</span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-start">Gestion des commandes</h1>
+          <span className="hidden sm:inline text-sm sm:text-lg text-gray-600 font-medium">{orders.length} commande{orders.length > 1 ? 's' : ''}</span>
         </div>
-        <p className="text-gray-600 text-sm text-start">Consultez, modifiez et gérez toutes vos commandes de cérémonie</p>
+        <p className="text-gray-600 text-xs sm:text-sm text-start">Consultez, modifiez et gérez toutes vos commandes de cérémonie</p>
       </div>
   
       {/* Liste des commandes avec recherche intégrée */}

@@ -82,11 +82,11 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
   const isFormValid = form.vendeur && form.client?.nom && form.client?.telephone;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
 
       {/* 1. Informations de base */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-3 text-xl font-bold text-gray-900 mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Calendar className="w-5 h-5 text-white" />
           </div>
@@ -121,7 +121,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 2. Informations client */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-3 text-xl font-bold text-gray-900 mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <User className="w-5 h-5 text-white" />
           </div>
@@ -176,7 +176,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 3. Sélection de la tenue */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-3 text-xl font-bold text-gray-900 mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Shirt className="w-5 h-5 text-white" />
           </div>
@@ -185,7 +185,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
         <div className="space-y-6">
 
           {/* Veste */}
-          <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50/50">
+          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">A</div>
               Veste
@@ -257,7 +257,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           </div>
 
           {/* Gilet */}
-          <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50/50">
+          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
@@ -297,9 +297,9 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           </div>
 
           {/* Pantalon */}
-          <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50/50">
+          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 text-sm font-bold">C</div>
+              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">C</div>
               Pantalon
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -352,7 +352,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           </div>
 
           {/* Accessoires */}
-          <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50/50">
+          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">D</div>
               Accessoires
@@ -395,7 +395,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 4. Notes */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-3 text-xl font-bold text-gray-900 mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
@@ -412,7 +412,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 5. Actions */}
       <div>
-        <div className="flex gap-4 justify-end">
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
           <Button
             variant="outline"
             onClick={handleSave}

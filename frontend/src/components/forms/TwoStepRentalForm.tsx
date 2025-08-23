@@ -130,12 +130,12 @@ export function TwoStepRentalForm({
 
         {currentStep === 2 && contractData && (
           <div>
-            <div className="mb-6 flex items-center justify-end">
+            <div className="mb-6 flex items-center justify-start">
               <button
                 onClick={goBackToStep1}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3 h-3" />
                 Retour aux mesures
               </button>
             </div>
