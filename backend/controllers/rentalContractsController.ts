@@ -27,6 +27,40 @@ const generateContractNumber = (): string => {
   return `${contractNumbering.prefix}-${currentYear}-${number}`;
 };
 
+// Fonction utilitaire pour créer automatiquement des mouvements de stock
+const createStockMovements = async (contract: RentalContract, type: 'reservation' | 'retour' | 'annulation') => {
+  if (!contract.articlesStock || contract.articlesStock.length === 0) return;
+  
+  for (const item of contract.articlesStock) {
+    const movementData = {
+      stockItemId: item.stockItemId,
+      type: type,
+      quantite: item.quantiteReservee,
+      dateMovement: new Date().toISOString(),
+      datePrevue: type === 'reservation' ? contract.dateRetrait : undefined,
+      dateRetour: type === 'reservation' ? contract.dateRetour : undefined,
+      contractId: contract.id,
+      vendeur: contract.vendeur,
+      commentaire: `${type} pour contrat ${contract.numero} - ${item.reference}`
+    };
+
+    try {
+      // Simuler l'appel à l'API stock
+      const response = await fetch('http://localhost:3001/api/stock/movements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(movementData)
+      });
+      
+      if (!response.ok) {
+        console.error(`Erreur lors de la création du mouvement de stock pour ${item.reference}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création du mouvement de stock:', error);
+    }
+  }
+};
+
 export const rentalContractsController = {
   // GET /api/contracts
   getAllContracts: async (req: Request, res: Response, next: NextFunction) => {
@@ -117,6 +151,9 @@ export const rentalContractsController = {
       
       contracts.push(newContract);
       
+      // Créer automatiquement les mouvements de stock si des articles sont spécifiés
+      await createStockMovements(newContract, 'reservation');
+      
       res.status(201).json(newContract);
     } catch (error) {
       next(error);
@@ -193,6 +230,9 @@ export const rentalContractsController = {
       contracts[contractIndex].status = 'rendu';
       contracts[contractIndex].updatedAt = new Date().toISOString();
       
+      // Créer automatiquement les mouvements de retour
+      await createStockMovements(contracts[contractIndex], 'retour');
+      
       res.json(contracts[contractIndex]);
     } catch (error) {
       next(error);
@@ -229,6 +269,13 @@ export const rentalContractsController = {
       
       if (contractIndex === -1) {
         throw createError('Bon de location non trouvé', 404);
+      }
+      
+      const contractToDelete = contracts[contractIndex];
+      
+      // Créer automatiquement les mouvements d'annulation si le contrat n'était pas encore rendu
+      if (!contractToDelete.rendu) {
+        await createStockMovements(contractToDelete, 'annulation');
       }
       
       contracts.splice(contractIndex, 1);

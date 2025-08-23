@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { ordersRouter } from './routes/orders';
 import { measurementsRouter } from './routes/measurements';
 import { contractsRouter } from './routes/contracts';
+import { stockRouter } from './routes/stock';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/orders', ordersRouter);
 app.use('/api/measurements', measurementsRouter);
 app.use('/api/contracts', contractsRouter);
+app.use('/api/stock', stockRouter);
 
 // Error handling
 app.use(errorHandler);

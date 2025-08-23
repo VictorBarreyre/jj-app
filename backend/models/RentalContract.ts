@@ -1,6 +1,16 @@
 // Types pour les modes de paiement
 export type PaymentMethod = 'especes' | 'carte' | 'virement' | 'cheque' | 'autre';
 
+// Interface pour les articles de stock utilisés dans un contrat
+export interface ContractStockItem {
+  stockItemId: string;
+  reference: string;
+  taille: string;
+  couleur?: string;
+  quantiteReservee: number;
+  prix: number;
+}
+
 // Interface pour le client
 export interface ClientInfo {
   nom: string;
@@ -54,6 +64,7 @@ export interface RentalContract {
   
   // Produits
   tenue: TenueInfo;
+  articlesStock?: ContractStockItem[];  // Articles de stock réservés
   notes?: string;
   
   // Financier

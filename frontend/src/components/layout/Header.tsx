@@ -4,9 +4,10 @@ import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface HeaderProps {
-  currentView: 'home' | 'measurement' | 'view-order' | 'edit-order';
+  currentView: 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
   onNavigateHome: () => void;
   onNavigateMeasurement: () => void;
+  onNavigateStock: () => void;
   ordersCount?: number;
   pendingOrdersCount?: number;
 }
@@ -15,6 +16,7 @@ export function Header({
   currentView, 
   onNavigateHome, 
   onNavigateMeasurement,
+  onNavigateStock,
   ordersCount = 0,
   pendingOrdersCount = 0
 }: HeaderProps) {
@@ -60,15 +62,18 @@ export function Header({
               Nouvelle prise de mesure
             </button>
 
-            {/* Indicateur tâches en attente */}
-            {pendingOrdersCount > 0 && (
-              <div className="flex items-center gap-2 text-sm bg-amber-50 px-4 py-2 rounded-xl border border-amber-200">
-                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                <span className="text-amber-700 font-semibold">
-                  {pendingOrdersCount} en attente
-                </span>
-              </div>
-            )}
+            <button
+              onClick={onNavigateStock}
+              className={`px-4 py-2 font-medium transition-all duration-200 hover:text-amber-600 ${
+                currentView === 'stock' 
+                  ? 'text-amber-600' 
+                  : 'text-gray-700 hover:text-amber-600'
+              }`}
+            >
+              Gestion du stock
+            </button>
+
+          
           </nav>
 
           {/* Bouton menu mobile */}
@@ -115,15 +120,21 @@ export function Header({
               Nouvelle prise de mesure
             </button>
 
-            {/* Indicateur mobile */}
-            {pendingOrdersCount > 0 && (
-              <div className="flex items-center gap-2 p-2 text-sm bg-orange-50 rounded-lg">
-                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                <span className="text-orange-600 font-medium">
-                  {pendingOrdersCount} commande{pendingOrdersCount > 1 ? 's' : ''} en attente
-                </span>
-              </div>
-            )}
+            <button
+              onClick={() => {
+                onNavigateStock();
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full px-4 py-3 text-left font-medium transition-colors ${
+                currentView === 'stock' 
+                  ? 'text-amber-600 bg-amber-50' 
+                  : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+              }`}
+            >
+              Gestion du stock
+            </button>
+
+        
           </div>
         )}
       </div>

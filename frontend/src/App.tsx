@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { Header } from './components/layout/Header'
 import { Home } from './pages/Home'
 import { MeasurementFormPage } from './pages/MeasurementFormPage'
+import { StockManagement } from './pages/StockManagement'
 import { MeasurementForm as MeasurementFormType } from './types/measurement-form'
 import { RentalContract } from './types/rental-contract'
 import { Order } from './types/order'
 import { mockOrders } from './data/mockOrders'
 import './App.css'
 
-type AppView = 'home' | 'measurement' | 'view-order' | 'edit-order';
+type AppView = 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('home');
@@ -46,6 +47,10 @@ function App() {
     setCurrentView('measurement');
   };
 
+  const handleNavigateStock = () => {
+    setCurrentView('stock');
+  };
+
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
     console.log('Voir commande:', order);
@@ -77,6 +82,7 @@ function App() {
         currentView={currentView}
         onNavigateHome={handleNavigateHome}
         onNavigateMeasurement={handleNavigateMeasurement}
+        onNavigateStock={handleNavigateStock}
         ordersCount={orders.length}
         pendingOrdersCount={pendingOrdersCount}
       />
@@ -98,6 +104,10 @@ function App() {
             onSaveDraft={handleRentalSaveDraft}
             onPrint={handlePrint}
           />
+        )}
+        
+        {currentView === 'stock' && (
+          <StockManagement />
         )}
       </main>
     </div>

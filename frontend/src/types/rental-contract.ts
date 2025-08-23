@@ -1,5 +1,15 @@
 import { MeasurementClientInfo, TenueMeasurement, Vendeur } from './measurement-form';
 
+// Interface pour les articles de stock utilisés dans un contrat
+export interface ContractStockItem {
+  stockItemId: string;
+  reference: string;
+  taille: string;
+  couleur?: string;
+  quantiteReservee: number;
+  prix: number;
+}
+
 // Types pour les modes de paiement
 export type PaymentMethod = 'especes' | 'carte' | 'virement' | 'cheque' | 'autre';
 
@@ -28,6 +38,7 @@ export interface RentalContract {
   
   // Tenue et mesures
   tenue: TenueMeasurement;
+  articlesStock?: ContractStockItem[];  // Articles de stock réservés
   notes?: string;
   
   // Tarification
