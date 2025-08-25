@@ -3,7 +3,7 @@ import { ThreeStepRentalForm } from '@/components/forms/ThreeStepRentalForm';
 import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
 
-interface MeasurementFormPageProps {
+interface GroupRentalPageProps {
   onSubmitComplete: (group: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
   onSaveDraft: (group?: GroupRentalInfo, contract?: Partial<RentalContract>) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
@@ -11,14 +11,14 @@ interface MeasurementFormPageProps {
   initialContract?: Partial<RentalContract>;
 }
 
-export function MeasurementFormPage({ 
+export function GroupRentalPage({ 
   onSubmitComplete, 
   onSaveDraft, 
   onPrint, 
   initialGroup, 
   initialContract 
-}: MeasurementFormPageProps) {
-  const [pageTitle, setPageTitle] = useState('Nouveau bon de location');
+}: GroupRentalPageProps) {
+  const [pageTitle, setPageTitle] = useState('Nouveau groupe de location');
   const [pageDescription, setPageDescription] = useState('Processus complet : configuration, mesures puis création du bon de location');
 
   const handleStepChange = (step: number, title: string, description: string) => {

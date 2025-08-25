@@ -12,7 +12,7 @@ import {
   Trash2
 } from 'lucide-react';
 
-interface StockListProps {
+export interface StockListProps {
   items: StockItem[];
   loading: boolean;
   onEdit: (itemId: string) => void;
