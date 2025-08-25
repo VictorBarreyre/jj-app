@@ -81,7 +81,91 @@ const checkStockAlerts = async (): Promise<void> => {
   }
 };
 
+// Endpoint pour initialiser des données d'exemple
+const seedDatabase = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Vérifier si des données existent déjà
+    const existingItems = await StockItem.countDocuments();
+    if (existingItems > 0) {
+      return res.json({ message: 'Base de données déjà initialisée', count: existingItems });
+    }
+
+    // Créer des articles d'exemple
+    const sampleItems = [
+      {
+        category: 'veste',
+        subCategory: 'jaquette',
+        reference: 'jaquette-fff',
+        taille: '48',
+        couleur: 'Noir',
+        quantiteStock: 5,
+        quantiteReservee: 1,
+        quantiteDisponible: 4,
+        seuilAlerte: 2,
+        prix: 150
+      },
+      {
+        category: 'veste',
+        subCategory: 'costume-ville',
+        reference: 'costume-bleu',
+        taille: '44N',
+        couleur: 'Bleu marine',
+        quantiteStock: 3,
+        quantiteReservee: 0,
+        quantiteDisponible: 3,
+        seuilAlerte: 2,
+        prix: 120
+      },
+      {
+        category: 'gilet',
+        reference: 'gilet-clair',
+        taille: '42N',
+        couleur: 'Clair',
+        quantiteStock: 2,
+        quantiteReservee: 0,
+        quantiteDisponible: 2,
+        seuilAlerte: 3,
+        prix: 80
+      },
+      {
+        category: 'pantalon',
+        reference: 'pantalon-sp',
+        taille: '42 82',
+        couleur: 'SP',
+        quantiteStock: 4,
+        quantiteReservee: 1,
+        quantiteDisponible: 3,
+        seuilAlerte: 2,
+        prix: 60
+      },
+      {
+        category: 'accessoire',
+        reference: 'ceinture-scratch',
+        taille: '42',
+        couleur: 'Noir',
+        quantiteStock: 10,
+        quantiteReservee: 2,
+        quantiteDisponible: 8,
+        seuilAlerte: 3,
+        prix: 25
+      }
+    ];
+
+    const createdItems = await StockItem.insertMany(sampleItems);
+    
+    res.json({
+      message: 'Base de données initialisée avec succès',
+      count: createdItems.length,
+      items: createdItems
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const stockController = {
+  // POST /api/stock/seed - Initialiser des données d'exemple
+  seedDatabase,
   // GET /api/stock/catalog
   getCatalog: async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -250,9 +334,26 @@ export const stockController = {
       
       await checkStockAlerts();
       
+      // Mapper _id vers id pour React
+      const itemsWithId = stockItems.map(item => ({
+        id: (item._id as any).toString(),
+        category: item.category,
+        subCategory: item.subCategory,
+        reference: item.reference,
+        taille: item.taille,
+        couleur: item.couleur,
+        quantiteStock: item.quantiteStock,
+        quantiteReservee: item.quantiteReservee,
+        quantiteDisponible: item.quantiteDisponible,
+        seuilAlerte: item.seuilAlerte,
+        prix: item.prix,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
+      }));
+      
       res.json({
-        items: stockItems,
-        total: stockItems.length
+        items: itemsWithId,
+        total: itemsWithId.length
       });
     } catch (error) {
       next(error);
@@ -340,9 +441,22 @@ export const stockController = {
         .populate('stockItemId', 'reference taille couleur')
         .sort({ dateDetection: -1 });
       
+      // Mapper _id vers id pour React
+      const alertsWithId = activeAlerts.map(alert => ({
+        id: (alert._id as any).toString(),
+        stockItemId: alert.stockItemId,
+        reference: alert.reference,
+        taille: alert.taille,
+        quantiteActuelle: alert.quantiteActuelle,
+        seuilAlerte: alert.seuilAlerte,
+        dateDetection: alert.dateDetection,
+        estActive: alert.estActive,
+        message: alert.message
+      }));
+      
       res.json({
-        alerts: activeAlerts,
-        total: activeAlerts.length
+        alerts: alertsWithId,
+        total: alertsWithId.length
       });
     } catch (error) {
       next(error);

@@ -12,8 +12,8 @@ import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
-// Connexion à MongoDB (désactivée temporairement)
-// connectDB();
+// Connexion à MongoDB Atlas
+connectDB().catch(err => console.log("MongoDB connection failed, continuing without:", err.message));
 
 const app = express();
 const PORT = process.env.PORT || 3001;

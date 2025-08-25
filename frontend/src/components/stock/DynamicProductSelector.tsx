@@ -186,7 +186,6 @@ export function DynamicProductSelector({
         <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
           <p><strong>Modèle:</strong> {sizeInfo.name}</p>
           <p><strong>Catégorie:</strong> {sizeInfo.subCategory}</p>
-          <p><strong>Prix de base:</strong> {sizeInfo.basePrice}€</p>
           <p><strong>Tailles disponibles:</strong> {sizeInfo.sizes.length} taille(s)</p>
         </div>
       )}

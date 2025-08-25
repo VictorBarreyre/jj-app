@@ -34,7 +34,14 @@ export interface TenueMeasurement {
     couleur?: string;
   };
   
-  // Accessoires
+  // Ceinture
+  ceinture?: {
+    reference: string; // ID de la référence depuis l'API
+    taille: string; // Taille dynamique depuis l'API
+    couleur?: string;
+  };
+
+  // Autres accessoires
   tailleChapeau?: TailleChapeau;
   tailleChaussures?: TailleChaussure;
 }

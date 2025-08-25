@@ -72,6 +72,34 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     updateTenue(category, 'couleur', color);
   };
 
+  const updateCeinture = (field: string, value: any) => {
+    setForm(prev => ({
+      ...prev,
+      tenue: {
+        ...prev.tenue,
+        ceinture: {
+          ...prev.tenue?.ceinture,
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  const updateCeintureReference = (referenceId: string) => {
+    updateCeinture('reference', referenceId);
+    // Reset la taille quand on change de référence
+    updateCeinture('taille', undefined);
+    updateCeinture('couleur', undefined);
+  };
+
+  const updateCeintureSize = (size: string) => {
+    updateCeinture('taille', size);
+  };
+
+  const updateCeintureColor = (color: string) => {
+    updateCeinture('couleur', color);
+  };
+
   const updateAccessoire = (field: 'tailleChapeau' | 'tailleChaussures', value: any) => {
     setForm(prev => ({
       ...prev,
@@ -248,11 +276,28 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             />
           </div>
 
-          {/* Accessoires */}
+          {/* Ceinture */}
           <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">D</div>
-              Accessoires
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">D</div>
+              Ceinture
+            </h4>
+            <DynamicProductSelector
+              category="accessoire"
+              selectedReference={form.tenue?.ceinture?.reference}
+              selectedSize={form.tenue?.ceinture?.taille}
+              selectedColor={form.tenue?.ceinture?.couleur}
+              onReferenceChange={(ref) => updateCeintureReference(ref)}
+              onSizeChange={(size) => updateCeintureSize(size)}
+              onColorChange={(color) => updateCeintureColor(color)}
+            />
+          </div>
+
+          {/* Autres Accessoires */}
+          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
+            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">E</div>
+              Autres Accessoires
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
