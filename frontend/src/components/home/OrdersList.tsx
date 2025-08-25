@@ -122,7 +122,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
       </div>
 
       {/* Version desktop - En-tête du tableau */}
-      <div className="hidden lg:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
+      <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
         <div className="col-span-2 text-left">Numéro</div>
         <div className="col-span-3 text-left ml-16">Client</div>
         <div className="col-span-2">Statut</div>
@@ -137,7 +137,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
         {filteredOrders.map((order) => (
           <div key={order.id} className="border border-gray-200/50 rounded-xl hover:shadow-md transition-all duration-200">
             {/* Version desktop */}
-            <div className="hidden lg:grid grid-cols-12 gap-4 p-3 lg:p-4 hover:bg-gray-50/30 transition-all duration-200">
+            <div className="hidden md:grid grid-cols-12 gap-4 p-3 lg:p-4 hover:bg-gray-50/30 transition-all duration-200">
               {/* Numéro */}
               <div className="col-span-2 text-left">
                 <div className="font-semibold text-amber-600 text-left">#{order.numero}</div>
@@ -220,7 +220,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
             </div>
 
             {/* Version mobile - Cards */}
-            <div className="md:hidden p-5 hover:bg-gray-50/30 transition-colors">
+            <div className="block md:hidden p-5 hover:bg-gray-50/30 transition-colors">
               <div className="flex justify-between items-start mb-3">
                 <div className="text-left">
                   <div className="font-semibold text-amber-600 text-left">#{order.numero}</div>
