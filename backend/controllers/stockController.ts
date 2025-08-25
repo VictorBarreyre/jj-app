@@ -1,74 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
 import { 
-  StockItem, 
+  StockItem,
   StockMovement, 
-  StockAvailability, 
   StockAlert,
+  IStockItem,
+  IStockMovement,
+  IStockAlert,
+  StockAvailability,
   CreateStockItemData, 
   UpdateStockItemData, 
   CreateStockMovementData,
   MovementType 
 } from '../models/Stock';
 import { createError } from '../middleware/errorHandler';
-import { v4 as uuidv4 } from 'uuid';
 
-// Simulation d'une base de données en mémoire
-let stockItems: StockItem[] = [
-  {
-    id: '1',
-    category: 'veste',
-    reference: 'Jaquette Traditionnelle',
-    taille: 'M',
-    couleur: 'Noir',
-    quantiteStock: 15,
-    quantiteReservee: 3,
-    quantiteDisponible: 12,
-    seuilAlerte: 5,
-    prix: 120,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    category: 'veste',
-    reference: 'Costume Ville 2P',
-    taille: 'L',
-    couleur: 'Bleu marine',
-    quantiteStock: 8,
-    quantiteReservee: 2,
-    quantiteDisponible: 6,
-    seuilAlerte: 3,
-    prix: 100,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
-
-let stockMovements: StockMovement[] = [];
-let stockAlerts: StockAlert[] = [];
+// Controllers utilisant MongoDB avec Mongoose
 
 // Fonction utilitaire pour calculer les disponibilités
-const calculateAvailabilityAtDate = (stockItemId: string, targetDate: string): StockAvailability => {
-  const stockItem = stockItems.find(item => item.id === stockItemId);
+const calculateAvailabilityAtDate = async (stockItemId: string, targetDate: Date): Promise<StockAvailability> => {
+  const stockItem = await StockItem.findById(stockItemId);
   if (!stockItem) {
     throw createError('Article non trouvé', 404);
   }
 
   // Récupérer toutes les réservations actives à cette date
-  const reservationsAtDate = stockMovements.filter(movement => 
-    movement.stockItemId === stockItemId &&
-    movement.type === 'reservation' &&
-    movement.datePrevue &&
-    movement.dateRetour &&
-    movement.datePrevue <= targetDate &&
-    movement.dateRetour >= targetDate
-  );
+  const reservationsAtDate = await StockMovement.find({
+    stockItemId,
+    type: 'reservation',
+    datePrevue: { $lte: targetDate },
+    dateRetour: { $gte: targetDate }
+  });
 
   const quantiteReserveeADate = reservationsAtDate.reduce((sum, res) => sum + res.quantite, 0);
   const quantiteDisponibleADate = stockItem.quantiteStock - quantiteReserveeADate;
 
   return {
-    stockItemId: stockItem.id,
+    stockItemId: (stockItem._id as any).toString(),
     reference: stockItem.reference,
     taille: stockItem.taille,
     couleur: stockItem.couleur,
@@ -77,80 +44,215 @@ const calculateAvailabilityAtDate = (stockItemId: string, targetDate: string): S
     quantiteDisponibleADate,
     reservationsActives: reservationsAtDate.map(res => ({
       contractId: res.contractId || '',
-      dateDebut: res.datePrevue || '',
-      dateFin: res.dateRetour || '',
+      dateDebut: res.datePrevue!,
+      dateFin: res.dateRetour!,
       quantite: res.quantite
     }))
   };
 };
 
 // Fonction pour vérifier les alertes de stock
-const checkStockAlerts = (): void => {
-  const now = new Date().toISOString();
+const checkStockAlerts = async (): Promise<void> => {
+  const stockItems = await StockItem.find();
   
-  stockItems.forEach(item => {
+  for (const item of stockItems) {
     const shouldAlert = item.quantiteDisponible <= item.seuilAlerte;
-    const existingAlert = stockAlerts.find(alert => 
-      alert.stockItemId === item.id && alert.estActive
-    );
+    const existingAlert = await StockAlert.findOne({ 
+      stockItemId: item._id as any, 
+      estActive: true 
+    });
 
     if (shouldAlert && !existingAlert) {
       // Créer une nouvelle alerte
-      const newAlert: StockAlert = {
-        id: uuidv4(),
-        stockItemId: item.id,
+      await StockAlert.create({
+        stockItemId: item._id as any,
         reference: item.reference,
         taille: item.taille,
         quantiteActuelle: item.quantiteDisponible,
         seuilAlerte: item.seuilAlerte,
-        dateDetection: now,
         estActive: true,
         message: `Stock faible pour ${item.reference} (${item.taille}): ${item.quantiteDisponible} restant(s)`
-      };
-      stockAlerts.push(newAlert);
+      });
     } else if (!shouldAlert && existingAlert) {
       // Désactiver l'alerte
       existingAlert.estActive = false;
+      await existingAlert.save();
     }
-  });
+  }
 };
 
 export const stockController = {
+  // GET /api/stock/catalog
+  getCatalog: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { PRODUCT_CATALOG, getProductByCategory, getAllSizesForCategory, getAllReferencesForCategory } = await import('../config/productCatalog');
+      const { category } = req.query;
+      
+      if (category) {
+        const products = getProductByCategory(category.toString());
+        const sizes = getAllSizesForCategory(category.toString());
+        const references = getAllReferencesForCategory(category.toString());
+        
+        res.json({
+          category,
+          products,
+          availableSizes: sizes,
+          availableReferences: references
+        });
+      } else {
+        res.json({
+          catalog: PRODUCT_CATALOG,
+          categories: ['veste', 'gilet', 'pantalon', 'accessoire']
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // GET /api/stock/sizes
+  getAvailableSizes: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { category, subCategory } = req.query;
+      const { COSTUME_VILLE_SIZES, JAQUETTE_SIZES, SMOKING_SIZES, HABIT_QUEUE_DE_PIE_SIZES, GILET_SIZES_CLASSIQUE, GILET_SIZES_STANDARD, GILET_SIZES_ECRU, CEINTURE_SIZES, PANTALON_SIZES } = await import('../config/productCatalog');
+      
+      let sizes: string[] = [];
+      
+      if (category === 'veste') {
+        if (subCategory === 'costume-ville') {
+          sizes = COSTUME_VILLE_SIZES;
+        } else if (subCategory === 'jaquette') {
+          sizes = JAQUETTE_SIZES;
+        } else if (subCategory === 'smoking') {
+          sizes = SMOKING_SIZES;
+        } else if (subCategory === 'habit-queue-de-pie') {
+          sizes = HABIT_QUEUE_DE_PIE_SIZES;
+        } else {
+          // Retourner toutes les tailles de vestes
+          sizes = [...new Set([...COSTUME_VILLE_SIZES, ...JAQUETTE_SIZES, ...SMOKING_SIZES, ...HABIT_QUEUE_DE_PIE_SIZES])].sort();
+        }
+      } else if (category === 'gilet') {
+        if (subCategory && typeof subCategory === 'string' && subCategory.startsWith('classique')) {
+          sizes = GILET_SIZES_CLASSIQUE;
+        } else if (subCategory && typeof subCategory === 'string' && subCategory.startsWith('ficelle')) {
+          sizes = GILET_SIZES_STANDARD;
+        } else if (subCategory && typeof subCategory === 'string' && subCategory.startsWith('ecru')) {
+          sizes = GILET_SIZES_ECRU;
+        } else {
+          // Retourner toutes les tailles de gilets
+          sizes = [...new Set([...GILET_SIZES_CLASSIQUE, ...GILET_SIZES_STANDARD, ...GILET_SIZES_ECRU])].sort();
+        }
+      } else if (category === 'accessoire') {
+        if (subCategory && typeof subCategory === 'string' && subCategory === 'ceinture') {
+          sizes = CEINTURE_SIZES;
+        } else {
+          // Retourner toutes les tailles d'accessoires
+          sizes = [...new Set([...CEINTURE_SIZES])].sort();
+        }
+      } else if (category === 'pantalon') {
+        sizes = PANTALON_SIZES;
+      } else {
+        // Pour les autres catégories, récupérer les tailles depuis la DB
+        const items = await StockItem.find(category ? { category } : {}).distinct('taille');
+        sizes = items.sort();
+      }
+      
+      res.json({
+        category,
+        subCategory,
+        sizes
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // GET /api/stock/references/:category
+  getReferencesByCategory: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { category } = req.params;
+      const { getProductByCategory } = await import('../config/productCatalog');
+      
+      const products = getProductByCategory(category);
+      
+      const references = products.map(product => ({
+        id: product.id,
+        name: product.name,
+        subCategory: product.subCategory,
+        colors: product.colors,
+        basePrice: product.basePrice,
+        availableSizes: product.availableSizes
+      }));
+      
+      res.json({
+        category,
+        references
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // GET /api/stock/sizes-for-reference/:referenceId
+  getSizesForReference: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { referenceId } = req.params;
+      const { getProductById } = await import('../config/productCatalog');
+      
+      const product = getProductById(referenceId);
+      
+      if (!product) {
+        throw createError('Référence non trouvée', 404);
+      }
+      
+      res.json({
+        referenceId,
+        name: product.name,
+        category: product.category,
+        subCategory: product.subCategory,
+        colors: product.colors,
+        sizes: product.availableSizes,
+        basePrice: product.basePrice
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   // GET /api/stock/items
   getAllStockItems: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { category, reference, taille, search } = req.query;
       
-      let filteredItems = [...stockItems];
+      let filter: any = {};
       
       if (category && category !== 'all') {
-        filteredItems = filteredItems.filter(item => item.category === category);
+        filter.category = category;
       }
       
       if (reference) {
-        filteredItems = filteredItems.filter(item => 
-          item.reference.toLowerCase().includes(reference.toString().toLowerCase())
-        );
+        filter.reference = { $regex: reference.toString(), $options: 'i' };
       }
       
       if (taille) {
-        filteredItems = filteredItems.filter(item => item.taille === taille);
+        filter.taille = taille;
       }
       
       if (search) {
-        const searchTerm = search.toString().toLowerCase();
-        filteredItems = filteredItems.filter(item => 
-          item.reference.toLowerCase().includes(searchTerm) ||
-          item.taille.toLowerCase().includes(searchTerm) ||
-          item.couleur?.toLowerCase().includes(searchTerm)
-        );
+        const searchTerm = search.toString();
+        filter.$or = [
+          { reference: { $regex: searchTerm, $options: 'i' } },
+          { taille: { $regex: searchTerm, $options: 'i' } },
+          { couleur: { $regex: searchTerm, $options: 'i' } }
+        ];
       }
       
-      checkStockAlerts();
+      const stockItems = await StockItem.find(filter);
+      
+      await checkStockAlerts();
       
       res.json({
-        items: filteredItems,
-        total: filteredItems.length
+        items: stockItems,
+        total: stockItems.length
       });
     } catch (error) {
       next(error);
@@ -163,23 +265,25 @@ export const stockController = {
       const { date } = req.params;
       const { category, reference, taille } = req.query;
       
-      let itemsToCheck = [...stockItems];
+      let filter: any = {};
       
-      // Appliquer les filtres
       if (category && category !== 'all') {
-        itemsToCheck = itemsToCheck.filter(item => item.category === category);
+        filter.category = category;
       }
       if (reference) {
-        itemsToCheck = itemsToCheck.filter(item => 
-          item.reference.toLowerCase().includes(reference.toString().toLowerCase())
-        );
+        filter.reference = { $regex: reference.toString(), $options: 'i' };
       }
       if (taille) {
-        itemsToCheck = itemsToCheck.filter(item => item.taille === taille);
+        filter.taille = taille;
       }
       
-      const availabilities = itemsToCheck.map(item => 
-        calculateAvailabilityAtDate(item.id, date)
+      const itemsToCheck = await StockItem.find(filter);
+      const targetDate = new Date(date);
+      
+      const availabilities = await Promise.all(
+        itemsToCheck.map(item => 
+          calculateAvailabilityAtDate((item._id as any).toString(), targetDate)
+        )
       );
       
       res.json({
@@ -197,35 +301,30 @@ export const stockController = {
     try {
       const { stockItemId, type, dateStart, dateEnd, limit = 100 } = req.query;
       
-      let filteredMovements = [...stockMovements];
+      let filter: any = {};
       
       if (stockItemId) {
-        filteredMovements = filteredMovements.filter(mov => mov.stockItemId === stockItemId);
+        filter.stockItemId = stockItemId;
       }
       
       if (type) {
-        filteredMovements = filteredMovements.filter(mov => mov.type === type);
+        filter.type = type;
       }
       
-      if (dateStart) {
-        filteredMovements = filteredMovements.filter(mov => 
-          mov.dateMovement >= dateStart.toString()
-        );
+      if (dateStart || dateEnd) {
+        filter.dateMovement = {};
+        if (dateStart) filter.dateMovement.$gte = new Date(dateStart.toString());
+        if (dateEnd) filter.dateMovement.$lte = new Date(dateEnd.toString());
       }
       
-      if (dateEnd) {
-        filteredMovements = filteredMovements.filter(mov => 
-          mov.dateMovement <= dateEnd.toString()
-        );
-      }
-      
-      // Trier par date décroissante et limiter
-      filteredMovements.sort((a, b) => new Date(b.dateMovement).getTime() - new Date(a.dateMovement).getTime());
-      filteredMovements = filteredMovements.slice(0, parseInt(limit.toString()));
+      const movements = await StockMovement.find(filter)
+        .populate('stockItemId', 'reference taille couleur')
+        .sort({ dateMovement: -1 })
+        .limit(parseInt(limit.toString()));
       
       res.json({
-        movements: filteredMovements,
-        total: filteredMovements.length
+        movements,
+        total: movements.length
       });
     } catch (error) {
       next(error);
@@ -235,9 +334,11 @@ export const stockController = {
   // GET /api/stock/alerts
   getActiveAlerts: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      checkStockAlerts();
+      await checkStockAlerts();
       
-      const activeAlerts = stockAlerts.filter(alert => alert.estActive);
+      const activeAlerts = await StockAlert.find({ estActive: true })
+        .populate('stockItemId', 'reference taille couleur')
+        .sort({ dateDetection: -1 });
       
       res.json({
         alerts: activeAlerts,
@@ -258,16 +359,13 @@ export const stockController = {
         throw createError('Référence, taille et catégorie sont requis', 400);
       }
       
-      const newItem: StockItem = {
+      const newItem = new StockItem({
         ...itemData,
-        id: uuidv4(),
         quantiteReservee: 0,
-        quantiteDisponible: itemData.quantiteStock,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+        quantiteDisponible: itemData.quantiteStock
+      });
       
-      stockItems.push(newItem);
+      await newItem.save();
       
       res.status(201).json(newItem);
     } catch (error) {
@@ -281,51 +379,39 @@ export const stockController = {
       const movementData: CreateStockMovementData = req.body;
       
       // Validation
-      if (!movementData.stockItemId || !movementData.type || !movementData.quantite) {
+      if (!movementData.stockItemId || !movementData.type || movementData.quantite === undefined) {
         throw createError('Item ID, type et quantité sont requis', 400);
       }
       
-      const stockItem = stockItems.find(item => item.id === movementData.stockItemId);
+      const stockItem = await StockItem.findById(movementData.stockItemId);
       if (!stockItem) {
         throw createError('Article non trouvé', 404);
       }
       
-      const newMovement: StockMovement = {
-        ...movementData,
-        id: uuidv4(),
-        createdAt: new Date().toISOString()
-      };
-      
-      stockMovements.push(newMovement);
+      const newMovement = new StockMovement(movementData);
+      await newMovement.save();
       
       // Mettre à jour les quantités de l'article
-      const itemIndex = stockItems.findIndex(item => item.id === movementData.stockItemId);
-      if (itemIndex !== -1) {
-        const item = stockItems[itemIndex];
-        
-        switch (movementData.type) {
-          case 'entree':
-            item.quantiteStock += movementData.quantite;
-            break;
-          case 'sortie':
-          case 'destruction':
-          case 'perte':
-            item.quantiteStock -= movementData.quantite;
-            break;
-          case 'reservation':
-            item.quantiteReservee += movementData.quantite;
-            break;
-          case 'retour':
-          case 'annulation':
-            item.quantiteReservee -= movementData.quantite;
-            break;
-        }
-        
-        item.quantiteDisponible = item.quantiteStock - item.quantiteReservee;
-        item.updatedAt = new Date().toISOString();
-        
-        stockItems[itemIndex] = item;
+      switch (movementData.type) {
+        case 'entree':
+          stockItem.quantiteStock += movementData.quantite;
+          break;
+        case 'sortie':
+        case 'destruction':
+        case 'perte':
+          stockItem.quantiteStock -= movementData.quantite;
+          break;
+        case 'reservation':
+          stockItem.quantiteReservee += movementData.quantite;
+          break;
+        case 'retour':
+        case 'annulation':
+          stockItem.quantiteReservee -= movementData.quantite;
+          break;
       }
+      
+      stockItem.quantiteDisponible = stockItem.quantiteStock - stockItem.quantiteReservee;
+      await stockItem.save();
       
       res.status(201).json(newMovement);
     } catch (error) {
@@ -339,22 +425,19 @@ export const stockController = {
       const { id } = req.params;
       const updateData: UpdateStockItemData = req.body;
       
-      const itemIndex = stockItems.findIndex(item => item.id === id);
-      if (itemIndex === -1) {
+      const stockItem = await StockItem.findById(id);
+      if (!stockItem) {
         throw createError('Article non trouvé', 404);
       }
       
-      stockItems[itemIndex] = {
-        ...stockItems[itemIndex],
-        ...updateData,
-        updatedAt: new Date().toISOString()
-      };
+      Object.assign(stockItem, updateData);
       
       // Recalculer la disponibilité
-      stockItems[itemIndex].quantiteDisponible = 
-        stockItems[itemIndex].quantiteStock - stockItems[itemIndex].quantiteReservee;
+      stockItem.quantiteDisponible = stockItem.quantiteStock - stockItem.quantiteReservee;
       
-      res.json(stockItems[itemIndex]);
+      await stockItem.save();
+      
+      res.json(stockItem);
     } catch (error) {
       next(error);
     }

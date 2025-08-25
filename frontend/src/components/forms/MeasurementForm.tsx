@@ -4,9 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, User, Phone, Mail, Shirt, Package, MessageSquare } from 'lucide-react';
-import { MeasurementForm as MeasurementFormType, Vendeur, TailleVetement, LongueurVetement, TailleChaussure, TailleChapeau } from '@/types/measurement-form';
-import { VESTE_CATALOG, GILET_CATALOG, PANTALON_CATALOG } from '@/types/product-catalog';
+import { Calendar, User, Phone, Mail, Shirt, MessageSquare } from 'lucide-react';
+import { MeasurementForm as MeasurementFormType, Vendeur, TailleChaussure, TailleChapeau } from '@/types/measurement-form';
+import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
 
 interface MeasurementFormProps {
   onSubmit: (form: MeasurementFormType) => void;
@@ -15,8 +15,6 @@ interface MeasurementFormProps {
 }
 
 const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent'];
-const TAILLES: TailleVetement[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-const LONGUEURS: LongueurVetement[] = ['Court', 'Moyen', 'Long'];
 const TAILLES_CHAUSSURES: TailleChaussure[] = ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '60', '61', '62'];
 
@@ -57,6 +55,21 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
         }
       }
     }));
+  };
+
+  const updateTenueReference = (category: 'veste' | 'gilet' | 'pantalon', referenceId: string) => {
+    updateTenue(category, 'reference', referenceId);
+    // Reset la taille quand on change de référence
+    updateTenue(category, 'taille', undefined);
+    updateTenue(category, 'couleur', undefined);
+  };
+
+  const updateTenueSize = (category: 'veste' | 'gilet' | 'pantalon', size: string) => {
+    updateTenue(category, 'taille', size);
+  };
+
+  const updateTenueColor = (category: 'veste' | 'gilet' | 'pantalon', color: string) => {
+    updateTenue(category, 'couleur', color);
   };
 
   const updateAccessoire = (field: 'tailleChapeau' | 'tailleChaussures', value: any) => {
@@ -190,70 +203,15 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">A</div>
               Veste
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Select
-                  value={form.tenue?.veste?.reference}
-                  onValueChange={(value) => updateTenue('veste', 'reference', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Sélectionner un modèle" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    <optgroup label="Jaquettes">
-                      {VESTE_CATALOG.JAQUETTES.map(ref => (
-                        <SelectItem key={ref} value={ref}>{ref}</SelectItem>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Costumes Ville">
-                      {VESTE_CATALOG.COSTUMES_VILLE.map(ref => (
-                        <SelectItem key={ref} value={ref}>{ref}</SelectItem>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Smoking">
-                      {VESTE_CATALOG.SMOKING.map(ref => (
-                        <SelectItem key={ref} value={ref}>{ref}</SelectItem>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Habit Queue de Pie">
-                      {VESTE_CATALOG.HABIT_QUEUE_DE_PIE.map(ref => (
-                        <SelectItem key={ref} value={ref}>{ref}</SelectItem>
-                      ))}
-                    </optgroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Select
-                  value={form.tenue?.veste?.taille}
-                  onValueChange={(value) => updateTenue('veste', 'taille', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Taille" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {TAILLES.map(taille => (
-                      <SelectItem key={taille} value={taille}>{taille}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Select
-                  value={form.tenue?.veste?.longueur}
-                  onValueChange={(value) => updateTenue('veste', 'longueur', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Longueur" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {LONGUEURS.map(longueur => (
-                      <SelectItem key={longueur} value={longueur}>{longueur}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <DynamicProductSelector
+              category="veste"
+              selectedReference={form.tenue?.veste?.reference}
+              selectedSize={form.tenue?.veste?.taille}
+              selectedColor={form.tenue?.veste?.couleur}
+              onReferenceChange={(ref) => updateTenueReference('veste', ref)}
+              onSizeChange={(size) => updateTenueSize('veste', size)}
+              onColorChange={(color) => updateTenueColor('veste', color)}
+            />
           </div>
 
           {/* Gilet */}
@@ -262,38 +220,15 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Select
-                  value={form.tenue?.gilet?.reference}
-                  onValueChange={(value) => updateTenue('gilet', 'reference', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Sélectionner un modèle" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {GILET_CATALOG.map(ref => (
-                      <SelectItem key={ref} value={ref}>{ref}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Select
-                  value={form.tenue?.gilet?.taille}
-                  onValueChange={(value) => updateTenue('gilet', 'taille', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Taille" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {TAILLES.map(taille => (
-                      <SelectItem key={taille} value={taille}>{taille}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <DynamicProductSelector
+              category="gilet"
+              selectedReference={form.tenue?.gilet?.reference}
+              selectedSize={form.tenue?.gilet?.taille}
+              selectedColor={form.tenue?.gilet?.couleur}
+              onReferenceChange={(ref) => updateTenueReference('gilet', ref)}
+              onSizeChange={(size) => updateTenueSize('gilet', size)}
+              onColorChange={(color) => updateTenueColor('gilet', color)}
+            />
           </div>
 
           {/* Pantalon */}
@@ -302,53 +237,15 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">C</div>
               Pantalon
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Select
-                  value={form.tenue?.pantalon?.reference}
-                  onValueChange={(value) => updateTenue('pantalon', 'reference', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Sélectionner un modèle" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {PANTALON_CATALOG.map(ref => (
-                      <SelectItem key={ref} value={ref}>{ref}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Select
-                  value={form.tenue?.pantalon?.taille}
-                  onValueChange={(value) => updateTenue('pantalon', 'taille', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Taille" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {TAILLES.map(taille => (
-                      <SelectItem key={taille} value={taille}>{taille}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Select
-                  value={form.tenue?.pantalon?.longueur}
-                  onValueChange={(value) => updateTenue('pantalon', 'longueur', value)}
-                >
-                  <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Longueur" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    {LONGUEURS.map(longueur => (
-                      <SelectItem key={longueur} value={longueur}>{longueur}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <DynamicProductSelector
+              category="pantalon"
+              selectedReference={form.tenue?.pantalon?.reference}
+              selectedSize={form.tenue?.pantalon?.taille}
+              selectedColor={form.tenue?.pantalon?.couleur}
+              onReferenceChange={(ref) => updateTenueReference('pantalon', ref)}
+              onSizeChange={(size) => updateTenueSize('pantalon', size)}
+              onColorChange={(color) => updateTenueColor('pantalon', color)}
+            />
           </div>
 
           {/* Accessoires */}

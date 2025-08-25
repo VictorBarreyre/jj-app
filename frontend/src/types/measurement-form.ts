@@ -1,4 +1,4 @@
-import { VesteReference, GiletReference, PantalonReference } from './product-references';
+// Les références sont maintenant des strings (IDs dynamiques depuis l'API)
 
 // Types pour les tailles
 export type TailleVetement = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
@@ -13,22 +13,25 @@ export type Vendeur = 'Sophie' | 'Olivier' | 'Laurent';
 export interface TenueMeasurement {
   // Veste
   veste?: {
-    reference: VesteReference;
-    taille: TailleVetement;
-    longueur: LongueurVetement;
+    reference: string; // ID de la référence depuis l'API
+    taille: string; // Taille dynamique depuis l'API
+    longueur?: LongueurVetement;
+    couleur?: string;
   };
   
   // Gilet
   gilet?: {
-    reference: GiletReference;
-    taille: TailleVetement;
+    reference: string; // ID de la référence depuis l'API
+    taille: string; // Taille dynamique depuis l'API
+    couleur?: string;
   };
   
   // Pantalon
   pantalon?: {
-    reference: PantalonReference;
-    taille: TailleVetement;
-    longueur: LongueurVetement;
+    reference: string; // ID de la référence depuis l'API
+    taille: string; // Taille dynamique depuis l'API
+    longueur?: LongueurVetement;
+    couleur?: string;
   };
   
   // Accessoires

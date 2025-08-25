@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { connectDB } from './config/database';
 import { ordersRouter } from './routes/orders';
 import { measurementsRouter } from './routes/measurements';
 import { contractsRouter } from './routes/contracts';
@@ -10,6 +11,9 @@ import { stockRouter } from './routes/stock';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
+
+// Connexion à MongoDB (désactivée temporairement)
+// connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
