@@ -8,7 +8,8 @@ import {
   Edit3, 
   History, 
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Trash2
 } from 'lucide-react';
 
 interface StockListProps {
@@ -17,9 +18,10 @@ interface StockListProps {
   onEdit: (itemId: string) => void;
   onViewMovements: (itemId: string) => void;
   onAddNew: () => void;
+  onDelete: (item: StockItem) => void;
 }
 
-export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }: StockListProps) {
+export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, onDelete }: StockListProps) {
   const getStatusColor = (item: StockItem) => {
     if (item.quantiteDisponible <= 0) return 'bg-red-100 text-red-800 border-red-200';
     if (item.quantiteDisponible <= item.seuilAlerte) return 'bg-orange-100 text-orange-800 border-orange-200';
@@ -109,7 +111,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }:
                 
                 <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                   <span className="font-semibold text-sm text-gray-900">{item.prix}€</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <Button 
                       size="sm" 
                       variant="outline" 
@@ -125,6 +127,14 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }:
                       className="bg-white/70 border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 rounded-lg transition-all shadow-sm px-2 py-1"
                     >
                       <History className="w-3 h-3" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onDelete(item)}
+                      className="bg-white/70 border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-700 rounded-lg transition-all shadow-sm px-2 py-1"
+                    >
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
@@ -202,6 +212,14 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew }:
                           className="bg-white/70 border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 rounded-xl transition-all shadow-sm"
                         >
                           <History className="w-3 h-3" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => onDelete(item)}
+                          className="bg-white/70 border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-700 rounded-xl transition-all shadow-sm"
+                        >
+                          <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
                     </td>

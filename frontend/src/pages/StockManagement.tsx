@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StockItem, StockAlert } from '@/types/stock';
+import { StockItem, StockAlert, CreateStockItemData } from '@/types/stock';
 import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
 import { StockList } from '@/components/stock/StockList';
+import { AddStockItemModal } from '@/components/stock/AddStockItemModal';
+import { DeleteStockItemModal } from '@/components/stock/DeleteStockItemModal';
 
 export function StockManagement() {
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
@@ -17,6 +19,11 @@ export function StockManagement() {
 
   // État pour la vérification de disponibilité
   const [checkDate, setCheckDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  // États des modales
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<StockItem | null>(null);
   
   useEffect(() => {
     loadStockData();
@@ -97,8 +104,56 @@ export function StockManagement() {
   };
 
   const handleAddNewItem = () => {
-    console.log('Ajouter nouvel article');
-    // TODO: Implémenter l'ajout
+    setIsAddModalOpen(true);
+  };
+
+  const handleDeleteItem = (item: StockItem) => {
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
+  };
+
+  const createStockItem = async (data: CreateStockItemData) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/stock/items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la création');
+      }
+
+      // Recharger les données
+      await loadStockData();
+      await loadAlerts();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  };
+
+  const deleteStockItem = async (itemId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/stock/items/${itemId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la suppression');
+      }
+
+      // Recharger les données
+      await loadStockData();
+      await loadAlerts();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
   };
 
   return (
@@ -137,6 +192,24 @@ export function StockManagement() {
         onEdit={handleEditItem}
         onViewMovements={handleViewMovements}
         onAddNew={handleAddNewItem}
+        onDelete={handleDeleteItem}
+      />
+
+      {/* Modales */}
+      <AddStockItemModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={createStockItem}
+      />
+
+      <DeleteStockItemModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={deleteStockItem}
+        item={itemToDelete}
       />
     </div>
   );

@@ -555,5 +555,41 @@ export const stockController = {
     } catch (error) {
       next(error);
     }
+  },
+
+  // DELETE /api/stock/items/:id
+  deleteStockItem: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      
+      const stockItem = await StockItem.findById(id);
+      if (!stockItem) {
+        throw createError('Article non trouvé', 404);
+      }
+      
+      // Vérifier qu'il n'y a pas de réservations actives
+      if (stockItem.quantiteReservee > 0) {
+        throw createError(
+          `Impossible de supprimer cet article car ${stockItem.quantiteReservee} unité(s) sont actuellement réservées`, 
+          400
+        );
+      }
+      
+      await StockItem.findByIdAndDelete(id);
+      
+      // Supprimer aussi les alertes associées
+      await StockAlert.deleteMany({ stockItemId: id });
+      
+      res.json({ 
+        message: 'Article supprimé avec succès',
+        deletedItem: {
+          id: (stockItem._id as any).toString(),
+          reference: stockItem.reference,
+          taille: stockItem.taille
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 };

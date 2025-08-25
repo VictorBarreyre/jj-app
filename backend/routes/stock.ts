@@ -15,6 +15,7 @@ router.get('/alerts', stockController.getActiveAlerts);
 router.post('/items', stockController.createStockItem);
 router.post('/movements', stockController.addStockMovement);
 router.put('/items/:id', stockController.updateStockItem);
+router.delete('/items/:id', stockController.deleteStockItem);
 router.post('/seed', stockController.seedDatabase);
 
 export { router as stockRouter };
