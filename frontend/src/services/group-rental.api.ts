@@ -3,11 +3,13 @@ import { GroupRentalInfo } from '@/types/group-rental';
 
 export interface CreateGroupRentalRequest {
   groupName: string;
+  telephone: string;
+  email?: string;
   dateEssai: string; // ISO string
   vendeur: string;
   clients: Array<{
     nom: string;
-    telephone: string;
+    telephone?: string; // Optionnel maintenant
     email?: string;
     isExistingClient?: boolean;
     clientId?: string;

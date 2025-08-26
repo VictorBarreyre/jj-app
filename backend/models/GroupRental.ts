@@ -34,8 +34,8 @@ export interface ITenueMeasurement {
 // Interface pour un client dans le groupe
 export interface IGroupClient {
   nom: string;
-  telephone: string;
-  email?: string;
+  telephone?: string; // Optionnel, peut être au niveau du groupe
+  email?: string; // Optionnel, peut être au niveau du groupe
   isExistingClient?: boolean;
   clientId?: string;
   tenue: ITenueMeasurement;
@@ -45,6 +45,8 @@ export interface IGroupClient {
 // Interface principale pour un groupe de location
 export interface IGroupRental extends Document {
   groupName: string;
+  telephone: string;
+  email?: string;
   dateEssai: Date;
   vendeur: Vendeur;
   clients: IGroupClient[];
@@ -91,7 +93,6 @@ const groupClientSchema = new Schema({
   },
   telephone: {
     type: String,
-    required: true,
     trim: true
   },
   email: {
@@ -121,6 +122,15 @@ const groupRentalSchema = new Schema<IGroupRental>({
   groupName: {
     type: String,
     required: true,
+    trim: true
+  },
+  telephone: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  email: {
+    type: String,
     trim: true
   },
   dateEssai: {

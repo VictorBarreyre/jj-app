@@ -9,8 +9,6 @@ import { Vendeur } from '@/types/measurement-form';
 import { 
   Calendar, 
   User, 
-  Phone, 
-  Mail, 
   Users, 
   Plus, 
   Trash2, 
@@ -29,6 +27,8 @@ const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent'];
 export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupFormProps) {
   const [formData, setFormData] = useState<Partial<GroupRentalInfo>>({
     groupName: '',
+    telephone: '',
+    email: '',
     dateEssai: new Date(),
     vendeur: undefined,
     clients: [createEmptyClient()],
@@ -49,15 +49,16 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       newErrors.dateEssai = 'Veuillez sélectionner une date d\'essai';
     }
 
+    if (!formData.telephone?.trim()) {
+      newErrors.telephone = 'Le téléphone est obligatoire';
+    }
+
     if (!formData.clients || formData.clients.length === 0) {
       newErrors.clients = 'Veuillez ajouter au moins une personne';
     } else {
       formData.clients.forEach((client, index) => {
         if (!client.nom.trim()) {
           newErrors[`client_${index}_nom`] = 'Le nom est obligatoire';
-        }
-        if (!client.telephone.trim()) {
-          newErrors[`client_${index}_telephone`] = 'Le téléphone est obligatoire';
         }
       });
     }
@@ -114,9 +115,10 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
 
   const isFormValid = formData.vendeur && 
                      formData.dateEssai && 
+                     formData.telephone?.trim() &&
                      formData.clients && 
                      formData.clients.length > 0 && 
-                     formData.clients.every(c => c.nom.trim() && c.telephone.trim());
+                     formData.clients.every(c => c.nom.trim());
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -164,6 +166,39 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
             {errors.vendeur && (
               <p className="text-red-500 text-xs mt-1">{errors.vendeur}</p>
             )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <Label htmlFor="telephone" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+              Téléphone de contact *
+            </Label>
+            <Input
+              id="telephone"
+              type="tel"
+              value={formData.telephone || ''}
+              onChange={(e) => updateBasicInfo('telephone', e.target.value)}
+              placeholder="06 12 34 56 78"
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
+            {errors.telephone && (
+              <p className="text-red-500 text-xs mt-1">{errors.telephone}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="email" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+              Email de contact
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email || ''}
+              onChange={(e) => updateBasicInfo('email', e.target.value)}
+              placeholder="contact@exemple.com"
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
           </div>
         </div>
 
@@ -235,7 +270,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
                     <User className="w-3 h-3" />
@@ -250,37 +285,6 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
                   {errors[`client_${index}_nom`] && (
                     <p className="text-red-500 text-xs mt-1">{errors[`client_${index}_nom`]}</p>
                   )}
-                </div>
-
-                <div>
-                  <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
-                    <Phone className="w-3 h-3" />
-                    Téléphone *
-                  </Label>
-                  <Input
-                    type="tel"
-                    value={client.telephone}
-                    onChange={(e) => updateClient(index, 'telephone', e.target.value)}
-                    placeholder="06 12 34 56 78"
-                    className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-                  />
-                  {errors[`client_${index}_telephone`] && (
-                    <p className="text-red-500 text-xs mt-1">{errors[`client_${index}_telephone`]}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
-                    <Mail className="w-3 h-3" />
-                    Email
-                  </Label>
-                  <Input
-                    type="email"
-                    value={client.email || ''}
-                    onChange={(e) => updateClient(index, 'email', e.target.value)}
-                    placeholder="email@exemple.com"
-                    className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-                  />
                 </div>
               </div>
             </div>

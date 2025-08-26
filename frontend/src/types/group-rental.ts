@@ -5,8 +5,8 @@ import { TenueMeasurement, Vendeur } from './measurement-form';
 export interface GroupClientInfo {
   id?: string; // ID temporaire pour la gestion dans le formulaire
   nom: string;
-  telephone: string;
-  email?: string;
+  telephone?: string; // Optionnel, peut être au niveau du groupe
+  email?: string; // Optionnel, peut être au niveau du groupe
   isExistingClient?: boolean;
   clientId?: string;
   // Tenue spécifique à ce client
@@ -19,6 +19,10 @@ export interface GroupClientInfo {
 export interface GroupRentalInfo {
   // Nom du groupe (automatique si une seule personne)
   groupName: string;
+  
+  // Informations de contact du groupe
+  telephone: string;
+  email?: string;
   
   // Informations de base communes
   dateEssai: Date;
@@ -40,6 +44,8 @@ export interface GroupRentalInfo {
 // Interface pour créer un nouveau groupe
 export interface CreateGroupRentalData {
   groupName: string;
+  telephone: string;
+  email?: string;
   dateEssai: Date;
   vendeur: Vendeur;
   clients: Omit<GroupClientInfo, 'id'>[];
@@ -64,8 +70,6 @@ export const generateGroupName = (clients: GroupClientInfo[]): string => {
 export const createEmptyClient = (): GroupClientInfo => ({
   id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
   nom: '',
-  telephone: '',
-  email: '',
   isExistingClient: false,
   tenue: {},
   notes: ''

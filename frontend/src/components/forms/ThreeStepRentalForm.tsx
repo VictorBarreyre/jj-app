@@ -59,8 +59,8 @@ export function ThreeStepRentalForm({
       
       client: {
         nom: updatedGroup.clients.length === 1 ? mainClient.nom : updatedGroup.groupName,
-        telephone: mainClient.telephone,
-        email: mainClient.email,
+        telephone: updatedGroup.telephone,
+        email: updatedGroup.email,
         isExistingClient: mainClient.isExistingClient,
         clientId: mainClient.clientId
       },
@@ -204,7 +204,7 @@ export function ThreeStepRentalForm({
                   <p className="font-medium">
                     {groupData.clients.length > 1 
                       ? `${groupData.clients.length} personne${groupData.clients.length > 1 ? 's' : ''}` 
-                      : groupData.clients[0].telephone
+                      : groupData.telephone
                     }
                   </p>
                 </div>
