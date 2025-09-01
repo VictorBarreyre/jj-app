@@ -41,7 +41,7 @@ export const useSaveMeasurementDraft = () => {
     mutationFn: (measurementData: Omit<MeasurementForm, 'id' | 'createdAt' | 'updatedAt'>) => 
       measurementsAPI.saveDraft(measurementData),
     onSuccess: (response) => {
-      toast.success(response.message || 'Brouillon sauvegardé avec succès');
+      // Sauvegarde silencieuse
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.error || 'Erreur lors de la sauvegarde du brouillon');

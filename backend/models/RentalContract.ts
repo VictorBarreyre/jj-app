@@ -26,15 +26,19 @@ export interface TenueInfo {
     reference: string;
     taille: string;
     longueur: string;
+    longueurManche?: string;
+    notes?: string;
   };
   gilet?: {
     reference: string;
     taille: string;
+    notes?: string;
   };
   pantalon?: {
     reference: string;
     taille: string;
     longueur: string;
+    notes?: string;
   };
   tailleChapeau?: string;
   tailleChaussures?: string;

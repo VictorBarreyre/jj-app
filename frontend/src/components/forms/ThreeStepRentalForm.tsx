@@ -26,13 +26,14 @@ interface ThreeStepRentalFormProps {
 // Utilitaires pour localStorage
 const saveToStorage = (key: string, data: any) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data, (key, value) => {
+    const jsonData = JSON.stringify(data, (key, value) => {
       // Convertir les dates en string pour pouvoir les sauvegarder
       if (value instanceof Date) {
         return value.toISOString();
       }
       return value;
-    }));
+    });
+    localStorage.setItem(key, jsonData);
   } catch (error) {
     console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
   }
@@ -107,7 +108,13 @@ export function ThreeStepRentalForm({
   useEffect(() => {
     if (groupData || contractData || currentStep > 1) {
       saveCurrentData();
+      // Afficher brièvement l'indicateur puis le masquer
       setShowAutoSaveIndicator(true);
+      const timeout = setTimeout(() => {
+        setShowAutoSaveIndicator(false);
+      }, 2000); // Masquer après 2 secondes
+      
+      return () => clearTimeout(timeout);
     }
   }, [currentStep, groupData, contractData]);
 
@@ -171,6 +178,7 @@ export function ThreeStepRentalForm({
   };
 
   const handleMeasurementSave = (updatedGroup: GroupRentalInfo) => {
+    setGroupData(updatedGroup); // Mettre à jour les données locales pour localStorage
     onSaveDraft(updatedGroup);
   };
 
@@ -187,6 +195,10 @@ export function ThreeStepRentalForm({
     if (groupData) {
       onSaveDraft(groupData, contract);
     }
+  };
+
+  const handleContractAutoSave = (contractPart: Partial<RentalContract>) => {
+    setContractData(contractPart); // Mettre à jour les données locales pour localStorage
   };
 
   // Navigation
@@ -338,6 +350,7 @@ export function ThreeStepRentalForm({
             <RentalContractForm
               onSubmit={handleContractSubmit}
               onSaveDraft={handleContractSave}
+              onAutoSave={handleContractAutoSave}
               onPrint={onPrint}
               initialData={contractData}
             />

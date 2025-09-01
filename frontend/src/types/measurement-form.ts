@@ -16,7 +16,9 @@ export interface TenueMeasurement {
     reference: string; // ID de la référence depuis l'API
     taille: string; // Taille dynamique depuis l'API
     longueur?: LongueurVetement;
+    longueurManche?: string; // Longueur de manche personnalisée
     couleur?: string;
+    notes?: string; // Notes spécifiques à la veste
   };
   
   // Gilet
@@ -24,6 +26,7 @@ export interface TenueMeasurement {
     reference: string; // ID de la référence depuis l'API
     taille: string; // Taille dynamique depuis l'API
     couleur?: string;
+    notes?: string; // Notes spécifiques au gilet
   };
   
   // Pantalon
@@ -32,6 +35,7 @@ export interface TenueMeasurement {
     taille: string; // Taille dynamique depuis l'API
     longueur?: LongueurVetement;
     couleur?: string;
+    notes?: string; // Notes spécifiques au pantalon
   };
   
   // Ceinture

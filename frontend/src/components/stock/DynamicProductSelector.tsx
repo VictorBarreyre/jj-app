@@ -58,10 +58,10 @@ export function DynamicProductSelector({
           const data = await response.json();
           setReferences(data.references || []);
         } else {
-          console.error('Erreur lors du chargement des références');
+          console.error('Erreur lors du chargement des références - Status:', response.status);
         }
       } catch (error) {
-        console.error('Erreur:', error);
+        console.error('Erreur lors du fetch:', error);
       } finally {
         setLoadingReferences(false);
       }
@@ -120,7 +120,7 @@ export function DynamicProductSelector({
                 <span>Chargement...</span>
               </div>
             ) : (
-              <SelectValue placeholder={`Sélectionner un modèle de ${category}`} />
+              <SelectValue placeholder={`Sélectionner un modèle de ${category === 'accessoire' ? 'ceinture' : category}`} />
             )}
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">

@@ -66,7 +66,6 @@ export function StockManagement() {
 
       const response = await fetch(`http://localhost:3001/api/stock/movements?${params}`);
       const data = await response.json();
-      console.log('Mouvements:', data.movements || []);
     } catch (error) {
       console.error('Erreur lors du chargement des mouvements:', error);
     }
@@ -81,7 +80,6 @@ export function StockManagement() {
       const response = await fetch(`http://localhost:3001/api/stock/availability/${checkDate}?${params}`);
       const data = await response.json();
       
-      console.log('Disponibilités pour le', checkDate, ':', data.availabilities);
     } catch (error) {
       console.error('Erreur lors de la vérification de disponibilité:', error);
     }
@@ -95,7 +93,6 @@ export function StockManagement() {
   });
 
   const handleEditItem = (itemId: string) => {
-    console.log('Éditer article:', itemId);
     // TODO: Implémenter l'édition
   };
 

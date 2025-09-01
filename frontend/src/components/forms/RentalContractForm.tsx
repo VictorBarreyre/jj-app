@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,11 +11,12 @@ import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle, Messa
 interface RentalContractFormProps {
   onSubmit: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
   onSaveDraft: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
+  onAutoSave?: (contract: Partial<RentalContract>) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
   initialData?: Partial<RentalContract>;
 }
 
-export function RentalContractForm({ onSubmit, onSaveDraft, onPrint, initialData }: RentalContractFormProps) {
+export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData }: RentalContractFormProps) {
   const [form, setForm] = useState<Partial<RentalContract>>({
     dateCreation: new Date(),
     dateEvenement: new Date(),
@@ -43,6 +44,17 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onPrint, initialData
     { value: 'cheque', label: 'Chèque' },
     { value: 'autre', label: 'Autre' }
   ];
+
+  // Auto-sauvegarde des données quand elles changent
+  useEffect(() => {
+    if (onAutoSave && form !== initialData) {
+      const timeoutId = setTimeout(() => {
+        onAutoSave(form);
+      }, 500); // Debounce de 500ms pour éviter trop d'appels
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [form, onAutoSave, initialData]);
 
   const updateForm = (field: keyof RentalContract, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));

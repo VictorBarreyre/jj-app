@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
 import { StockIndicator } from '@/components/stock/StockIndicator';
 import { GroupRentalInfo, GroupClientInfo } from '@/types/group-rental';
@@ -29,6 +30,43 @@ const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '
 export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: GroupMeasurementFormProps) {
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
+  const [vesteReferences, setVesteReferences] = useState<any[]>([]);
+
+  // Charger les références de veste au montage
+  useEffect(() => {
+    const fetchVesteReferences = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/stock/references/veste');
+        if (response.ok) {
+          const data = await response.json();
+          setVesteReferences(data.references || []);
+        }
+      } catch (error) {
+        console.warn('Erreur lors du chargement des références veste:', error);
+      }
+    };
+    fetchVesteReferences();
+  }, []);
+
+  // Auto-sauvegarde des données quand elles changent
+  useEffect(() => {
+    if (onSave && updatedGroup !== groupData) {
+      const timeoutId = setTimeout(() => {
+        onSave(updatedGroup);
+      }, 500); // Debounce de 500ms pour éviter trop d'appels
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [updatedGroup, onSave, groupData]);
+
+  // Fonction pour vérifier si la veste sélectionnée est un smoking
+  const isSmokingSelected = (clientIndex: number) => {
+    const vesteRef = updatedGroup.clients[clientIndex]?.tenue?.veste?.reference;
+    if (!vesteRef || vesteReferences.length === 0) return false;
+    
+    const reference = vesteReferences.find(ref => ref.id === vesteRef);
+    return reference?.subCategory === 'smoking';
+  };
 
   const updateClientTenue = (clientIndex: number, category: 'veste' | 'gilet' | 'pantalon' | 'ceinture', field: string, value: any) => {
     setUpdatedGroup(prev => {
@@ -57,19 +95,37 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
     });
   };
 
-  const updateTenueReference = (clientIndex: number, category: ArticleCategory, referenceId: string) => {
-    updateClientTenue(clientIndex, category as any, 'reference', referenceId);
+  const updateTenueReference = (clientIndex: number, category: ArticleCategory | 'ceinture', referenceId: string) => {
+    // Map 'accessoire' to 'ceinture' for form data structure
+    const formCategory = category === 'accessoire' ? 'ceinture' : category;
+    updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'reference', referenceId);
     // Reset la taille et couleur quand on change de référence
-    updateClientTenue(clientIndex, category as any, 'taille', '');
-    updateClientTenue(clientIndex, category as any, 'couleur', '');
+    updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'taille', '');
+    updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'couleur', '');
+    
+    // Si on sélectionne une veste qui est un smoking, réinitialiser le gilet
+    if (category === 'veste') {
+      const reference = vesteReferences.find(ref => ref.id === referenceId);
+      if (reference?.subCategory === 'smoking') {
+        setUpdatedGroup(prev => {
+          const newClients = [...prev.clients];
+          newClients[clientIndex].tenue.gilet = undefined;
+          return { ...prev, clients: newClients };
+        });
+      }
+    }
   };
 
-  const updateTenueSize = (clientIndex: number, category: ArticleCategory, size: string) => {
-    updateClientTenue(clientIndex, category as any, 'taille', size);
+  const updateTenueSize = (clientIndex: number, category: ArticleCategory | 'ceinture', size: string) => {
+    // Map 'accessoire' to 'ceinture' for form data structure
+    const formCategory = category === 'accessoire' ? 'ceinture' : category;
+    updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'taille', size);
   };
 
-  const updateTenueColor = (clientIndex: number, category: ArticleCategory, color: string) => {
-    updateClientTenue(clientIndex, category as any, 'couleur', color);
+  const updateTenueColor = (clientIndex: number, category: ArticleCategory | 'ceinture', color: string) => {
+    // Map 'accessoire' to 'ceinture' for form data structure
+    const formCategory = category === 'accessoire' ? 'ceinture' : category;
+    updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'couleur', color);
   };
 
   const handleSubmit = () => {
@@ -179,10 +235,31 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               onSizeChange={(size) => updateTenueSize(currentClientIndex, 'veste', size)}
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'veste', color)}
             />
+            
+            {/* Longueur de manche et notes veste */}
+            {currentClient.tenue.veste?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                <Input
+                  id="longueur-manche"
+                  value={currentClient.tenue.veste?.longueurManche || ''}
+                  onChange={(e) => updateClientTenue(currentClientIndex, 'veste', 'longueurManche', e.target.value)}
+                  placeholder="Longueur de manche (optionnel)"
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
+                />
+                <Textarea
+                  value={currentClient.tenue.veste?.notes || ''}
+                  onChange={(e) => updateClientTenue(currentClientIndex, 'veste', 'notes', e.target.value)}
+                  placeholder="Notes pour la veste (optionnel)"
+                  rows={2}
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
           </div>
 
-          {/* Gilet */}
-          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
+          {/* Gilet - Masqué si smoking sélectionné */}
+          {!isSmokingSelected(currentClientIndex) && (
+            <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
@@ -200,7 +277,21 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               onSizeChange={(size) => updateTenueSize(currentClientIndex, 'gilet', size)}
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'gilet', color)}
             />
+            
+            {/* Notes gilet */}
+            {currentClient.tenue.gilet?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Textarea
+                  value={currentClient.tenue.gilet?.notes || ''}
+                  onChange={(e) => updateClientTenue(currentClientIndex, 'gilet', 'notes', e.target.value)}
+                  placeholder="Notes pour le gilet (optionnel)"
+                  rows={2}
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
           </div>
+          )}
 
           {/* Pantalon */}
           <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
@@ -221,6 +312,19 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               onSizeChange={(size) => updateTenueSize(currentClientIndex, 'pantalon', size)}
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'pantalon', color)}
             />
+            
+            {/* Notes pantalon */}
+            {currentClient.tenue.pantalon?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Textarea
+                  value={currentClient.tenue.pantalon?.notes || ''}
+                  onChange={(e) => updateClientTenue(currentClientIndex, 'pantalon', 'notes', e.target.value)}
+                  placeholder="Notes pour le pantalon (optionnel)"
+                  rows={2}
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
           </div>
 
           {/* Ceinture */}
@@ -238,9 +342,9 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               selectedReference={currentClient.tenue.ceinture?.reference}
               selectedSize={currentClient.tenue.ceinture?.taille}
               selectedColor={currentClient.tenue.ceinture?.couleur}
-              onReferenceChange={(ref) => updateTenueReference(currentClientIndex, 'accessoire', ref)}
-              onSizeChange={(size) => updateTenueSize(currentClientIndex, 'accessoire', size)}
-              onColorChange={(color) => updateTenueColor(currentClientIndex, 'accessoire', color)}
+              onReferenceChange={(ref) => updateTenueReference(currentClientIndex, 'ceinture', ref)}
+              onSizeChange={(size) => updateTenueSize(currentClientIndex, 'ceinture', size)}
+              onColorChange={(color) => updateTenueColor(currentClientIndex, 'ceinture', color)}
             />
           </div>
 
@@ -284,22 +388,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
             </div>
           </div>
 
-          {/* Notes individuelles */}
-          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-bold">
-                <MessageSquare className="w-4 h-4" />
-              </div>
-              Notes pour {currentClient.nom}
-            </h4>
-            <Textarea
-              value={currentClient.notes || ''}
-              onChange={(e) => updateClientNotes(currentClientIndex, e.target.value)}
-              placeholder="Notes spécifiques pour cette personne..."
-              rows={3}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-          </div>
         </div>
       </div>
 

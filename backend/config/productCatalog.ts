@@ -84,57 +84,57 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 150,
     description: 'Jaquette traditionnelle française'
   },
   {
     id: 'jaquette-bleue',
-    name: 'Jaquette Bleue',
+    name: 'Jaquette bleue',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
-    colors: ['Bleu'],
+    colors: ['bleu'],
     basePrice: 150,
     description: 'Jaquette bleue élégante'
   },
   {
     id: 'jaquette-bleue-clair',
-    name: 'Jaquette Bleue Clair',
+    name: 'Jaquette bleue clair',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
-    colors: ['Bleu clair'],
+    colors: ['bleu clair'],
     basePrice: 150,
     description: 'Jaquette bleu clair'
   },
   {
     id: 'jaquette-bordeaux',
-    name: 'Jaquette BORDEAUX',
+    name: 'Jaquette bordeaux',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
-    colors: ['Bordeaux'],
+    colors: ['bordeaux'],
     basePrice: 150,
     description: 'Jaquette bordeaux distinguée'
   },
   {
     id: 'jaquette-jola',
-    name: 'Jaquette JOLA',
+    name: 'Jaquette Jola',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 160,
-    description: 'Jaquette JOLA premium'
+    description: 'Jaquette Jola premium'
   },
   {
     id: 'jaquette-ff-clair',
-    name: 'Jaquette FF Clair',
+    name: 'Jaquette FF clair',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
-    colors: ['Gris clair'],
+    colors: ['gris clair'],
     basePrice: 150,
     description: 'Jaquette française claire'
   },
@@ -146,7 +146,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'costume-ville',
     availableSizes: COSTUME_VILLE_SIZES,
-    colors: ['Bleu marine'],
+    colors: ['bleu marine'],
     basePrice: 120,
     description: 'Costume ville bleu marine classique'
   },
@@ -156,7 +156,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'costume-ville',
     availableSizes: COSTUME_VILLE_SIZES,
-    colors: ['Gris'],
+    colors: ['gris'],
     basePrice: 120,
     description: 'Costume ville gris élégant'
   },
@@ -168,7 +168,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 180,
     description: 'Smoking noir avec revers châle'
   },
@@ -178,7 +178,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 180,
     description: 'Smoking noir avec revers cranté'
   },
@@ -188,17 +188,17 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
-    colors: ['Bleu'],
+    colors: ['bleu'],
     basePrice: 180,
     description: 'Smoking bleu élégant'
   },
   {
     id: 'smoking-bordeaux',
-    name: 'Smoking Bordeaux',
+    name: 'Smoking bordeaux',
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
-    colors: ['Bordeaux'],
+    colors: ['bordeaux'],
     basePrice: 180,
     description: 'Smoking bordeaux distingué'
   },
@@ -208,7 +208,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
-    colors: ['Gris'],
+    colors: ['gris'],
     basePrice: 180,
     description: 'Smoking gris raffiné'
   },
@@ -216,11 +216,11 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // HABIT QUEUE DE PIE
   {
     id: 'habit-noir',
-    name: 'Habit Queue de Pie noir',
+    name: 'Habit queue de pie noir',
     category: 'veste',
     subCategory: 'habit-queue-de-pie',
     availableSizes: HABIT_QUEUE_DE_PIE_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 200,
     description: 'Habit queue de pie noir traditionnel'
   },
@@ -228,31 +228,31 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // GILETS CLASSIQUES
   {
     id: 'gilet-clair',
-    name: 'Gilet Clair',
+    name: 'Gilet clair',
     category: 'gilet',
     subCategory: 'classique-standard',
     availableSizes: GILET_SIZES_CLASSIQUE,
-    colors: ['Clair'],
+    colors: ['clair'],
     basePrice: 80,
     description: 'Gilet clair élégant'
   },
   {
     id: 'gilet-clair-croise',
-    name: 'Gilet Clair croisé',
+    name: 'Gilet clair croisé',
     category: 'gilet',
     subCategory: 'classique-croise',
     availableSizes: GILET_SIZES_CLASSIQUE,
-    colors: ['Clair'],
+    colors: ['clair'],
     basePrice: 85,
     description: 'Gilet clair croisé distingué'
   },
   {
     id: 'gilet-bleu',
-    name: 'Gilet Bleu',
+    name: 'Gilet bleu',
     category: 'gilet',
     subCategory: 'classique-standard',
     availableSizes: GILET_SIZES_CLASSIQUE,
-    colors: ['Bleu'],
+    colors: ['bleu'],
     basePrice: 80,
     description: 'Gilet bleu classique'
   },
@@ -260,41 +260,41 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // GILETS FICELLE (tailles XS-XXXL)
   {
     id: 'gilet-ficelle-droit',
-    name: 'Gilet Ficelle droit',
+    name: 'Gilet ficelle droit',
     category: 'gilet',
     subCategory: 'ficelle-droit',
     availableSizes: GILET_SIZES_STANDARD,
-    colors: ['Ficelle'],
+    colors: ['ficelle'],
     basePrice: 75,
     description: 'Gilet ficelle coupe droite'
   },
   {
     id: 'gilet-ficelle-croise',
-    name: 'Gilet Ficelle croisé',
+    name: 'Gilet ficelle croisé',
     category: 'gilet',
     subCategory: 'ficelle-croise',
     availableSizes: GILET_SIZES_STANDARD,
-    colors: ['Ficelle'],
+    colors: ['ficelle'],
     basePrice: 80,
     description: 'Gilet ficelle croisé élégant'
   },
   {
     id: 'gilet-bleu-croise',
-    name: 'Gilet Bleu croisé',
+    name: 'Gilet bleu croisé',
     category: 'gilet',
     subCategory: 'ficelle-croise',
     availableSizes: GILET_SIZES_STANDARD,
-    colors: ['Bleu'],
+    colors: ['bleu'],
     basePrice: 80,
     description: 'Gilet bleu croisé moderne'
   },
   {
     id: 'gilet-rose-croise',
-    name: 'Gilet Rose croisé',
+    name: 'Gilet rose croisé',
     category: 'gilet',
     subCategory: 'ficelle-croise',
     availableSizes: GILET_SIZES_STANDARD,
-    colors: ['Rose'],
+    colors: ['rose'],
     basePrice: 80,
     description: 'Gilet rose croisé original'
   },
@@ -302,11 +302,11 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // GILET ÉCRU (tailles spécifiques)
   {
     id: 'gilet-ecru-croise',
-    name: 'Gilet Écru croisé',
+    name: 'Gilet écru croisé',
     category: 'gilet',
     subCategory: 'ecru-croise',
     availableSizes: GILET_SIZES_ECRU,
-    colors: ['Écru'],
+    colors: ['écru'],
     basePrice: 85,
     description: 'Gilet écru croisé avec tailles spécifiques'
   },
@@ -314,11 +314,11 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // CEINTURES
   {
     id: 'ceinture-scratch',
-    name: 'Ceinture Scratch',
+    name: 'Ceinture scratch',
     category: 'accessoire',
     subCategory: 'ceinture',
     availableSizes: CEINTURE_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 25,
     description: 'Ceinture scratch pratique et ajustable'
   },
@@ -336,81 +336,81 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   },
   {
     id: 'pantalon-bleu',
-    name: 'Pantalon Bleu',
+    name: 'Pantalon bleu',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
-    colors: ['Bleu'],
+    colors: ['bleu'],
     basePrice: 60,
     description: 'Pantalon bleu élégant'
   },
   {
     id: 'pantalon-bleu-clair',
-    name: 'Pantalon Bleu clair',
+    name: 'Pantalon bleu clair',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
-    colors: ['Bleu clair'],
+    colors: ['bleu clair'],
     basePrice: 60,
     description: 'Pantalon bleu clair moderne'
   },
   {
     id: 'pantalon-uni-fonce',
-    name: 'Pantalon Uni foncé',
+    name: 'Pantalon uni foncé',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
-    colors: ['Uni foncé'],
+    colors: ['uni foncé'],
     basePrice: 60,
     description: 'Pantalon uni foncé classique'
   },
   {
     id: 'pantalon-gris-ville',
-    name: 'Pantalon Gris ville',
+    name: 'Pantalon gris ville',
     category: 'pantalon',
     subCategory: 'ville',
     availableSizes: PANTALON_SIZES,
-    colors: ['Gris'],
+    colors: ['gris'],
     basePrice: 65,
     description: 'Pantalon gris ville chic'
   },
   {
     id: 'pantalon-bleu-smok',
-    name: 'Pantalon Bleu smok',
+    name: 'Pantalon bleu smok',
     category: 'pantalon',
     subCategory: 'smoking',
     availableSizes: PANTALON_SIZES,
-    colors: ['Bleu'],
+    colors: ['bleu'],
     basePrice: 70,
     description: 'Pantalon bleu pour smoking'
   },
   {
     id: 'pantalon-gris-smok',
-    name: 'Pantalon Gris smok',
+    name: 'Pantalon gris smok',
     category: 'pantalon',
     subCategory: 'smoking',
     availableSizes: PANTALON_SIZES,
-    colors: ['Gris'],
+    colors: ['gris'],
     basePrice: 70,
     description: 'Pantalon gris pour smoking'
   },
   {
     id: 'pantalon-bordeaux',
-    name: 'Pantalon Bordeaux',
+    name: 'Pantalon bordeaux',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
-    colors: ['Bordeaux'],
+    colors: ['bordeaux'],
     basePrice: 65,
     description: 'Pantalon bordeaux distingué'
   },
   {
     id: 'pantalon-noir-smok',
-    name: 'Pantalon Noir smok',
+    name: 'Pantalon noir smok',
     category: 'pantalon',
     subCategory: 'smoking',
     availableSizes: PANTALON_SIZES,
-    colors: ['Noir'],
+    colors: ['noir'],
     basePrice: 70,
     description: 'Pantalon noir pour smoking'
   }

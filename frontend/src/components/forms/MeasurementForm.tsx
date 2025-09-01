@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +33,32 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     notes: '',
     ...initialData
   });
+  const [vesteReferences, setVesteReferences] = useState<any[]>([]);
+
+  // Charger les références de veste au montage
+  useEffect(() => {
+    const fetchVesteReferences = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/stock/references/veste');
+        if (response.ok) {
+          const data = await response.json();
+          setVesteReferences(data.references || []);
+        }
+      } catch (error) {
+        console.warn('Erreur lors du chargement des références veste:', error);
+      }
+    };
+    fetchVesteReferences();
+  }, []);
+
+  // Fonction pour vérifier si la veste sélectionnée est un smoking
+  const isSmokingSelected = () => {
+    const vesteRef = form.tenue?.veste?.reference;
+    if (!vesteRef || vesteReferences.length === 0) return false;
+    
+    const reference = vesteReferences.find(ref => ref.id === vesteRef);
+    return reference?.subCategory === 'smoking';
+  };
 
   const updateForm = (field: keyof MeasurementFormType, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -63,6 +89,20 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     // Reset la taille quand on change de référence
     updateTenue(category, 'taille', undefined);
     updateTenue(category, 'couleur', undefined);
+    
+    // Si on sélectionne une veste qui est un smoking, réinitialiser le gilet
+    if (category === 'veste') {
+      const reference = vesteReferences.find(ref => ref.id === referenceId);
+      if (reference?.subCategory === 'smoking') {
+        setForm(prev => ({
+          ...prev,
+          tenue: {
+            ...prev.tenue,
+            gilet: undefined
+          }
+        }));
+      }
+    }
   };
 
   const updateTenueSize = (category: 'veste' | 'gilet' | 'pantalon', size: string) => {
@@ -245,10 +285,31 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onSizeChange={(size) => updateTenueSize('veste', size)}
               onColorChange={(color) => updateTenueColor('veste', color)}
             />
+            
+            {/* Longueur de manche et notes veste */}
+            {form.tenue?.veste?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                <Input
+                  id="longueur-manche-single"
+                  value={form.tenue?.veste?.longueurManche || ''}
+                  onChange={(e) => updateTenue('veste', 'longueurManche', e.target.value)}
+                  placeholder="Longueur de manche (optionnel)"
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
+                />
+                <Textarea
+                  value={form.tenue?.veste?.notes || ''}
+                  onChange={(e) => updateTenue('veste', 'notes', e.target.value)}
+                  placeholder="Notes pour la veste (optionnel)"
+                  rows={2}
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
           </div>
 
-          {/* Gilet */}
-          <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
+          {/* Gilet - Masqué si smoking sélectionné */}
+          {!isSmokingSelected() && (
+            <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
@@ -266,7 +327,21 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onSizeChange={(size) => updateTenueSize('gilet', size)}
               onColorChange={(color) => updateTenueColor('gilet', color)}
             />
+            
+            {/* Notes gilet */}
+            {form.tenue?.gilet?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Textarea
+                  value={form.tenue?.gilet?.notes || ''}
+                  onChange={(e) => updateTenue('gilet', 'notes', e.target.value)}
+                  placeholder="Notes pour le gilet (optionnel)"
+                  rows={2}
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
           </div>
+          )}
 
           {/* Pantalon */}
           <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gray-50/50">
@@ -287,6 +362,19 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onSizeChange={(size) => updateTenueSize('pantalon', size)}
               onColorChange={(color) => updateTenueColor('pantalon', color)}
             />
+            
+            {/* Notes pantalon */}
+            {form.tenue?.pantalon?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Textarea
+                  value={form.tenue?.pantalon?.notes || ''}
+                  onChange={(e) => updateTenue('pantalon', 'notes', e.target.value)}
+                  placeholder="Notes pour le pantalon (optionnel)"
+                  rows={2}
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
           </div>
 
           {/* Ceinture */}
@@ -352,24 +440,8 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
         </div>
       </div>
 
-      {/* 4. Notes */}
-      <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
-          <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
-            <MessageSquare className="w-5 h-5 text-white" />
-          </div>
-          4. Notes du Vendeur
-        </h2>
-        <Textarea
-          value={form.notes || ''}
-          onChange={(e) => updateForm('notes', e.target.value)}
-          placeholder="Notes sur la prise de mesure, ajustements nécessaires..."
-          rows={4}
-          className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-        />
-      </div>
 
-      {/* 5. Actions */}
+      {/* 4. Actions */}
       <div>
         <div className="flex flex-col sm:flex-row gap-4 justify-end">
           <Button

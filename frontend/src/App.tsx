@@ -15,20 +15,15 @@ function App() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const handleRentalSubmitComplete = (measurement: MeasurementFormType, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
-    console.log('Prise de mesure:', measurement);
-    console.log('Bon de location créé:', contract);
     alert(`Bon de location créé avec succès ! Transmis au PC caisse.`);
     setCurrentView('home');
   };
 
   const handleRentalSaveDraft = (measurement: MeasurementFormType, contract?: Partial<RentalContract>) => {
-    console.log('Brouillon - Mesure:', measurement);
-    console.log('Brouillon - Contrat:', contract);
-    alert('Brouillon sauvegardé !');
+    // Sauvegarde silencieuse
   };
 
   const handlePrint = (contractId: string, type: 'jj' | 'client') => {
-    console.log(`Impression ${type} pour contrat:`, contractId);
     alert(`Impression ${type} lancée !`);
   };
 
@@ -51,13 +46,11 @@ function App() {
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
-    console.log('Voir commande:', order);
     alert(`Affichage de la commande #${order.numero}`);
   };
 
   const handleEditOrder = (order: Order) => {
     setSelectedOrder(order);
-    console.log('Modifier commande:', order);
     alert(`Modification de la commande #${order.numero}`);
   };
 

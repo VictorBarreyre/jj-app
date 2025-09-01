@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 // Types pour les vendeurs
-export type Vendeur = 'Sophie' | 'Olivier' | 'Laurent';
+export type Vendeur = 'Sophie' | 'Olivier' | 'Laurent' | 'Alexis' | 'Mael';
 
 // Interface pour une tenue dans le groupe
 export interface ITenueMeasurement {
@@ -9,18 +9,22 @@ export interface ITenueMeasurement {
     reference: string;
     taille: string;
     longueur?: string;
+    longueurManche?: string;
     couleur?: string;
+    notes?: string;
   };
   gilet?: {
     reference: string;
     taille: string;
     couleur?: string;
+    notes?: string;
   };
   pantalon?: {
     reference: string;
     taille: string;
     longueur?: string;
     couleur?: string;
+    notes?: string;
   };
   ceinture?: {
     reference: string;
@@ -62,18 +66,22 @@ const tenueSchema = new Schema({
     reference: { type: String },
     taille: { type: String },
     longueur: { type: String },
-    couleur: { type: String }
+    longueurManche: { type: String },
+    couleur: { type: String },
+    notes: { type: String }
   },
   gilet: {
     reference: { type: String },
     taille: { type: String },
-    couleur: { type: String }
+    couleur: { type: String },
+    notes: { type: String }
   },
   pantalon: {
     reference: { type: String },
     taille: { type: String },
     longueur: { type: String },
-    couleur: { type: String }
+    couleur: { type: String },
+    notes: { type: String }
   },
   ceinture: {
     reference: { type: String },
@@ -139,7 +147,7 @@ const groupRentalSchema = new Schema<IGroupRental>({
   },
   vendeur: {
     type: String,
-    enum: ['Sophie', 'Olivier', 'Laurent'],
+    enum: ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'],
     required: true
   },
   clients: {

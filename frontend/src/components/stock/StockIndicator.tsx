@@ -11,8 +11,6 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
   const [stockInfo, setStockInfo] = useState<{ available: number; total: number } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Log pour voir ce qui est passé en props
-  console.log('🏷️ StockIndicator reçoit:', { selectedReference, selectedSize });
 
   useEffect(() => {
     const fetchStock = async () => {
@@ -23,16 +21,13 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
 
       setLoading(true);
       try {
-        console.log('🔍 Recherche stock pour:', { selectedReference, selectedSize });
         
         // Récupérer d'abord le nom de la référence depuis le catalog
         const refResponse = await fetch(`${API_BASE_URL}/stock/sizes-for-reference/${selectedReference}`);
         const refData = await refResponse.json();
         
-        console.log('📄 Données de référence:', refData);
         
         if (!refData.name) {
-          console.log('❌ Pas de nom dans refData');
           return;
         }
 
@@ -40,11 +35,9 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
         const params = new URLSearchParams();
         params.append('reference', refData.name);
         
-        console.log('🌐 Recherche stock avec nom:', refData.name);
         const stockResponse = await fetch(`${API_BASE_URL}/stock/items?${params}`);
         const stockData = await stockResponse.json();
         
-        console.log('📦 Données de stock:', stockData);
         
         if (stockData.items && stockData.items.length > 0) {
           // Filtrer par taille exacte
@@ -52,7 +45,6 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
             item.taille === selectedSize
           );
           
-          console.log('🎯 Item correspondant:', matchingItem);
           
           if (matchingItem) {
             setStockInfo({
@@ -60,11 +52,9 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
               total: matchingItem.quantiteStock
             });
           } else {
-            console.log('❌ Aucun item avec la taille', selectedSize);
             setStockInfo({ available: 0, total: 0 });
           }
         } else {
-          console.log('❌ Aucun item trouvé pour la référence');
           setStockInfo({ available: 0, total: 0 });
         }
       } catch (error) {
