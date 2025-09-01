@@ -39,9 +39,9 @@ export const mockOrders: Order[] = [
     sousTotal: 150,
     tva: 30,
     total: 180,
-    status: 'confirmee',
+    status: 'commandee',
     notes: 'Client préfère les manches un peu plus longues',
-    createdBy: 'Sophie',
+    createdBy: 'Alexis',
     updatedAt: new Date('2025-01-15')
   },
   {
@@ -87,9 +87,9 @@ export const mockOrders: Order[] = [
     sousTotal: 200,
     tva: 40,
     total: 240,
-    status: 'en_production',
+    status: 'livree',
     notes: 'Mariage le 22 février - urgent',
-    createdBy: 'Olivier',
+    createdBy: 'Mael',
     updatedAt: new Date('2025-01-17')
   },
   {
@@ -119,9 +119,9 @@ export const mockOrders: Order[] = [
     ],
     sousTotal: 180,
     total: 180,
-    status: 'brouillon',
+    status: 'commandee',
     notes: '',
-    createdBy: 'Laurent',
+    createdBy: 'Olivier',
     updatedAt: new Date('2025-01-18')
   },
   {
@@ -153,7 +153,7 @@ export const mockOrders: Order[] = [
     sousTotal: 200,
     tva: 40,
     total: 240,
-    status: 'prete',
+    status: 'livree',
     createdBy: 'Sophie',
     updatedAt: new Date('2025-01-21')
   },
@@ -185,7 +185,7 @@ export const mockOrders: Order[] = [
     sousTotal: 160,
     tva: 32,
     total: 192,
-    status: 'livree',
+    status: 'rendue',
     createdBy: 'Olivier',
     updatedAt: new Date('2025-01-25')
   }

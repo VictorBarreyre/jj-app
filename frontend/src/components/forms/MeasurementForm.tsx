@@ -14,7 +14,7 @@ interface MeasurementFormProps {
   initialData?: Partial<MeasurementFormType>;
 }
 
-const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent'];
+const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'];
 const TAILLES_CHAUSSURES: TailleChaussure[] = ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '60', '61', '62'];
 

@@ -83,7 +83,7 @@ export interface Order {
   sousTotal?: number;
   tva?: number;
   total?: number;
-  status: 'brouillon' | 'confirmee' | 'en_production' | 'prete' | 'livree' | 'annulee';
+  status: 'commandee' | 'livree' | 'rendue';
   notes?: string;
   createdBy?: string; // ID de l'utilisateur qui a créé la commande
   updatedAt?: Date;

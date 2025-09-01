@@ -3,8 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Edit, Trash2, Calendar, Phone, Package, Search, Filter, Plus } from 'lucide-react';
+import { Eye, Edit, Trash2, Calendar, Phone, Package, Search, Filter, Plus, User, Shirt } from 'lucide-react';
 import { Order } from '@/types/order';
+import { Vendeur } from '@/types/measurement-form';
 
 interface OrdersListProps {
   orders: Order[];
@@ -15,26 +16,30 @@ interface OrdersListProps {
 }
 
 const statusColors: Record<Order['status'], string> = {
-  'brouillon': 'bg-gray-500',
-  'confirmee': 'bg-amber-500', 
-  'en_production': 'bg-orange-500',
-  'prete': 'bg-amber-600',
-  'livree': 'bg-orange-600',
-  'annulee': 'bg-red-500'
+  'commandee': 'bg-blue-500',
+  'livree': 'bg-green-500',
+  'rendue': 'bg-gray-500'
 };
 
 const statusLabels: Record<Order['status'], string> = {
-  'brouillon': 'Brouillon',
-  'confirmee': 'Confirmée',
-  'en_production': 'En production',
-  'prete': 'Prête',
+  'commandee': 'Commandée',
   'livree': 'Livrée',
-  'annulee': 'Annulée'
+  'rendue': 'Rendue'
 };
+
+const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'];
+
+const CATEGORIES = [
+  { value: 'veste', label: 'Vestes' },
+  { value: 'gilet', label: 'Gilets' },
+  { value: 'pantalon', label: 'Pantalons' }
+];
 
 export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: OrdersListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [vendeurFilter, setVendeurFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   // Filtrage des commandes
   const filteredOrders = useMemo(() => {
@@ -55,9 +60,21 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
       filtered = filtered.filter(order => order.status === statusFilter);
     }
 
+    // Filtre par vendeur
+    if (vendeurFilter !== 'all') {
+      filtered = filtered.filter(order => order.createdBy === vendeurFilter);
+    }
+
+    // Filtre par catégorie d'articles
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(order => 
+        order.items.some(item => item.category === categoryFilter)
+      );
+    }
+
     // Tri par date de création (plus récent en premier)
     return filtered.sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
-  }, [orders, searchQuery, statusFilter]);
+  }, [orders, searchQuery, statusFilter, vendeurFilter, categoryFilter]);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('fr-FR', {
@@ -93,18 +110,49 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
 
           {/* Filtre par statut */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-56 bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm">
-              <Filter className="w-4 h-4 mr-2 text-amber-600" />
-              <SelectValue placeholder="Filtrer par statut" />
+            <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <SelectValue placeholder="Filtrer par statut" />
+              </div>
             </SelectTrigger>
             <SelectContent className="bg-white border-gray-300 text-gray-900">
               <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="brouillon">Brouillon</SelectItem>
-              <SelectItem value="confirmee">Confirmée</SelectItem>
-              <SelectItem value="en_production">En production</SelectItem>
-              <SelectItem value="prete">Prête</SelectItem>
+              <SelectItem value="commandee">Commandée</SelectItem>
               <SelectItem value="livree">Livrée</SelectItem>
-              <SelectItem value="annulee">Annulée</SelectItem>
+              <SelectItem value="rendue">Rendue</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Filtre par vendeur */}
+          <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
+            <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <SelectValue placeholder="Filtrer par vendeur" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-300 text-gray-900">
+              <SelectItem value="all">Tous les vendeurs</SelectItem>
+              {VENDEURS.map(vendeur => (
+                <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Filtre par catégorie d'articles */}
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
+              <div className="flex items-center gap-2">
+                <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <SelectValue placeholder="Filtrer par article" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-300 text-gray-900">
+              <SelectItem value="all">Tous les articles</SelectItem>
+              {CATEGORIES.map(category => (
+                <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -299,25 +347,25 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
         {filteredOrders.length === 0 && (
           <div className="border border-gray-200/50 rounded-xl p-8 text-center">
             <div className="text-gray-400 mb-4">
-              {searchQuery || statusFilter !== 'all' ? (
+              {searchQuery || statusFilter !== 'all' || vendeurFilter !== 'all' || categoryFilter !== 'all' ? (
                 <Search className="w-16 h-16 mx-auto mb-2 opacity-50" />
               ) : (
                 <Package className="w-16 h-16 mx-auto mb-2 opacity-50" />
               )}
             </div>
             <div className="text-base sm:text-lg font-medium text-gray-600 mb-2">
-              {searchQuery || statusFilter !== 'all' ? 
+              {searchQuery || statusFilter !== 'all' || vendeurFilter !== 'all' || categoryFilter !== 'all' ? 
                 'Aucune commande trouvée pour cette recherche' : 
                 'Aucune commande pour le moment'
               }
             </div>
             <div className="text-sm text-gray-500">
-              {searchQuery || statusFilter !== 'all' ? 
+              {searchQuery || statusFilter !== 'all' || vendeurFilter !== 'all' || categoryFilter !== 'all' ? 
                 'Essayez de modifier vos critères de recherche' : 
                 'Créez votre première commande pour commencer'
               }
             </div>
-            {!searchQuery && statusFilter === 'all' && (
+            {!searchQuery && statusFilter === 'all' && vendeurFilter === 'all' && categoryFilter === 'all' && (
               <Button 
                 onClick={onCreateNew} 
                 variant="outline" 

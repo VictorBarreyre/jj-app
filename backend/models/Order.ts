@@ -10,7 +10,7 @@ export interface Order {
   dateCommande: string;
   dateEssai?: string;
   dateLivraison?: string;
-  status: 'brouillon' | 'en_production' | 'prete' | 'livree';
+  status: 'commandee' | 'livree' | 'rendue';
   articles: {
     type: string;
     taille: string;

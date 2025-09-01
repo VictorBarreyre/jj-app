@@ -7,7 +7,7 @@ export type TailleChaussure = '38' | '39' | '40' | '41' | '42' | '43' | '44' | '
 export type TailleChapeau = '54' | '55' | '56' | '57' | '58' | '59' | '60' | '61' | '62';
 
 // Types pour les vendeurs
-export type Vendeur = 'Sophie' | 'Olivier' | 'Laurent';
+export type Vendeur = 'Sophie' | 'Olivier' | 'Laurent' | 'Alexis' | 'Mael';
 
 // Interface pour les mesures d'une tenue
 export interface TenueMeasurement {

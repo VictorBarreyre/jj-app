@@ -4,56 +4,7 @@ import { createError } from '../middleware/errorHandler';
 import { v4 as uuidv4 } from 'uuid';
 
 // Simulation d'une base de données en mémoire
-let orders: Order[] = [
-  {
-    id: '1',
-    numero: 'JJ-2024-001',
-    client: {
-      nom: 'Martin',
-      prenom: 'Jean',
-      telephone: '01 23 45 67 89',
-      email: 'jean.martin@email.com'
-    },
-    dateCommande: '2024-01-15',
-    dateEssai: '2024-01-22',
-    dateLivraison: '2024-02-05',
-    status: 'en_production',
-    articles: [
-      {
-        type: 'Costume 3 pièces',
-        taille: '52',
-        couleur: 'Bleu marine',
-        prix: 450
-      }
-    ],
-    montantTotal: 450,
-    notes: 'Client préfère les revers étroits',
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z'
-  },
-  {
-    id: '2',
-    numero: 'JJ-2024-002',
-    client: {
-      nom: 'Dupont',
-      prenom: 'Marie',
-      telephone: '01 98 76 54 32'
-    },
-    dateCommande: '2024-01-16',
-    status: 'brouillon',
-    articles: [
-      {
-        type: 'Robe de soirée',
-        taille: '38',
-        couleur: 'Noir',
-        prix: 350
-      }
-    ],
-    montantTotal: 350,
-    createdAt: '2024-01-16T14:30:00Z',
-    updatedAt: '2024-01-16T14:30:00Z'
-  }
-];
+let orders: Order[] = [];
 
 export const ordersController = {
   // GET /api/orders

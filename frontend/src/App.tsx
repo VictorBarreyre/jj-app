@@ -6,14 +6,12 @@ import { StockManagement } from './pages/StockManagement'
 import { MeasurementForm as MeasurementFormType } from './types/measurement-form'
 import { RentalContract } from './types/rental-contract'
 import { Order } from './types/order'
-import { mockOrders } from './data/mockOrders'
 import './App.css'
 
 type AppView = 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('home');
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const handleRentalSubmitComplete = (measurement: MeasurementFormType, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
@@ -63,18 +61,7 @@ function App() {
     alert(`Modification de la commande #${order.numero}`);
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
-      setOrders(prev => prev.filter(order => order.id !== orderId));
-      alert('Commande supprimée avec succès');
-    }
-  };
-
-
-  // Statistiques pour le header
-  const pendingOrdersCount = orders.filter(order => 
-    order.status === 'brouillon' || order.status === 'en_production'
-  ).length;
+  // handleDeleteOrder est maintenant géré dans le composant Home
 
   return (
     <div className="min-h-screen">
@@ -83,18 +70,16 @@ function App() {
         onNavigateHome={handleNavigateHome}
         onNavigateMeasurement={handleNavigateMeasurement}
         onNavigateStock={handleNavigateStock}
-        ordersCount={orders.length}
-        pendingOrdersCount={pendingOrdersCount}
+        ordersCount={0}
+        pendingOrdersCount={0}
       />
       
       <main>
         {currentView === 'home' && (
           <Home
-            orders={orders}
             onCreateNew={handleCreateNew}
             onViewOrder={handleViewOrder}
             onEditOrder={handleEditOrder}
-            onDeleteOrder={handleDeleteOrder}
           />
         )}
         

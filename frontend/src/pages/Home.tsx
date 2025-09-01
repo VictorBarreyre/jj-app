@@ -1,25 +1,34 @@
 import React, { useMemo } from 'react';
 import { OrdersList } from '../components/home/OrdersList';
 import { Order } from '@/types/order';
+import { useOrders, useDeleteOrder } from '@/hooks/useOrders';
 
 interface HomeProps {
-  orders: Order[];
   onCreateNew: () => void;
   onViewOrder: (order: Order) => void;
   onEditOrder: (order: Order) => void;
-  onDeleteOrder: (orderId: string) => void;
 }
 
-export function Home({ orders, onCreateNew, onViewOrder, onEditOrder, onDeleteOrder }: HomeProps) {
+export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
+  const { data: ordersData, isLoading, error } = useOrders();
+  const deleteOrderMutation = useDeleteOrder();
+
+  const orders = ordersData?.orders || [];
+
+  const handleDeleteOrder = (orderId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
+      deleteOrderMutation.mutate(orderId);
+    }
+  };
   
   // Statistiques rapides
   const stats = useMemo(() => {
     const total = orders.length;
-    const brouillons = orders.filter(o => o.status === 'brouillon').length;
-    const enProduction = orders.filter(o => o.status === 'en_production').length;
-    const pretes = orders.filter(o => o.status === 'prete').length;
+    const commandees = orders.filter(o => o.status === 'commandee').length;
+    const livrees = orders.filter(o => o.status === 'livree').length;
+    const rendues = orders.filter(o => o.status === 'rendue').length;
     
-    return { total, brouillons, enProduction, pretes };
+    return { total, commandees, livrees, rendues };
   }, [orders]);
 
   return (
@@ -37,7 +46,7 @@ export function Home({ orders, onCreateNew, onViewOrder, onEditOrder, onDeleteOr
         orders={orders}
         onView={onViewOrder}
         onEdit={onEditOrder}
-        onDelete={onDeleteOrder}
+        onDelete={handleDeleteOrder}
         onCreateNew={onCreateNew}
       />
     </div>
