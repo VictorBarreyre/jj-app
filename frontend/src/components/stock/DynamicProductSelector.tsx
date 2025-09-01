@@ -3,6 +3,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArticleCategory } from '@/types/stock';
 import { Loader2 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 interface ProductReference {
   id: string;
   name: string;
@@ -51,7 +53,7 @@ export function DynamicProductSelector({
     const fetchReferences = async () => {
       setLoadingReferences(true);
       try {
-        const response = await fetch(`/api/stock/references/${category}`);
+        const response = await fetch(`${API_BASE_URL}/stock/references/${category}`);
         if (response.ok) {
           const data = await response.json();
           setReferences(data.references || []);
@@ -80,7 +82,7 @@ export function DynamicProductSelector({
 
       setLoadingSizes(true);
       try {
-        const response = await fetch(`/api/stock/sizes-for-reference/${selectedReference}`);
+        const response = await fetch(`${API_BASE_URL}/stock/sizes-for-reference/${selectedReference}`);
         if (response.ok) {
           const data = await response.json();
           setSizeInfo(data);
