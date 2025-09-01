@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,21 +22,67 @@ interface GroupSetupFormProps {
   initialData?: Partial<GroupRentalInfo>;
 }
 
-const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent'];
+const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'];
+
+// Clé pour localStorage du GroupSetupForm
+const GROUP_SETUP_STORAGE_KEY = 'group_setup_form_data';
+
+// Utilitaires localStorage pour ce formulaire
+const saveGroupSetupToStorage = (data: Partial<GroupRentalInfo>) => {
+  try {
+    localStorage.setItem(GROUP_SETUP_STORAGE_KEY, JSON.stringify(data, (key, value) => {
+      if (value instanceof Date) {
+        return value.toISOString();
+      }
+      return value;
+    }));
+  } catch (error) {
+    console.warn('Erreur lors de la sauvegarde GroupSetupForm:', error);
+  }
+};
+
+const loadGroupSetupFromStorage = (): Partial<GroupRentalInfo> | null => {
+  try {
+    const data = localStorage.getItem(GROUP_SETUP_STORAGE_KEY);
+    if (!data) return null;
+    
+    return JSON.parse(data, (key, value) => {
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+        return new Date(value);
+      }
+      return value;
+    });
+  } catch (error) {
+    console.warn('Erreur lors du chargement GroupSetupForm:', error);
+    return null;
+  }
+};
 
 export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupFormProps) {
-  const [formData, setFormData] = useState<Partial<GroupRentalInfo>>({
-    groupName: '',
-    telephone: '',
-    email: '',
-    dateEssai: new Date(),
-    vendeur: undefined,
-    clients: [createEmptyClient()],
-    groupNotes: '',
-    ...initialData
+  const [formData, setFormData] = useState<Partial<GroupRentalInfo>>(() => {
+    const savedData = loadGroupSetupFromStorage();
+    return {
+      groupName: '',
+      telephone: '',
+      email: '',
+      dateEssai: new Date(),
+      vendeur: undefined,
+      clients: [createEmptyClient()],
+      groupNotes: '',
+      ...initialData,
+      ...savedData, // Les données sauvegardées prennent priorité
+    };
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Auto-sauvegarde des données du formulaire
+  useEffect(() => {
+    if (formData.groupName || formData.telephone || formData.email || formData.vendeur || 
+        (formData.clients && formData.clients.some(c => c.nom.trim()))) {
+      saveGroupSetupToStorage(formData);
+    }
+  }, [formData]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};

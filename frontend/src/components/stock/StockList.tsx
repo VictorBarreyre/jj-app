@@ -180,7 +180,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                       </div>
                       <div className="bg-white px-5 py-2.5 rounded-xl border border-slate-300 shadow-md">
                         <span className="text-slate-700 font-semibold text-sm">
-                          {categoryItems.length} article{categoryItems.length > 1 ? 's' : ''}
+                          {categoryItems.length} article{categoryItems.length > 1 ? 's' : ''} • {categoryItems.reduce((total, item) => total + item.quantiteStock, 0)} pièce{categoryItems.reduce((total, item) => total + item.quantiteStock, 0) > 1 ? 's' : ''} en stock
                         </span>
                       </div>
                     </div>

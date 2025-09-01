@@ -71,7 +71,7 @@ const checkStockAlerts = async (): Promise<void> => {
         quantiteActuelle: item.quantiteDisponible,
         seuilAlerte: item.seuilAlerte,
         estActive: true,
-        message: `Stock faible pour ${item.reference} (${item.taille}): ${item.quantiteDisponible} restant(s)`
+        message: `Stock faible pour ${item.reference} ${item.taille}: ${item.quantiteDisponible} restant(s)`
       });
     } else if (!shouldAlert && existingAlert) {
       // Désactiver l'alerte

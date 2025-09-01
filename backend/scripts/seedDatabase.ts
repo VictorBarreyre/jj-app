@@ -55,7 +55,7 @@ const seedDatabase = async () => {
 
     console.log('\n📊 Résumé du stock créé :');
     summary.forEach(item => {
-      console.log(`${item._id.category}${item._id.subCategory ? ` (${item._id.subCategory})` : ''}: ${item.count} articles, ${item.totalStock} pièces total`);
+      console.log(`${item._id.category}${item._id.subCategory ? ` ${item._id.subCategory}` : ''}: ${item.count} articles, ${item.totalStock} pièces total`);
     });
 
     console.log('\n🎉 Seeding terminé avec succès !');

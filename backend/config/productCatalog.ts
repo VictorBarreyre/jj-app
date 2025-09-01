@@ -19,13 +19,21 @@ export const COSTUME_VILLE_SIZES = [
   '54N', '54L', '56N', '60N'
 ];
 
-// Tailles standards pour jaquettes
+// Tailles standards pour jaquettes (identiques aux costumes ville)
 export const JAQUETTE_SIZES = [
-  '46', '48', '50', '52', '54', '56', '58', '60'
+  '34N', '34L', '36N', '36L', '38N', '38L', '40N', '40L',
+  '42N', '42L', '42TL', '44N', '44L', '44TL', '46N', '46L', '46TL',
+  '48N', '48L', '48TL', '50N', '50L', '50TL', '52N', '52L',
+  '54N', '54L', '56N', '60N'
 ];
 
-// Tailles pour smoking (mêmes que costumes ville)
-export const SMOKING_SIZES = COSTUME_VILLE_SIZES;
+// Tailles pour smoking (format taille + longueur)
+export const SMOKING_SIZES = [
+  '34 78', '34 82', '36 78', '36 82', '38 78', '38 82', '39 84', '40 80',
+  '41 84', '42 78', '42 82', '43 88', '44 78', '44 84', '45 88', '46 80',
+  '46 84', '47 88', '48 80', '48 86', '50 82', '50 86', '52 82', '55 82',
+  '57 84', '60 82'
+];
 
 // Tailles spécifiques pour habit queue de pie (taille + longueur)
 export const HABIT_QUEUE_DE_PIE_SIZES = [
@@ -208,7 +216,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // HABIT QUEUE DE PIE
   {
     id: 'habit-noir',
-    name: 'Habit noir',
+    name: 'Habit Queue de Pie noir',
     category: 'veste',
     subCategory: 'habit-queue-de-pie',
     availableSizes: HABIT_QUEUE_DE_PIE_SIZES,

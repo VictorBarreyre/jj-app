@@ -126,33 +126,13 @@ export function DynamicProductSelector({
           <SelectContent className="bg-white border-gray-300 text-gray-900">
             {references.map(ref => (
               <SelectItem key={ref.id} value={ref.id}>
-                {ref.name} ({ref.subCategory})
+                {ref.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Sélection de la couleur (si disponible) */}
-      {sizeInfo && sizeInfo.colors && sizeInfo.colors.length > 0 && onColorChange && (
-        <div>
-          <Select
-            value={selectedColor || ''}
-            onValueChange={onColorChange}
-          >
-            <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-              <SelectValue placeholder="Sélectionner une couleur" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border-gray-300 text-gray-900">
-              {sizeInfo.colors.map(color => (
-                <SelectItem key={color} value={color}>
-                  {color}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
 
       {/* Sélection de la taille */}
       <div>
@@ -167,10 +147,8 @@ export function DynamicProductSelector({
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Chargement des tailles...</span>
               </div>
-            ) : sizeInfo ? (
-              <SelectValue placeholder="Sélectionner une taille" />
             ) : (
-              <SelectValue placeholder="Choisir d'abord un modèle" />
+              <SelectValue placeholder="Sélectionner une taille" />
             )}
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">
@@ -183,14 +161,6 @@ export function DynamicProductSelector({
         </Select>
       </div>
 
-      {/* Informations sur le produit sélectionné */}
-      {sizeInfo && (
-        <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-          <p><strong>Modèle:</strong> {sizeInfo.name}</p>
-          <p><strong>Catégorie:</strong> {sizeInfo.subCategory}</p>
-          <p><strong>Tailles disponibles:</strong> {sizeInfo.sizes.length} taille(s)</p>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { ProductCategory, VesteReference, GiletReference, PantalonReference } from './product-references';
+import { ProductCategory, VesteReference, GiletReference, PantalonReference, ChapeauReference, ChaussuresReference } from './product-references';
 
 // Interface pour les mesures spécifiques par type de produit
 export interface VesteMeasurements {
@@ -45,12 +45,28 @@ export interface PantalonMeasurements {
   notes?: string;
 }
 
+export interface ChapeauMeasurements {
+  // Mesure principale
+  taille?: string; // 54, 55, 56, etc.
+  // Notes spécifiques
+  notes?: string;
+}
+
+export interface ChaussuresMeasurements {
+  // Mesure principale
+  pointure?: string; // 38, 39, 40, etc.
+  // Options
+  largeur?: 'standard' | 'large';
+  // Notes spécifiques
+  notes?: string;
+}
+
 // Interface générique pour un item du bon de commande
 export interface OrderItem {
   id: string;
   category: ProductCategory;
-  reference: VesteReference | GiletReference | PantalonReference;
-  measurements: VesteMeasurements | GiletMeasurements | PantalonMeasurements;
+  reference: VesteReference | GiletReference | PantalonReference | ChapeauReference | ChaussuresReference;
+  measurements: VesteMeasurements | GiletMeasurements | PantalonMeasurements | ChapeauMeasurements | ChaussuresMeasurements;
   quantity: number;
   unitPrice?: number;
   totalPrice?: number;
@@ -84,6 +100,7 @@ export interface Order {
   tva?: number;
   total?: number;
   status: 'commandee' | 'livree' | 'rendue';
+  type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
   createdBy?: string; // ID de l'utilisateur qui a créé la commande
   updatedAt?: Date;

@@ -32,10 +32,13 @@ const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'];
 const CATEGORIES = [
   { value: 'veste', label: 'Vestes' },
   { value: 'gilet', label: 'Gilets' },
-  { value: 'pantalon', label: 'Pantalons' }
+  { value: 'pantalon', label: 'Pantalons' },
+  { value: 'chapeau', label: 'Chapeaux' },
+  { value: 'chaussures', label: 'Chaussures' }
 ];
 
 export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: OrdersListProps) {
+  const [activeTab, setActiveTab] = useState<'individuel' | 'groupe'>('individuel');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [vendeurFilter, setVendeurFilter] = useState<string>('all');
@@ -44,6 +47,9 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
   // Filtrage des commandes
   const filteredOrders = useMemo(() => {
     let filtered = orders;
+
+    // Filtre par type (individuel/groupe)
+    filtered = filtered.filter(order => order.type === activeTab);
 
     // Filtre par recherche (numéro ou nom)
     if (searchQuery.trim()) {
@@ -74,7 +80,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
 
     // Tri par date de création (plus récent en premier)
     return filtered.sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
-  }, [orders, searchQuery, statusFilter, vendeurFilter, categoryFilter]);
+  }, [orders, activeTab, searchQuery, statusFilter, vendeurFilter, categoryFilter]);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('fr-FR', {
@@ -94,6 +100,32 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-4 sm:p-6 mt-16 sm:mt-20">
+      {/* Onglets */}
+      <div className="border-b border-gray-200 pb-4 mb-6">
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+          <button
+            onClick={() => setActiveTab('individuel')}
+            className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === 'individuel'
+                ? 'bg-white text-amber-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            👤 Commandes individuelles
+          </button>
+          <button
+            onClick={() => setActiveTab('groupe')}
+            className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === 'groupe'
+                ? 'bg-white text-amber-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            👥 Mariages/Cérémonies
+          </button>
+        </div>
+      </div>
+
       {/* Actions et recherche */}
       <div className="border-b border-gray-200 pb-4 sm:pb-6 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">

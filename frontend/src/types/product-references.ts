@@ -43,17 +43,33 @@ export type PantalonReference =
   | 'Bordeaux'
   | 'Noir smok';
 
+// Références pour les chapeaux
+export type ChapeauReference = 
+  | 'Haut-de-forme noir'
+  | 'Haut-de-forme gris'
+  | 'Chapeau melon'
+  | 'Casquette cérémonie';
+
+// Références pour les chaussures
+export type ChaussuresReference = 
+  | 'Chaussures noires vernies'
+  | 'Chaussures marron cuir'
+  | 'Chaussures blanches'
+  | 'Chaussures de sport élégantes';
+
 // Catégories de produits
 export enum ProductCategory {
   VESTE = 'veste',
   GILET = 'gilet',
-  PANTALON = 'pantalon'
+  PANTALON = 'pantalon',
+  CHAPEAU = 'chapeau',
+  CHAUSSURES = 'chaussures'
 }
 
 // Interface pour un produit avec sa référence
 export interface ProductReference {
   category: ProductCategory;
-  reference: VesteReference | GiletReference | PantalonReference;
+  reference: VesteReference | GiletReference | PantalonReference | ChapeauReference | ChaussuresReference;
   label: string;
 }
 

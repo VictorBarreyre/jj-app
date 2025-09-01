@@ -2,9 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { GroupSetupForm } from './GroupSetupForm';
 import { GroupMeasurementForm } from './GroupMeasurementForm';
 import { RentalContractForm } from './RentalContractForm';
+import { AutoSaveIndicator } from '@/components/ui/AutoSaveIndicator';
 import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
 import { ChevronLeft } from 'lucide-react';
+
+// Clés pour localStorage
+const STORAGE_KEYS = {
+  CURRENT_STEP: 'measurement_form_current_step',
+  GROUP_DATA: 'measurement_form_group_data',
+  CONTRACT_DATA: 'measurement_form_contract_data',
+} as const;
 
 interface ThreeStepRentalFormProps {
   onSubmitComplete: (group: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
@@ -15,6 +23,49 @@ interface ThreeStepRentalFormProps {
   initialContract?: Partial<RentalContract>;
 }
 
+// Utilitaires pour localStorage
+const saveToStorage = (key: string, data: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data, (key, value) => {
+      // Convertir les dates en string pour pouvoir les sauvegarder
+      if (value instanceof Date) {
+        return value.toISOString();
+      }
+      return value;
+    }));
+  } catch (error) {
+    console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
+  }
+};
+
+const loadFromStorage = <T>(key: string): T | null => {
+  try {
+    const data = localStorage.getItem(key);
+    if (!data) return null;
+    
+    return JSON.parse(data, (key, value) => {
+      // Reconvertir les dates ISO en objets Date
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+        return new Date(value);
+      }
+      return value;
+    });
+  } catch (error) {
+    console.warn('Erreur lors du chargement depuis localStorage:', error);
+    return null;
+  }
+};
+
+const clearFormStorage = () => {
+  try {
+    Object.values(STORAGE_KEYS).forEach(key => {
+      localStorage.removeItem(key);
+    });
+  } catch (error) {
+    console.warn('Erreur lors du nettoyage du localStorage:', error);
+  }
+};
+
 export function ThreeStepRentalForm({ 
   onSubmitComplete, 
   onSaveDraft, 
@@ -23,9 +74,42 @@ export function ThreeStepRentalForm({
   initialGroup, 
   initialContract 
 }: ThreeStepRentalFormProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
-  const [groupData, setGroupData] = useState<GroupRentalInfo | null>(null);
-  const [contractData, setContractData] = useState<Partial<RentalContract> | null>(null);
+  // Initialiser les états avec les données du localStorage ou les valeurs par défaut
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(() => {
+    const savedStep = loadFromStorage<number>(STORAGE_KEYS.CURRENT_STEP);
+    return (savedStep && (savedStep === 1 || savedStep === 2 || savedStep === 3)) ? savedStep as 1 | 2 | 3 : 1;
+  });
+  
+  const [groupData, setGroupData] = useState<GroupRentalInfo | null>(() => {
+    const savedData = loadFromStorage<GroupRentalInfo>(STORAGE_KEYS.GROUP_DATA);
+    return savedData || null;
+  });
+  
+  const [contractData, setContractData] = useState<Partial<RentalContract> | null>(() => {
+    const savedData = loadFromStorage<Partial<RentalContract>>(STORAGE_KEYS.CONTRACT_DATA);
+    return savedData || null;
+  });
+  
+  const [showAutoSaveIndicator, setShowAutoSaveIndicator] = useState(false);
+
+  // Sauvegarde automatique des données
+  const saveCurrentData = () => {
+    saveToStorage(STORAGE_KEYS.CURRENT_STEP, currentStep);
+    if (groupData) {
+      saveToStorage(STORAGE_KEYS.GROUP_DATA, groupData);
+    }
+    if (contractData) {
+      saveToStorage(STORAGE_KEYS.CONTRACT_DATA, contractData);
+    }
+  };
+
+  // Auto-sauvegarde quand les données changent
+  useEffect(() => {
+    if (groupData || contractData || currentStep > 1) {
+      saveCurrentData();
+      setShowAutoSaveIndicator(true);
+    }
+  }, [currentStep, groupData, contractData]);
 
   // Étape 1 : Configuration du groupe
   const handleGroupSetupSubmit = (group: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => {
@@ -94,6 +178,8 @@ export function ThreeStepRentalForm({
   const handleContractSubmit = (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
     if (groupData) {
       onSubmitComplete(groupData, contract);
+      // Nettoyer le localStorage après soumission réussie
+      clearFormStorage();
     }
   };
 
@@ -156,8 +242,29 @@ export function ThreeStepRentalForm({
     }
   }, [currentStep, onStepChange, stepInfo.title, stepInfo.description]);
 
+  // Fonction pour réinitialiser le formulaire
+  const resetForm = () => {
+    setCurrentStep(1);
+    setGroupData(null);
+    setContractData(null);
+    clearFormStorage();
+  };
+
   return (
     <div className="mx-auto">
+      {/* Indicateurs et boutons en haut */}
+      {(groupData || contractData || currentStep > 1) && (
+        <div className="mb-4 flex justify-between items-center">
+          <AutoSaveIndicator isVisible={showAutoSaveIndicator} />
+          <button
+            onClick={resetForm}
+            className="px-3 py-1.5 text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            Nouveau formulaire
+          </button>
+        </div>
+      )}
+      
       {/* Contenu de l'étape */}
       <div className="bg-white rounded-lg">
         {currentStep === 1 && (

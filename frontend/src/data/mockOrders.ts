@@ -34,12 +34,25 @@ export const mockOrders: Order[] = [
         quantity: 1,
         unitPrice: 150,
         totalPrice: 150
+      },
+      {
+        id: 'item-1b',
+        category: 'chaussures',
+        reference: 'Chaussures noires vernies',
+        measurements: {
+          pointure: '42',
+          largeur: 'standard'
+        },
+        quantity: 1,
+        unitPrice: 35,
+        totalPrice: 35
       }
     ],
-    sousTotal: 150,
-    tva: 30,
-    total: 180,
+    sousTotal: 185,
+    tva: 37,
+    total: 222,
     status: 'commandee',
+    type: 'individuel',
     notes: 'Client préfère les manches un peu plus longues',
     createdBy: 'Alexis',
     updatedAt: new Date('2025-01-15')
@@ -88,6 +101,7 @@ export const mockOrders: Order[] = [
     tva: 40,
     total: 240,
     status: 'livree',
+    type: 'individuel',
     notes: 'Mariage le 22 février - urgent',
     createdBy: 'Mael',
     updatedAt: new Date('2025-01-17')
@@ -115,11 +129,23 @@ export const mockOrders: Order[] = [
         quantity: 1,
         unitPrice: 180,
         totalPrice: 180
+      },
+      {
+        id: 'item-3b',
+        category: 'chapeau',
+        reference: 'Haut-de-forme noir',
+        measurements: {
+          taille: '57'
+        },
+        quantity: 1,
+        unitPrice: 45,
+        totalPrice: 45
       }
     ],
-    sousTotal: 180,
-    total: 180,
+    sousTotal: 225,
+    total: 225,
     status: 'commandee',
+    type: 'individuel',
     notes: '',
     createdBy: 'Olivier',
     updatedAt: new Date('2025-01-18')
@@ -154,6 +180,7 @@ export const mockOrders: Order[] = [
     tva: 40,
     total: 240,
     status: 'livree',
+    type: 'individuel',
     createdBy: 'Sophie',
     updatedAt: new Date('2025-01-21')
   },
@@ -186,7 +213,119 @@ export const mockOrders: Order[] = [
     tva: 32,
     total: 192,
     status: 'rendue',
+    type: 'individuel',
     createdBy: 'Olivier',
     updatedAt: new Date('2025-01-25')
+  },
+  {
+    id: '6',
+    numero: '2025-006',
+    client: {
+      id: '6',
+      nom: 'Famille Rousseau',
+      prenom: 'Mariage de Paul & Marie',
+      telephone: '01 23 45 67 89',
+      email: 'rousseau.mariage@email.com'
+    },
+    dateCreation: new Date('2025-01-28'),
+    dateLivraison: new Date('2025-03-15'),
+    items: [
+      {
+        id: 'item-6a',
+        category: 'veste',
+        reference: 'Smoking noir châle',
+        measurements: {
+          longueur: 74,
+          poitrine: 104,
+          taille: 90,
+          epaules: 45,
+          manches: 64
+        },
+        quantity: 1,
+        unitPrice: 150,
+        totalPrice: 150
+      },
+      {
+        id: 'item-6b',
+        category: 'gilet',
+        reference: 'Gilet Bleu',
+        measurements: {
+          longueur: 62,
+          poitrine: 104,
+          taille: 90
+        },
+        quantity: 3,
+        unitPrice: 80,
+        totalPrice: 240
+      },
+      {
+        id: 'item-6c',
+        category: 'pantalon',
+        reference: 'Uni foncé',
+        measurements: {
+          taille: 90,
+          longueur: 105,
+          entrejambe: 80
+        },
+        quantity: 4,
+        unitPrice: 60,
+        totalPrice: 240
+      }
+    ],
+    sousTotal: 630,
+    tva: 126,
+    total: 756,
+    status: 'commandee',
+    type: 'groupe',
+    notes: 'Mariage - 1 marié + 3 témoins',
+    createdBy: 'Alexis',
+    updatedAt: new Date('2025-01-28')
+  },
+  {
+    id: '7',
+    numero: '2025-007',
+    client: {
+      id: '7',
+      nom: 'Cérémonie Martin',
+      prenom: 'Anniversaire 50 ans',
+      telephone: '06 88 77 66 55',
+      email: 'martin.ceremonie@email.com'
+    },
+    dateCreation: new Date('2025-01-30'),
+    dateLivraison: new Date('2025-02-28'),
+    items: [
+      {
+        id: 'item-7a',
+        category: 'veste',
+        reference: 'Costume bleu',
+        measurements: {
+          longueur: 72,
+          poitrine: 98,
+          taille: 86
+        },
+        quantity: 2,
+        unitPrice: 120,
+        totalPrice: 240
+      },
+      {
+        id: 'item-7b',
+        category: 'chapeau',
+        reference: 'Chapeau melon',
+        measurements: {
+          taille: '56'
+        },
+        quantity: 2,
+        unitPrice: 40,
+        totalPrice: 80
+      }
+    ],
+    sousTotal: 320,
+    tva: 64,
+    total: 384,
+    status: 'livree',
+    type: 'groupe',
+    notes: 'Cérémonie familiale - 2 personnes',
+    createdBy: 'Mael',
+    updatedAt: new Date('2025-02-28')
   }
 ];

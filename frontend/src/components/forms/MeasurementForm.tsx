@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar, User, Phone, Mail, Shirt, MessageSquare } from 'lucide-react';
 import { MeasurementForm as MeasurementFormType, Vendeur, TailleChaussure, TailleChapeau } from '@/types/measurement-form';
 import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
+import { StockIndicator } from '@/components/stock/StockIndicator';
 
 interface MeasurementFormProps {
   onSubmit: (form: MeasurementFormType) => void;
@@ -230,6 +231,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">A</div>
               Veste
+              <StockIndicator 
+                selectedReference={form.tenue?.veste?.reference} 
+                selectedSize={form.tenue?.veste?.taille} 
+              />
             </h4>
             <DynamicProductSelector
               category="veste"
@@ -247,6 +252,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
+              <StockIndicator 
+                selectedReference={form.tenue?.gilet?.reference} 
+                selectedSize={form.tenue?.gilet?.taille} 
+              />
             </h4>
             <DynamicProductSelector
               category="gilet"
@@ -264,6 +273,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">C</div>
               Pantalon
+              <StockIndicator 
+                selectedReference={form.tenue?.pantalon?.reference} 
+                selectedSize={form.tenue?.pantalon?.taille} 
+              />
             </h4>
             <DynamicProductSelector
               category="pantalon"
@@ -281,6 +294,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">D</div>
               Ceinture
+              <StockIndicator 
+                selectedReference={form.tenue?.ceinture?.reference} 
+                selectedSize={form.tenue?.ceinture?.taille} 
+              />
             </h4>
             <DynamicProductSelector
               category="accessoire"
