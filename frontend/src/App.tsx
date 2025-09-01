@@ -6,6 +6,7 @@ import { StockManagement } from './pages/StockManagement'
 import { MeasurementForm as MeasurementFormType } from './types/measurement-form'
 import { RentalContract } from './types/rental-contract'
 import { Order } from './types/order'
+import { rentalContractApi } from './services/rental-contract.api'
 import './App.css'
 
 type AppView = 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
@@ -14,9 +15,20 @@ function App() {
   const [currentView, setCurrentView] = useState<AppView>('home');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const handleRentalSubmitComplete = (measurement: MeasurementFormType, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
-    alert(`Bon de location créé avec succès ! Transmis au PC caisse.`);
-    setCurrentView('home');
+  const handleRentalSubmitComplete = async (measurement: MeasurementFormType, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const contractData = {
+        ...contract,
+        status: 'confirme' as const
+      };
+      
+      const createdContract = await rentalContractApi.create(contractData);
+      alert(`Bon de location #${createdContract.numero} créé avec succès ! Transmis au PC caisse.`);
+      setCurrentView('home');
+    } catch (error) {
+      console.error('Erreur lors de la création du contrat:', error);
+      alert('Erreur lors de la création du bon de location. Veuillez réessayer.');
+    }
   };
 
   const handleRentalSaveDraft = (measurement: MeasurementFormType, contract?: Partial<RentalContract>) => {

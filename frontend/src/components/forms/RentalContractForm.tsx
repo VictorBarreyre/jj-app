@@ -21,6 +21,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     dateCreation: new Date(),
     dateEvenement: new Date(),
     dateRetrait: new Date(),
+    dateRetour: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // +3 jours par défaut
     client: {
       nom: '',
       telephone: '',
@@ -78,7 +79,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>);
   };
 
-  const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait;
+  const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait && form.dateRetour;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -91,7 +92,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           </div>
           1. Dates importantes
         </h2>
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 flex-wrap">
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Date de l'événement</Label>
             <Input
@@ -102,11 +103,20 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             />
           </div>
           <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À prendre entre 9h et 18h le</Label>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À prendre le</Label>
             <Input
               type="date"
               value={form.dateRetrait?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateRetrait', new Date(e.target.value))}
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
+            />
+          </div>
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À rendre le</Label>
+            <Input
+              type="date"
+              value={form.dateRetour?.toISOString().split('T')[0] || ''}
+              onChange={(e) => updateForm('dateRetour', new Date(e.target.value))}
               className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
             />
           </div>

@@ -312,6 +312,25 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               onSizeChange={(size) => updateTenueSize(currentClientIndex, 'pantalon', size)}
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'pantalon', color)}
             />
+
+            {/* Longueur pantalon */}
+            {currentClient.tenue.pantalon?.reference && (
+              <div className="mt-4">
+                <Label htmlFor={`longueurPantalon-${currentClientIndex}`} className="block text-left text-sm font-semibold text-gray-700 mb-2">
+                  Longueur pantalon (cm)
+                </Label>
+                <Input
+                  id={`longueurPantalon-${currentClientIndex}`}
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  value={currentClient.tenue.pantalon?.longueur || ''}
+                  onChange={(e) => updateClientTenue(currentClientIndex, 'pantalon', 'longueur', e.target.value)}
+                  placeholder="Ex: 32"
+                  className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
             
             {/* Notes pantalon */}
             {currentClient.tenue.pantalon?.reference && (

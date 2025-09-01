@@ -157,7 +157,7 @@ export function TwoStepRentalForm({
                   <p className="font-medium">{measurementData?.vendeur}</p>
                 </div>
                 <div>
-                  <span className="text-gray-600">Date essai:</span>
+                  <span className="text-gray-600">Date événement:</span>
                   <p className="font-medium">{measurementData?.dateEssai.toLocaleDateString()}</p>
                 </div>
               </div>

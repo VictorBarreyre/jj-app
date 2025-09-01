@@ -205,8 +205,8 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
       <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
         <div className="col-span-2 text-left">Numéro</div>
         <div className="col-span-3 text-left ml-16">Client</div>
+        <div className="col-span-2">Date événement</div>
         <div className="col-span-2">Statut</div>
-        <div className="col-span-2">Date création</div>
         <div className="col-span-1">Articles</div>
         <div className="col-span-1">Total</div>
         <div className="col-span-1">Actions</div>
@@ -245,16 +245,16 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
                 )}
               </div>
 
+              {/* Date événement */}
+              <div className="col-span-2 text-sm text-gray-600">
+                {formatDate(order.dateCreation)}
+              </div>
+
               {/* Statut */}
               <div className="col-span-2">
                 <Badge className={`${statusColors[order.status]} text-white text-xs`}>
                   {statusLabels[order.status]}
                 </Badge>
-              </div>
-
-              {/* Date création */}
-              <div className="col-span-2 text-sm text-gray-600">
-                {formatDate(order.dateCreation)}
               </div>
 
               {/* Nombre d'articles */}
@@ -325,7 +325,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
 
                 <div className="flex items-center gap-1 text-xs text-gray-600">
                   <Calendar className="w-3 h-3 flex-shrink-0" />
-                  <span>Créée le {formatDate(order.dateCreation)}</span>
+                  <span>Événement le {formatDate(order.dateCreation)}</span>
                 </div>
 
                 {order.dateLivraison && (
@@ -391,21 +391,8 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
                 'Aucune commande pour le moment'
               }
             </div>
-            <div className="text-sm text-gray-500">
-              {searchQuery || statusFilter !== 'all' || vendeurFilter !== 'all' || categoryFilter !== 'all' ? 
-                'Essayez de modifier vos critères de recherche' : 
-                'Créez votre première commande pour commencer'
-              }
-            </div>
-            {!searchQuery && statusFilter === 'all' && vendeurFilter === 'all' && categoryFilter === 'all' && (
-              <Button 
-                onClick={onCreateNew} 
-                variant="outline" 
-                className="mt-4"
-              >
-                Créer la première commande
-              </Button>
-            )}
+     
+        
           </div>
         )}
       </div>

@@ -176,7 +176,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <Label htmlFor="dateEssai" className="block text-left text-sm font-semibold text-gray-700 mb-2">Date d'essai</Label>
+            <Label htmlFor="dateEssai" className="block text-left text-sm font-semibold text-gray-700 mb-2">Date d'événement</Label>
             <Input
               id="dateEssai"
               type="date"
@@ -362,6 +362,25 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onSizeChange={(size) => updateTenueSize('pantalon', size)}
               onColorChange={(color) => updateTenueColor('pantalon', color)}
             />
+
+            {/* Longueur pantalon */}
+            {form.tenue?.pantalon?.reference && (
+              <div className="mt-4">
+                <Label htmlFor="longueurPantalon" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+                  Longueur pantalon (cm)
+                </Label>
+                <Input
+                  id="longueurPantalon"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  value={form.tenue?.pantalon?.longueur || ''}
+                  onChange={(e) => updateTenue('pantalon', 'longueur', e.target.value)}
+                  placeholder="Ex: 32"
+                  className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                />
+              </div>
+            )}
             
             {/* Notes pantalon */}
             {form.tenue?.pantalon?.reference && (

@@ -332,7 +332,7 @@ export function ThreeStepRentalForm({
                   <p className="font-medium">{groupData.vendeur}</p>
                 </div>
                 <div>
-                  <span className="text-gray-600">Date essai:</span>
+                  <span className="text-gray-600">Date événement:</span>
                   <p className="font-medium">{groupData.dateEssai.toLocaleDateString()}</p>
                 </div>
               </div>

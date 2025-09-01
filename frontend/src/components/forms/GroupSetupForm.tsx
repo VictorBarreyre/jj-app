@@ -92,7 +92,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
     }
 
     if (!formData.dateEssai) {
-      newErrors.dateEssai = 'Veuillez sélectionner une date d\'essai';
+      newErrors.dateEssai = 'Veuillez sélectionner une date d\'événement';
     }
 
     if (!formData.telephone?.trim()) {
@@ -181,7 +181,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
         <div className="flex flex-col md:flex-row gap-3 md:gap-4">
           <div>
             <Label htmlFor="dateEssai" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-              Date d'essai *
+              Date d'événement *
             </Label>
             <Input
               id="dateEssai"
