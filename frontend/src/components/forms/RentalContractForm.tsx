@@ -21,7 +21,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     dateCreation: new Date(),
     dateEvenement: new Date(),
     dateRetrait: new Date(),
-    dateRetour: new Date(),
     client: {
       nom: '',
       telephone: '',
@@ -32,8 +31,11 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     tarifLocation: 0,
     depotGarantie: 50,
     arrhes: 0,
+    paiementArrhes: {
+      date: new Date().toISOString().split('T')[0],
+      method: undefined
+    },
     status: 'brouillon',
-    rendu: false,
     ...initialData
   });
 
@@ -76,7 +78,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>);
   };
 
-  const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait && form.dateRetour;
+  const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -89,32 +91,23 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           </div>
           1. Dates importantes
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Date de l'événement</Label>
             <Input
               type="date"
               value={form.dateEvenement?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateEvenement', new Date(e.target.value))}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
             />
           </div>
           <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À prendre dès 9h le</Label>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À prendre entre 9h et 18h le</Label>
             <Input
               type="date"
               value={form.dateRetrait?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateRetrait', new Date(e.target.value))}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-          </div>
-          <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À rendre dès 9h le</Label>
-            <Input
-              type="date"
-              value={form.dateRetour?.toISOString().split('T')[0] || ''}
-              onChange={(e) => updateForm('dateRetour', new Date(e.target.value))}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
             />
           </div>
         </div>
@@ -174,14 +167,14 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             </div>
             3. Paiement des arrhes
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div>
               <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Payé le</Label>
               <Input
                 type="date"
                 value={form.paiementArrhes?.date ? new Date(form.paiementArrhes.date).toISOString().split('T')[0] : ''}
                 onChange={(e) => updatePayment('arrhes', 'date', e.target.value)}
-                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
               />
             </div>
             <div>
@@ -190,7 +183,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
                 value={form.paiementArrhes?.method || ''} 
                 onValueChange={(value) => updatePayment('arrhes', 'method', value)}
               >
-                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                <SelectTrigger className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl [&>svg]:ml-3">
                   <SelectValue placeholder="Sélectionner un mode de paiement" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
@@ -204,38 +197,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
         </div>
       )}
 
-      {/* 4. Retour de la tenue */}
-      <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
-          <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
-            <CheckCircle className="w-5 h-5 text-white" />
-          </div>
-          4. Retour de la tenue
-        </h2>
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.rendu || false}
-              onChange={(e) => updateForm('rendu', e.target.checked)}
-              className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 rounded-md"
-            />
-            <span className="text-sm font-semibold text-gray-700">Tenue rendue</span>
-          </label>
-          
-          {form.rendu && (
-            <div className="flex-1 max-w-xs">
-              <Input
-                type="date"
-                value={form.dateRendu ? new Date(form.dateRendu).toISOString().split('T')[0] : ''}
-                onChange={(e) => updateForm('dateRendu', e.target.value)}
-                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-                placeholder="Date de retour"
-              />
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* 5. Notes */}
       <div className="border-b border-gray-200 pb-8">
@@ -243,7 +204,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           <div className="bg-gradient-to-br from-gray-500 to-gray-600 p-2 rounded-lg shadow-md">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          5. Notes
+          4. Notes
         </h2>
         <Textarea
           value={form.notes || ''}

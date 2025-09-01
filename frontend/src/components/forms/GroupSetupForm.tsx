@@ -178,7 +178,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
           1. Informations du groupe
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4">
           <div>
             <Label htmlFor="dateEssai" className="block text-left text-sm font-semibold text-gray-700 mb-2">
               Date d'essai *
@@ -188,7 +188,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
               type="date"
               value={formData.dateEssai?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateBasicInfo('dateEssai', new Date(e.target.value))}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
             />
             {errors.dateEssai && (
               <p className="text-red-500 text-xs mt-1">{errors.dateEssai}</p>
@@ -200,7 +200,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
               Vendeur *
             </Label>
             <Select value={formData.vendeur || ''} onValueChange={(value) => updateBasicInfo('vendeur', value as Vendeur)}>
-              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+              <SelectTrigger className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl [&>svg]:ml-3">
                 <SelectValue placeholder="Sélectionner un vendeur" />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-300 text-gray-900">
