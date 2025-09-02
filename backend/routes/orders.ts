@@ -1,19 +1,29 @@
 import { Router } from 'express';
-import { ordersController } from '../controllers/ordersController';
+import { 
+  getAllOrders, 
+  getOrderById, 
+  createOrder, 
+  updateOrder, 
+  deleteOrder,
+  getOrdersStats 
+} from '../controllers/ordersController';
 
 export const ordersRouter = Router();
 
+// GET /api/orders/stats
+ordersRouter.get('/stats', getOrdersStats);
+
 // GET /api/orders
-ordersRouter.get('/', ordersController.getAllOrders);
+ordersRouter.get('/', getAllOrders);
 
 // GET /api/orders/:id
-ordersRouter.get('/:id', ordersController.getOrderById);
+ordersRouter.get('/:id', getOrderById);
 
 // POST /api/orders
-ordersRouter.post('/', ordersController.createOrder);
+ordersRouter.post('/', createOrder);
 
 // PUT /api/orders/:id
-ordersRouter.put('/:id', ordersController.updateOrder);
+ordersRouter.put('/:id', updateOrder);
 
 // DELETE /api/orders/:id
-ordersRouter.delete('/:id', ordersController.deleteOrder);
+ordersRouter.delete('/:id', deleteOrder);

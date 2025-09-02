@@ -12,11 +12,12 @@ interface AddStockItemModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateStockItemData) => Promise<void>;
+  defaultCategory?: ArticleCategory;
 }
 
-export function AddStockItemModal({ isOpen, onClose, onSubmit }: AddStockItemModalProps) {
+export function AddStockItemModal({ isOpen, onClose, onSubmit, defaultCategory }: AddStockItemModalProps) {
   const [formData, setFormData] = useState<Partial<CreateStockItemData>>({
-    category: undefined,
+    category: defaultCategory,
     reference: '',
     taille: '',
     couleur: '',
@@ -77,7 +78,7 @@ export function AddStockItemModal({ isOpen, onClose, onSubmit }: AddStockItemMod
 
   const resetForm = () => {
     setFormData({
-      category: undefined,
+      category: defaultCategory,
       reference: '',
       taille: '',
       couleur: '',

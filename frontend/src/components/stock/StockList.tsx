@@ -19,9 +19,10 @@ export interface StockListProps {
   onViewMovements: (itemId: string) => void;
   onAddNew: () => void;
   onDelete: (item: StockItem) => void;
+  hideHeader?: boolean;
 }
 
-export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, onDelete }: StockListProps) {
+export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, onDelete, hideHeader }: StockListProps) {
   const getStatusColor = (item: StockItem) => {
     if (item.quantiteDisponible <= 0) return 'bg-red-100 text-red-800 border-red-200';
     if (item.quantiteDisponible <= item.seuilAlerte) return 'bg-orange-100 text-orange-800 border-orange-200';
@@ -36,26 +37,28 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
-      <div className="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-white">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="bg-gradient-to-br from-slate-600 to-slate-700 p-3 rounded-xl shadow-md">
-              <Package className="w-6 h-6 text-white" />
+      {!hideHeader && (
+        <div className="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-white">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="bg-gradient-to-br from-slate-600 to-slate-700 p-3 rounded-xl shadow-md">
+                <Package className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-800">
+                Gestion du stock
+              </h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800">
-              Gestion du stock
-            </h2>
+            <Button 
+              onClick={onAddNew}
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="hidden sm:inline">Nouvel article</span>
+              <span className="sm:hidden">Nouveau</span>
+            </Button>
           </div>
-          <Button 
-            onClick={onAddNew}
-            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Nouvel article</span>
-            <span className="sm:hidden">Nouveau</span>
-          </Button>
         </div>
-      </div>
+      )}
       
       {loading ? (
         <div className="p-12 text-center">

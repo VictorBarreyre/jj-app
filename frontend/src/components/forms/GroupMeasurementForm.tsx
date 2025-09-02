@@ -241,6 +241,9 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               <div className="mt-4">
                 <Input
                   id="longueur-manche"
+                  type="number"
+                  min="0"
+                  step="0.5"
                   value={currentClient.tenue.veste?.longueurManche || ''}
                   onChange={(e) => updateClientTenue(currentClientIndex, 'veste', 'longueurManche', e.target.value)}
                   placeholder="Longueur de manche"

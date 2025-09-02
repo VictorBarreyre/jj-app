@@ -13,6 +13,8 @@ interface OrdersListProps {
   onEdit: (order: Order) => void;
   onDelete: (orderId: string) => void;
   onCreateNew: () => void;
+  hideHeader?: boolean;
+  activeType?: string;
 }
 
 const statusColors: Record<Order['status'], string> = {
@@ -37,19 +39,16 @@ const CATEGORIES = [
   { value: 'chaussures', label: 'Chaussures' }
 ];
 
-export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: OrdersListProps) {
+export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hideHeader, activeType }: OrdersListProps) {
   const [activeTab, setActiveTab] = useState<'individuel' | 'groupe'>('individuel');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [vendeurFilter, setVendeurFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  // Filtrage des commandes
+  // Filtrage des commandes (simplifié, le filtrage par type est fait au niveau parent)
   const filteredOrders = useMemo(() => {
     let filtered = orders;
-
-    // Filtre par type (individuel/groupe)
-    filtered = filtered.filter(order => order.type === activeTab);
 
     // Filtre par recherche (numéro ou nom)
     if (searchQuery.trim()) {
@@ -59,11 +58,6 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
         order.client.nom.toLowerCase().includes(query) ||
         (order.client.prenom && order.client.prenom.toLowerCase().includes(query))
       );
-    }
-
-    // Filtre par statut
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(order => order.status === statusFilter);
     }
 
     // Filtre par vendeur
@@ -80,7 +74,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
 
     // Tri par date de création (plus récent en premier)
     return filtered.sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
-  }, [orders, activeTab, searchQuery, statusFilter, vendeurFilter, categoryFilter]);
+  }, [orders, searchQuery, vendeurFilter, categoryFilter]);
 
   const formatDate = (date: Date | string) => {
     if (!date) return '';
@@ -102,121 +96,162 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-4 sm:p-6 mt-16 sm:mt-20">
-      {/* Onglets */}
-      <div className="border-b border-gray-200 pb-4 mb-6">
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
-          <button
-            onClick={() => setActiveTab('individuel')}
-            className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === 'individuel'
-                ? 'bg-white text-amber-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            👤 Commandes individuelles
-          </button>
-          <button
-            onClick={() => setActiveTab('groupe')}
-            className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === 'groupe'
-                ? 'bg-white text-amber-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            👥 Mariages/Cérémonies
-          </button>
-        </div>
-      </div>
-
-      {/* Actions et recherche */}
-      <div className="border-b border-gray-200 pb-4 sm:pb-6 mb-4 sm:mb-6">
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          {/* Barre de recherche */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-600 w-5 h-5" />
-            <Input
-              placeholder="Rechercher par numéro de commande ou nom client..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-3 bg-white/70 border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-xl focus:border-amber-500 focus:ring-amber-500/20 transition-all shadow-sm"
-            />
+    <div className={hideHeader ? "" : "bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-4 sm:p-6 mt-16 sm:mt-20"}>
+      {!hideHeader && (
+        <>
+          {/* Onglets */}
+          <div className="border-b border-gray-200 pb-4 mb-6">
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+              <button
+                onClick={() => setActiveTab('individuel')}
+                className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  activeTab === 'individuel'
+                    ? 'bg-white text-amber-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                👤 Commandes individuelles
+              </button>
+              <button
+                onClick={() => setActiveTab('groupe')}
+                className={`flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  activeTab === 'groupe'
+                    ? 'bg-white text-amber-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                👥 Mariages/Cérémonies
+              </button>
+            </div>
           </div>
 
-          {/* Filtre par statut */}
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                <SelectValue placeholder="Filtrer par statut" />
+          {/* Actions et recherche */}
+          <div className="border-b border-gray-200 pb-4 sm:pb-6 mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              {/* Barre de recherche */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-600 w-5 h-5" />
+                <Input
+                  placeholder="Rechercher par numéro de commande ou nom client..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-4 py-3 bg-white/70 border-gray-300 text-gray-900 placeholder:text-gray-500 rounded-xl focus:border-amber-500 focus:ring-amber-500/20 transition-all shadow-sm"
+                />
               </div>
-            </SelectTrigger>
-            <SelectContent className="bg-white border-gray-300 text-gray-900">
-              <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="commandee">Commandée</SelectItem>
-              <SelectItem value="livree">Livrée</SelectItem>
-              <SelectItem value="rendue">Rendue</SelectItem>
-            </SelectContent>
-          </Select>
 
-          {/* Filtre par vendeur */}
-          <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
-            <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                <SelectValue placeholder="Filtrer par vendeur" />
-              </div>
-            </SelectTrigger>
-            <SelectContent className="bg-white border-gray-300 text-gray-900">
-              <SelectItem value="all">Tous les vendeurs</SelectItem>
-              {VENDEURS.map(vendeur => (
-                <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              {/* Filtre par vendeur */}
+              <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
+                <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <SelectValue placeholder="Filtrer par vendeur" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="all">Tous les vendeurs</SelectItem>
+                  {VENDEURS.map(vendeur => (
+                    <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-          {/* Filtre par catégorie d'articles */}
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
-              <div className="flex items-center gap-2">
-                <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                <SelectValue placeholder="Filtrer par article" />
-              </div>
-            </SelectTrigger>
-            <SelectContent className="bg-white border-gray-300 text-gray-900">
-              <SelectItem value="all">Tous les articles</SelectItem>
-              {CATEGORIES.map(category => (
-                <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              {/* Filtre par catégorie d'articles */}
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
+                  <div className="flex items-center gap-2">
+                    <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <SelectValue placeholder="Filtrer par article" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="all">Tous les articles</SelectItem>
+                  {CATEGORIES.map(category => (
+                    <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-          {/* Bouton nouvelle commande */}
-          <Button 
-            onClick={onCreateNew} 
-            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Nouvelle prise de mesure
-          </Button>
+              {/* Bouton nouvelle commande */}
+              <Button 
+                onClick={onCreateNew} 
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Nouvelle prise de mesure
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Recherche simplifiée quand hideHeader est actif */}
+      {hideHeader && (
+        <div className="border-b border-gray-100 p-4">
+          <div className="flex gap-3 items-end">
+            {/* Barre de recherche */}
+            <div className="flex-1 min-w-0 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Rechercher par numéro ou nom client..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              />
+            </div>
+            
+            {/* Filtre par vendeur */}
+            <div className="flex-shrink-0">
+              <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
+                <SelectTrigger className="w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
+                  <div className="flex items-center gap-1">
+                    <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <SelectValue placeholder="Vendeur" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="all">Tous vendeurs</SelectItem>
+                  {VENDEURS.map(vendeur => (
+                    <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtre par catégorie d'articles */}
+            <div className="flex-shrink-0">
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
+                  <div className="flex items-center gap-1">
+                    <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <SelectValue placeholder="Article" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="all">Tous articles</SelectItem>
+                  {CATEGORIES.map(category => (
+                    <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
-
-      
-      </div>
-
-      {/* Version desktop - En-tête du tableau */}
-      <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
-        <div className="col-span-2 text-left">Numéro</div>
-        <div className="col-span-3 text-left ml-16">Client</div>
-        <div className="col-span-2">Date événement</div>
-        <div className="col-span-2">Statut</div>
-        <div className="col-span-1">Articles</div>
-        <div className="col-span-1">Total</div>
-        <div className="col-span-1">Actions</div>
-      </div>
+      )}
 
       {/* Contenu de la liste */}
-      <div className="space-y-2">
+      <div className={hideHeader ? "p-6" : ""}>
+        {/* Version desktop - En-tête du tableau */}
+        <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
+          <div className="col-span-2 text-left">Numéro</div>
+          <div className="col-span-3 text-left ml-16">Client</div>
+          <div className="col-span-2">Date événement</div>
+          <div className="col-span-2">Statut</div>
+          <div className="col-span-1">Articles</div>
+          <div className="col-span-1">Total</div>
+          <div className="col-span-1">Actions</div>
+        </div>
+
+        <div className="space-y-2">
         {filteredOrders.map((order) => (
           <div key={order.id} className="border border-gray-200/50 rounded-xl hover:shadow-md transition-all duration-200">
             {/* Version desktop */}
@@ -398,6 +433,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
         
           </div>
         )}
+        </div>
       </div>
     </div>
   );
