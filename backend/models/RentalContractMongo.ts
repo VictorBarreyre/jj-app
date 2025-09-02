@@ -36,6 +36,9 @@ export interface IRentalContractDocument extends Document {
   // Statut
   status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule';
   
+  // Type d'événement
+  type: 'individuel' | 'groupe';
+  
   // Métadonnées
   createdAt: Date;
   updatedAt: Date;
@@ -130,6 +133,13 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
     type: String, 
     enum: ['brouillon', 'confirme', 'retire', 'rendu', 'annule'],
     default: 'brouillon'
+  },
+  
+  // Type d'événement
+  type: {
+    type: String,
+    enum: ['individuel', 'groupe'],
+    default: 'individuel'
   }
 }, {
   timestamps: true, // Ajoute automatiquement createdAt et updatedAt
@@ -140,6 +150,7 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
 rentalContractSchema.index({ 'client.nom': 'text', 'client.telephone': 'text' });
 rentalContractSchema.index({ dateEvenement: 1 });
 rentalContractSchema.index({ status: 1 });
+rentalContractSchema.index({ type: 1 });
 rentalContractSchema.index({ vendeur: 1 });
 
 // Modèle MongoDB

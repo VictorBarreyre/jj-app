@@ -87,6 +87,9 @@ export interface RentalContract {
   // Statut
   status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule';
   
+  // Type d'événement
+  type: 'individuel' | 'groupe';
+  
   // Métadonnées
   createdAt: string;
   updatedAt: string;

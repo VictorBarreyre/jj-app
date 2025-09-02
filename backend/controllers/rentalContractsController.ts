@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { RentalContract, CreateRentalContractData, UpdateRentalContractData } from '../models/RentalContract';
 import { RentalContractModel, ContractNumberingModel } from '../models/RentalContractMongo';
-import { OrderModel, IOrderItem } from '../models/OrderMongo';
 import { createError } from '../middleware/errorHandler';
 
 // Fonction pour générer un numéro de contrat
@@ -27,97 +26,6 @@ const generateContractNumber = async (): Promise<string> => {
   return `${numbering.prefix}-${currentYear}-${number}`;
 };
 
-// Fonction pour créer une commande à partir d'un contrat de location
-const createOrderFromContract = async (contract: any): Promise<void> => {
-  try {
-    // Créer les items de commande à partir de la tenue et des articles de stock
-    const orderItems: IOrderItem[] = [];
-    
-    // Ajouter la tenue si elle existe
-    if (contract.tenue) {
-      if (contract.tenue.veste) {
-        orderItems.push({
-          id: `veste-${Date.now()}`,
-          category: 'veste',
-          reference: contract.tenue.veste.reference,
-          measurements: {
-            longueur: contract.tenue.veste.longueur,
-            longueurManche: contract.tenue.veste.longueurManche,
-            notes: contract.tenue.veste.notes
-          },
-          quantity: 1,
-          notes: contract.tenue.veste.notes
-        });
-      }
-      
-      if (contract.tenue.gilet) {
-        orderItems.push({
-          id: `gilet-${Date.now()}`,
-          category: 'gilet',
-          reference: contract.tenue.gilet.reference,
-          measurements: {
-            longueur: contract.tenue.gilet.longueur,
-            notes: contract.tenue.gilet.notes
-          },
-          quantity: 1,
-          notes: contract.tenue.gilet.notes
-        });
-      }
-      
-      if (contract.tenue.pantalon) {
-        orderItems.push({
-          id: `pantalon-${Date.now()}`,
-          category: 'pantalon',
-          reference: contract.tenue.pantalon.reference,
-          measurements: {
-            longueur: contract.tenue.pantalon.longueur,
-            notes: contract.tenue.pantalon.notes
-          },
-          quantity: 1,
-          notes: contract.tenue.pantalon.notes
-        });
-      }
-    }
-    
-    // Ajouter les articles de stock si ils existent
-    if (contract.articlesStock && contract.articlesStock.length > 0) {
-      for (const item of contract.articlesStock) {
-        orderItems.push({
-          id: `stock-${item.stockItemId}`,
-          category: 'veste', // À adapter selon le type d'article
-          reference: item.reference,
-          measurements: {},
-          quantity: item.quantiteReservee,
-          unitPrice: item.prix,
-          totalPrice: item.prix * item.quantiteReservee
-        });
-      }
-    }
-    
-    // Créer la commande
-    const newOrder = new OrderModel({
-      numero: contract.numero, // Utiliser le même numéro que le contrat
-      client: {
-        nom: contract.client.nom,
-        telephone: contract.client.telephone,
-        email: contract.client.email
-      },
-      dateCreation: contract.dateCreation,
-      dateLivraison: contract.dateEvenement, // Date d'événement = date de livraison
-      items: orderItems,
-      total: contract.tarifLocation,
-      status: 'commandee',
-      type: 'individuel', // Bon de location = commande individuelle
-      notes: `Commande générée automatiquement depuis le bon de location ${contract.numero}. ${contract.notes || ''}`.trim()
-    });
-    
-    await newOrder.save();
-    console.log('✅ Commande créée automatiquement:', newOrder._id);
-  } catch (error) {
-    console.error('❌ Erreur lors de la création de la commande:', error);
-    // Ne pas faire échouer la création du contrat si la commande échoue
-  }
-};
 
 // Fonction utilitaire pour créer automatiquement des mouvements de stock
 const createStockMovements = async (contract: any, type: 'reservation' | 'retour' | 'annulation') => {
@@ -256,24 +164,63 @@ export const rentalContractsController = {
       const numero = await generateContractNumber();
       console.log('✅ Numéro généré:', numero);
       
+      // Nettoyer les données avant sauvegarde
+      const cleanedData: any = { ...contractData };
+      
+      // Supprimer paiementArrhes si amount n'est pas fourni
+      if (cleanedData.paiementArrhes && !cleanedData.paiementArrhes.amount) {
+        cleanedData.paiementArrhes = undefined;
+      }
+      
+      // Supprimer paiementSolde si amount n'est pas fourni
+      if (cleanedData.paiementSolde && !cleanedData.paiementSolde.amount) {
+        cleanedData.paiementSolde = undefined;
+      }
+      
+      // Nettoyer la tenue - supprimer les pièces avec taille vide
+      if (cleanedData.tenue) {
+        const tenue: any = {};
+        if (cleanedData.tenue.veste && cleanedData.tenue.veste.taille) {
+          tenue.veste = cleanedData.tenue.veste;
+        }
+        if (cleanedData.tenue.gilet && cleanedData.tenue.gilet.taille) {
+          tenue.gilet = cleanedData.tenue.gilet;
+        }
+        if (cleanedData.tenue.pantalon && cleanedData.tenue.pantalon.taille) {
+          tenue.pantalon = cleanedData.tenue.pantalon;
+        }
+        if (cleanedData.tenue.tailleChapeau) {
+          tenue.tailleChapeau = cleanedData.tenue.tailleChapeau;
+        }
+        if (cleanedData.tenue.tailleChaussures) {
+          tenue.tailleChaussures = cleanedData.tenue.tailleChaussures;
+        }
+        
+        // Si la tenue a au moins une pièce, l'inclure
+        cleanedData.tenue = Object.keys(tenue).length > 0 ? tenue : undefined;
+      }
+      
+      // Détecter le type d'événement basé sur le nom du client
+      const isGroupe = cleanedData.client.nom.toLowerCase().includes('groupe') || 
+                      cleanedData.client.nom.toLowerCase().includes('mariage') ||
+                      cleanedData.client.nom.toLowerCase().includes('ceremonie') ||
+                      cleanedData.client.nom.toLowerCase().includes('personnes');
+      
       // Créer le nouveau contrat
       const contractToSave = {
-        ...contractData,
+        ...cleanedData,
         numero,
-        dateCreation: contractData.dateCreation || new Date(),
-        dateEvenement: new Date(contractData.dateEvenement),
-        dateRetrait: new Date(contractData.dateRetrait),
-        dateRetour: new Date(contractData.dateRetour),
+        type: isGroupe ? 'groupe' : 'individuel',
+        dateCreation: cleanedData.dateCreation || new Date(),
+        dateEvenement: new Date(cleanedData.dateEvenement),
+        dateRetrait: new Date(cleanedData.dateRetrait),
+        dateRetour: new Date(cleanedData.dateRetour),
       };
       console.log('💾 Contrat à sauvegarder:', JSON.stringify(contractToSave, null, 2));
       
       const newContract = new RentalContractModel(contractToSave);
       const savedContract = await newContract.save();
       console.log('✅ Contrat sauvegardé avec ID:', savedContract._id);
-      
-      // Créer automatiquement une commande correspondante
-      console.log('📋 Création de la commande associée...');
-      await createOrderFromContract(savedContract);
       
       // Créer automatiquement les mouvements de stock si des articles sont spécifiés
       if (savedContract.articlesStock && savedContract.articlesStock.length > 0) {

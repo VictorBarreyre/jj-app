@@ -4,11 +4,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { connectDB } from './config/database';
-import { ordersRouter } from './routes/orders';
 import { measurementsRouter } from './routes/measurements';
 import { contractsRouter } from './routes/contracts';
 import { stockRouter } from './routes/stock';
-import groupRentalsRouter from './routes/groupRentals';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -34,11 +32,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/orders', ordersRouter);
 app.use('/api/measurements', measurementsRouter);
 app.use('/api/contracts', contractsRouter);
 app.use('/api/stock', stockRouter);
-app.use('/api/group-rentals', groupRentalsRouter);
 
 // Error handling
 app.use(errorHandler);
