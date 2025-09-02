@@ -36,7 +36,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
       {!hideHeader && (
         <div className="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-white">
           <div className="flex justify-between items-center">
@@ -168,7 +168,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
               if (categoryItems.length === 0) return null;
               
               return (
-                <div key={category} className="mb-8 last:mb-0 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-200">
+                <div key={category} className="mb-8 last:mb-0 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-lg hover:shadow-lg transition-shadow duration-200">
                   {/* En-tête de catégorie */}
                   <div className="bg-gradient-to-r from-slate-100 to-slate-50 border-b border-slate-200 px-8 py-5">
                     <div className="flex items-center justify-between">
@@ -181,7 +181,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                            'Accessoires'}
                         </h3>
                       </div>
-                      <div className="bg-white px-5 py-2.5 rounded-xl border border-slate-300 shadow-md">
+                      <div className="px-5 py-2.5">
                         <span className="text-slate-700 font-semibold text-sm">
                           {categoryItems.length} article{categoryItems.length > 1 ? 's' : ''} • {categoryItems.reduce((total, item) => total + item.quantiteStock, 0)} pièce{categoryItems.reduce((total, item) => total + item.quantiteStock, 0) > 1 ? 's' : ''} en stock
                         </span>

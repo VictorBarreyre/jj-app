@@ -253,7 +253,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
 
         <div className="space-y-2">
         {filteredOrders.map((order) => (
-          <div key={order.id} className="border border-gray-200/50 rounded-xl hover:shadow-md transition-all duration-200">
+          <div key={order.id} className="border border-gray-200/50 rounded-xl hover:shadow-lg transition-shadow duration-200">
             {/* Version desktop */}
             <div className="hidden md:grid grid-cols-12 gap-4 p-3 lg:p-4 hover:bg-gray-50/30 transition-all duration-200">
               {/* Numéro */}
