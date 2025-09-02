@@ -6,7 +6,7 @@ import { StockList } from '@/components/stock/StockList';
 import { AddStockItemModal } from '@/components/stock/AddStockItemModal';
 import { DeleteStockItemModal } from '@/components/stock/DeleteStockItemModal';
 import { Button } from '@/components/ui/button';
-import { Shirt, ShirtIcon, CircleDot, Crown, Plus } from 'lucide-react';
+import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type StockCategory = 'veste' | 'gilet' | 'pantalon' | 'accessoire';
 
@@ -22,6 +22,9 @@ export function StockManagement() {
   const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<StockCategory>('veste');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   
   // Filtres (simplifiés car on filtre par onglet)
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,9 +40,14 @@ export function StockManagement() {
   const [itemToDelete, setItemToDelete] = useState<StockItem | null>(null);
   
   useEffect(() => {
+    setCurrentPage(1); // Reset to first page when category changes
     loadStockData();
     loadAlerts();
   }, [activeCategory]);
+
+  useEffect(() => {
+    loadStockData();
+  }, [currentPage]);
 
   const loadStockData = async () => {
     setLoading(true);
@@ -48,10 +56,14 @@ export function StockManagement() {
       if (searchTerm) params.append('search', searchTerm);
       params.append('category', activeCategory); // Filtre par catégorie active
       if (tailleFilter) params.append('taille', tailleFilter);
+      params.append('page', currentPage.toString());
+      params.append('limit', '100'); // Load more per page for better UX
 
       const response = await fetch(`http://localhost:3001/api/stock/items?${params}`);
       const data = await response.json();
       setStockItems(data.items || []);
+      setTotalPages(data.totalPages || 1);
+      setTotalItems(data.total || 0);
     } catch (error) {
       console.error('Erreur lors du chargement du stock:', error);
     } finally {
@@ -96,26 +108,46 @@ export function StockManagement() {
     }
   };
 
-  // Charger tous les articles pour calculer les compteurs
-  const [allStockItems, setAllStockItems] = useState<StockItem[]>([]);
+  // Stocker les compteurs par catégorie (évite de charger tous les articles)
+  const [categoryCounts, setCategoryCounts] = useState<Record<StockCategory, number>>({
+    veste: 0,
+    gilet: 0,
+    pantalon: 0,
+    accessoire: 0
+  });
 
-  const loadAllStockData = async () => {
+  const loadCategoryCounts = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/stock/items`);
+      const response = await fetch(`http://localhost:3001/api/stock/items/counts`);
       const data = await response.json();
-      setAllStockItems(data.items || []);
+      setCategoryCounts(data.counts || {
+        veste: 0,
+        gilet: 0,
+        pantalon: 0,
+        accessoire: 0
+      });
     } catch (error) {
-      console.error('Erreur lors du chargement de tous les articles:', error);
+      console.error('Erreur lors du chargement des compteurs:', error);
+      // Fallback: compter via l'API existante si l'endpoint counts n'existe pas
+      const categories: StockCategory[] = ['veste', 'gilet', 'pantalon', 'accessoire'];
+      const counts: Record<StockCategory, number> = { veste: 0, gilet: 0, pantalon: 0, accessoire: 0 };
+      
+      for (const category of categories) {
+        const response = await fetch(`http://localhost:3001/api/stock/items?category=${category}&count_only=true`);
+        const data = await response.json();
+        counts[category] = data.total || 0;
+      }
+      setCategoryCounts(counts);
     }
   };
 
   useEffect(() => {
-    loadAllStockData();
+    loadCategoryCounts();
   }, []);
 
   // Calculer les compteurs pour chaque catégorie
   const getCategoryCount = (category: StockCategory) => {
-    return allStockItems.filter(item => item.category === category).length;
+    return categoryCounts[category] || 0;
   };
 
   // Définir les onglets avec leurs icônes
@@ -176,6 +208,7 @@ export function StockManagement() {
 
   const handleCategoryChange = (category: StockCategory) => {
     setActiveCategory(category);
+    setCurrentPage(1); // Reset to first page
     setSearchTerm(''); // Reset search when changing category
     setTailleFilter(''); // Reset size filter when changing category
     setShowAlertsOnly(false); // Reset alerts filter when changing category
@@ -307,6 +340,37 @@ export function StockManagement() {
           onDelete={handleDeleteItem}
           hideHeader={true} // Nouvelle prop pour masquer l'en-tête
         />
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div className="text-sm text-gray-700">
+              Page {currentPage} sur {totalPages} • {totalItems} article{totalItems > 1 ? 's' : ''} au total
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage <= 1}
+                className="flex items-center gap-1"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Précédent
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage >= totalPages}
+                className="flex items-center gap-1"
+              >
+                Suivant
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modales */}

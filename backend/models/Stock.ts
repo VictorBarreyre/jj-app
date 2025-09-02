@@ -16,7 +16,6 @@ export interface IStockItem extends Document {
   quantiteReservee: number;   // Quantité réservée (louée)
   quantiteDisponible: number; // Calculé: stock - réservée
   seuilAlerte: number;        // Seuil en dessous duquel une alerte est déclenchée
-  prix: number;               // Prix de location
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,11 +70,6 @@ const stockItemSchema = new Schema<IStockItem>({
     required: true,
     min: 0,
     default: 5
-  },
-  prix: {
-    type: Number,
-    required: true,
-    min: 0
   }
 }, {
   timestamps: true

@@ -127,8 +127,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                   </div>
                 </div>
                 
-                <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-                  <span className="font-semibold text-sm text-gray-900">{item.prix}€</span>
+                <div className="flex justify-end items-center pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-1">
                     <Button 
                       size="sm" 
@@ -199,7 +198,6 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Réservé</th>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Disponible</th>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Statut</th>
-                          <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Prix</th>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
@@ -238,9 +236,6 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                               <Badge className={`${getStatusColor(item)} border text-xs font-semibold`}>
                                 {getStatusText(item)}
                               </Badge>
-                            </td>
-                            <td className="px-4 lg:px-6 py-3 lg:py-4">
-                              <span className="font-bold text-gray-900 text-sm lg:text-base">{item.prix}€</span>
                             </td>
                             <td className="px-4 lg:px-6 py-3 lg:py-4">
                               <div className="flex items-center gap-1 lg:gap-2">

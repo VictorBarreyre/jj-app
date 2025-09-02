@@ -22,8 +22,7 @@ export function AddStockItemModal({ isOpen, onClose, onSubmit, defaultCategory }
     taille: '',
     couleur: '',
     quantiteStock: 1,
-    seuilAlerte: 2,
-    prix: 0
+    seuilAlerte: 2
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,8 +82,7 @@ export function AddStockItemModal({ isOpen, onClose, onSubmit, defaultCategory }
       taille: '',
       couleur: '',
       quantiteStock: 1,
-      seuilAlerte: 2,
-      prix: 0
+      seuilAlerte: 2
     });
     setError('');
     setIsSubmitting(false);
@@ -110,10 +108,6 @@ export function AddStockItemModal({ isOpen, onClose, onSubmit, defaultCategory }
       return;
     }
 
-    if (formData.prix! < 0) {
-      setError('Le prix ne peut pas être négatif');
-      return;
-    }
 
     setIsSubmitting(true);
     try {
@@ -214,20 +208,6 @@ export function AddStockItemModal({ isOpen, onClose, onSubmit, defaultCategory }
             />
           </div>
 
-          <div>
-            <Label htmlFor="prix" className="text-sm font-semibold text-gray-700 mb-2 block">
-              Prix de location (€)
-            </Label>
-            <Input
-              id="prix"
-              type="number"
-              min="0"
-              step="0.01"
-              value={formData.prix || ''}
-              onChange={(e) => handleInputChange('prix', parseFloat(e.target.value) || 0)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-          </div>
         </div>
 
         {/* Actions */}

@@ -81,84 +81,83 @@ const checkStockAlerts = async (): Promise<void> => {
   }
 };
 
-// Endpoint pour initialiser des données d'exemple
+// Endpoint pour initialiser le stock basé sur le catalogue de produits
 const seedDatabase = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Vérifier si des données existent déjà
-    const existingItems = await StockItem.countDocuments();
-    if (existingItems > 0) {
-      return res.json({ message: 'Base de données déjà initialisée', count: existingItems });
-    }
-
-    // Créer des articles d'exemple
-    const sampleItems = [
-      {
-        category: 'veste',
-        subCategory: 'jaquette',
-        reference: 'jaquette-fff',
-        taille: '48',
-        couleur: 'Noir',
-        quantiteStock: 5,
-        quantiteReservee: 1,
-        quantiteDisponible: 4,
-        seuilAlerte: 2,
-        prix: 150
-      },
-      {
-        category: 'veste',
-        subCategory: 'costume-ville',
-        reference: 'costume-bleu',
-        taille: '44N',
-        couleur: 'Bleu marine',
-        quantiteStock: 3,
-        quantiteReservee: 0,
-        quantiteDisponible: 3,
-        seuilAlerte: 2,
-        prix: 120
-      },
-      {
-        category: 'gilet',
-        reference: 'gilet-clair',
-        taille: '42N',
-        couleur: 'Clair',
-        quantiteStock: 2,
-        quantiteReservee: 0,
-        quantiteDisponible: 2,
-        seuilAlerte: 3,
-        prix: 80
-      },
-      {
-        category: 'pantalon',
-        reference: 'pantalon-sp',
-        taille: '42 82',
-        couleur: 'SP',
-        quantiteStock: 4,
-        quantiteReservee: 1,
-        quantiteDisponible: 3,
-        seuilAlerte: 2,
-        prix: 60
-      },
-      {
-        category: 'accessoire',
-        reference: 'ceinture-scratch',
-        taille: '42',
-        couleur: 'Noir',
-        quantiteStock: 10,
-        quantiteReservee: 2,
-        quantiteDisponible: 8,
-        seuilAlerte: 3,
-        prix: 25
+    console.log('🚀 Initialisation du stock basé sur le catalogue de produits...');
+    
+    // Importer le catalogue de produits
+    const { PRODUCT_CATALOG } = await import('../config/productCatalog');
+    
+    // Supprimer tous les articles existants pour repartir à zéro
+    await StockItem.deleteMany({});
+    console.log('🗑️ Articles existants supprimés');
+    
+    const stockItemsToCreate = [];
+    
+    // Parcourir chaque produit du catalogue
+    for (const product of PRODUCT_CATALOG) {
+      console.log(`📦 Traitement du produit: ${product.name} (${product.id})`);
+      
+      // Créer un article de stock pour chaque taille disponible
+      for (const taille of product.availableSizes) {
+        // Mapper la subCategory pour respecter l'enum du modèle
+        let mappedSubCategory;
+        if (product.category === 'veste') {
+          // Mapper les sous-catégories de veste selon l'enum accepté
+          if (product.subCategory.includes('jaquette')) {
+            mappedSubCategory = 'jaquette';
+          } else if (product.subCategory.includes('costume')) {
+            mappedSubCategory = 'costume-ville';
+          } else if (product.subCategory.includes('smoking')) {
+            mappedSubCategory = 'smoking';
+          } else if (product.subCategory.includes('habit') || product.subCategory.includes('queue')) {
+            mappedSubCategory = 'habit-queue-de-pie';
+          } else {
+            mappedSubCategory = 'autre';
+          }
+        } else {
+          // Pour les autres catégories, pas de subCategory requise
+          mappedSubCategory = undefined;
+        }
+        
+        const stockItem = {
+          category: product.category,
+          subCategory: mappedSubCategory,
+          reference: product.id,
+          taille: taille,
+          couleur: product.colors?.[0] || '', // Première couleur disponible ou vide
+          quantiteStock: 1, // Une pièce par défaut
+          quantiteReservee: 0,
+          quantiteDisponible: 1,
+          seuilAlerte: 1 // Alerte dès qu'il n'y a plus de stock
+        };
+        
+        stockItemsToCreate.push(stockItem);
       }
-    ];
-
-    const createdItems = await StockItem.insertMany(sampleItems);
+    }
+    
+    console.log(`📊 Création de ${stockItemsToCreate.length} articles de stock...`);
+    
+    // Insérer tous les articles en lot pour optimiser les performances
+    const createdItems = await StockItem.insertMany(stockItemsToCreate);
+    
+    console.log('✅ Stock initialisé avec succès !');
     
     res.json({
-      message: 'Base de données initialisée avec succès',
-      count: createdItems.length,
-      items: createdItems
+      message: 'Stock initialisé automatiquement depuis le catalogue de produits',
+      totalItems: createdItems.length,
+      breakdown: {
+        produitsCatalogue: PRODUCT_CATALOG.length,
+        articlesParProduit: 'Variable selon tailles disponibles',
+        quantiteParArticle: 1,
+        seuilAlerteDefaut: 1
+      },
+      note: 'Une pièce par référence et par taille a été créée'
     });
+    
   } catch (error) {
+    console.error('❌ Erreur lors de l\'initialisation du stock:', error);
     next(error);
   }
 };
@@ -302,10 +301,45 @@ export const stockController = {
       next(error);
     }
   },
+  // GET /api/stock/items/counts
+  getCategoryCounts: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const counts = await StockItem.aggregate([
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+      
+      // Initialize all categories with 0
+      const categoryCounts = {
+        veste: 0,
+        gilet: 0,
+        pantalon: 0,
+        accessoire: 0
+      };
+      
+      // Fill with actual counts
+      counts.forEach(item => {
+        if (categoryCounts.hasOwnProperty(item._id)) {
+          categoryCounts[item._id as keyof typeof categoryCounts] = item.count;
+        }
+      });
+      
+      res.json({
+        counts: categoryCounts
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   // GET /api/stock/items
   getAllStockItems: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { category, reference, taille, search } = req.query;
+      const { category, reference, taille, search, page = '1', limit = '50' } = req.query;
       
       let filter: any = {};
       
@@ -330,9 +364,19 @@ export const stockController = {
         ];
       }
       
-      const stockItems = await StockItem.find(filter);
+      const pageNum = Math.max(1, parseInt(page.toString()));
+      const limitNum = Math.min(200, Math.max(1, parseInt(limit.toString()))); // Max 200 items
+      const skip = (pageNum - 1) * limitNum;
       
-      await checkStockAlerts();
+      const [stockItems, totalCount] = await Promise.all([
+        StockItem.find(filter).skip(skip).limit(limitNum).sort({ reference: 1, taille: 1 }),
+        StockItem.countDocuments(filter)
+      ]);
+      
+      // Only check alerts if we're on first page to avoid performance issues
+      if (pageNum === 1) {
+        await checkStockAlerts();
+      }
       
       // Mapper _id vers id pour React
       const itemsWithId = stockItems.map(item => ({
@@ -346,14 +390,17 @@ export const stockController = {
         quantiteReservee: item.quantiteReservee,
         quantiteDisponible: item.quantiteDisponible,
         seuilAlerte: item.seuilAlerte,
-        prix: item.prix,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt
       }));
       
       res.json({
         items: itemsWithId,
-        total: itemsWithId.length
+        total: totalCount,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(totalCount / limitNum),
+        hasMore: skip + itemsWithId.length < totalCount
       });
     } catch (error) {
       next(error);

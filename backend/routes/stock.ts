@@ -8,6 +8,7 @@ router.get('/catalog', stockController.getCatalog);
 router.get('/sizes', stockController.getAvailableSizes);
 router.get('/references/:category', stockController.getReferencesByCategory);
 router.get('/sizes-for-reference/:referenceId', stockController.getSizesForReference);
+router.get('/items/counts', stockController.getCategoryCounts);
 router.get('/items', stockController.getAllStockItems);
 router.get('/availability/:date', stockController.getAvailabilityAtDate);
 router.get('/movements', stockController.getAllMovements);
