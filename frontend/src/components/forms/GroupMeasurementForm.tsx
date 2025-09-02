@@ -236,16 +236,22 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'veste', color)}
             />
             
-            {/* Longueur de manche et notes veste */}
+            {/* Longueur de manche */}
             {currentClient.tenue.veste?.reference && (
-              <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+              <div className="mt-4">
                 <Input
                   id="longueur-manche"
                   value={currentClient.tenue.veste?.longueurManche || ''}
                   onChange={(e) => updateClientTenue(currentClientIndex, 'veste', 'longueurManche', e.target.value)}
-                  placeholder="Longueur de manche (optionnel)"
+                  placeholder="Longueur de manche"
                   className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
                 />
+              </div>
+            )}
+            
+            {/* Notes veste */}
+            {currentClient.tenue.veste?.reference && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
                 <Textarea
                   value={currentClient.tenue.veste?.notes || ''}
                   onChange={(e) => updateClientTenue(currentClientIndex, 'veste', 'notes', e.target.value)}
@@ -316,9 +322,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
             {/* Longueur pantalon */}
             {currentClient.tenue.pantalon?.reference && (
               <div className="mt-4">
-                <Label htmlFor={`longueurPantalon-${currentClientIndex}`} className="block text-left text-sm font-semibold text-gray-700 mb-2">
-                  Longueur pantalon (cm)
-                </Label>
                 <Input
                   id={`longueurPantalon-${currentClientIndex}`}
                   type="number"
@@ -326,8 +329,8 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
                   step="0.5"
                   value={currentClient.tenue.pantalon?.longueur || ''}
                   onChange={(e) => updateClientTenue(currentClientIndex, 'pantalon', 'longueur', e.target.value)}
-                  placeholder="Ex: 32"
-                  className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                  placeholder="Longueur du pantalon"
+                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
                 />
               </div>
             )}

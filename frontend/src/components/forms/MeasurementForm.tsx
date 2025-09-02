@@ -371,13 +371,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onColorChange={(color) => updateTenueColor('pantalon', color)}
             />
 
-            {/* Longueur pantalon */}
+            {/* Longueur pantalon et notes pantalon */}
             {form.tenue?.pantalon?.reference && (
               <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
                 <div>
-                  <Label htmlFor="longueurPantalon" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-                    Longueur pantalon (cm)
-                  </Label>
                   <Input
                     id="longueurPantalon"
                     type="number"
@@ -385,15 +382,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                     step="0.5"
                     value={form.tenue?.pantalon?.longueur || ''}
                     onChange={(e) => updateTenue('pantalon', 'longueur', e.target.value)}
-                    placeholder="Ex: 32"
+                    placeholder="Longueur du pantalon (cm)"
                     className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
                   />
                 </div>
-            )}
-            
-            {/* Notes pantalon */}
-            {form.tenue?.pantalon?.reference && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
                 <Textarea
                   value={form.tenue?.pantalon?.notes || ''}
                   onChange={(e) => updateTenue('pantalon', 'notes', e.target.value)}

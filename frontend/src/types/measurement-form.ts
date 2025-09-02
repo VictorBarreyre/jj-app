@@ -33,7 +33,7 @@ export interface TenueMeasurement {
   pantalon?: {
     reference: string; // ID de la référence depuis l'API
     taille: string; // Taille dynamique depuis l'API
-    longueur?: LongueurVetement;
+    longueur?: string; // Longueur de pantalon personnalisée en cm
     couleur?: string;
     notes?: string; // Notes spécifiques au pantalon
   };
