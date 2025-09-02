@@ -93,8 +93,8 @@ export interface Order {
   id: string;
   numero: string; // Numéro de commande unique
   client: ClientInfo;
-  dateCreation: Date;
-  dateLivraison?: Date;
+  dateCreation: Date | string;
+  dateLivraison?: Date | string;
   items: OrderItem[];
   sousTotal?: number;
   tva?: number;
@@ -103,7 +103,7 @@ export interface Order {
   type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
   createdBy?: string; // ID de l'utilisateur qui a créé la commande
-  updatedAt?: Date;
+  updatedAt?: Date | string;
 }
 
 // Interface pour la création d'une nouvelle commande

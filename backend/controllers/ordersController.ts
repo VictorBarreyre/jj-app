@@ -3,8 +3,66 @@ import { Order, CreateOrderData, UpdateOrderData } from '../models/Order';
 import { createError } from '../middleware/errorHandler';
 import { v4 as uuidv4 } from 'uuid';
 
-// Simulation d'une base de données en mémoire
-let orders: Order[] = [];
+// Simulation d'une base de données en mémoire avec des données de test
+let orders: Order[] = [
+  {
+    id: "1",
+    numero: "JJ-2024-001",
+    client: {
+      nom: "Martin",
+      prenom: "Jean",
+      telephone: "01 23 45 67 89",
+      email: "jean.martin@email.com"
+    },
+    dateCreation: new Date("2024-01-15"),
+    dateLivraison: new Date("2024-02-05"),
+    status: "commandee",
+    type: "individuel",
+    items: [
+      {
+        id: "1",
+        category: "veste",
+        reference: "costume-3-pieces",
+        measurements: {},
+        quantity: 1,
+        unitPrice: 450,
+        totalPrice: 450
+      }
+    ],
+    total: 450,
+    notes: "Client préfère les revers étroits",
+    createdBy: "Sophie",
+    createdAt: "2024-01-15T10:00:00Z",
+    updatedAt: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "2",
+    numero: "JJ-2024-002",
+    client: {
+      nom: "Dupont",
+      prenom: "Marie",
+      telephone: "01 98 76 54 32"
+    },
+    dateCreation: new Date("2024-01-16"),
+    status: "commandee",
+    type: "individuel",
+    items: [
+      {
+        id: "2",
+        category: "veste",
+        reference: "robe-soiree",
+        measurements: {},
+        quantity: 1,
+        unitPrice: 350,
+        totalPrice: 350
+      }
+    ],
+    total: 350,
+    createdBy: "Laurent",
+    createdAt: "2024-01-16T14:30:00Z",
+    updatedAt: "2024-01-16T14:30:00Z"
+  }
+] as any[];
 
 export const ordersController = {
   // GET /api/orders

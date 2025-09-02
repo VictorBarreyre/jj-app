@@ -286,16 +286,24 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onColorChange={(color) => updateTenueColor('veste', color)}
             />
             
-            {/* Longueur de manche et notes veste */}
+            {/* Longueur de manche et notes veste */} 
             {form.tenue?.veste?.reference && (
               <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
-                <Input
-                  id="longueur-manche-single"
-                  value={form.tenue?.veste?.longueurManche || ''}
-                  onChange={(e) => updateTenue('veste', 'longueurManche', e.target.value)}
-                  placeholder="Longueur de manche (optionnel)"
-                  className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
-                />
+                <div>
+                  <Label htmlFor="longueurManche" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+                    Longueur de manche (cm)
+                  </Label>
+                  <Input
+                    id="longueurManche"
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={form.tenue?.veste?.longueurManche || ''}
+                    onChange={(e) => updateTenue('veste', 'longueurManche', e.target.value)}
+                    placeholder="Ex: 60"
+                    className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                  />
+                </div>
                 <Textarea
                   value={form.tenue?.veste?.notes || ''}
                   onChange={(e) => updateTenue('veste', 'notes', e.target.value)}
@@ -365,21 +373,22 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
             {/* Longueur pantalon */}
             {form.tenue?.pantalon?.reference && (
-              <div className="mt-4">
-                <Label htmlFor="longueurPantalon" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-                  Longueur pantalon (cm)
-                </Label>
-                <Input
-                  id="longueurPantalon"
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  value={form.tenue?.pantalon?.longueur || ''}
-                  onChange={(e) => updateTenue('pantalon', 'longueur', e.target.value)}
-                  placeholder="Ex: 32"
-                  className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-                />
-              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                <div>
+                  <Label htmlFor="longueurPantalon" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+                    Longueur pantalon (cm)
+                  </Label>
+                  <Input
+                    id="longueurPantalon"
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={form.tenue?.pantalon?.longueur || ''}
+                    onChange={(e) => updateTenue('pantalon', 'longueur', e.target.value)}
+                    placeholder="Ex: 32"
+                    className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                  />
+                </div>
             )}
             
             {/* Notes pantalon */}

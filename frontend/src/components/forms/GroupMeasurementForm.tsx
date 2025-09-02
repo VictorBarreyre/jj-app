@@ -162,7 +162,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
           </button>
           
           <div className="text-sm text-gray-600 bg-amber-50 px-3 py-1 rounded-full">
-            Groupe : {updatedGroup.groupName}
+            {updatedGroup.groupName}
           </div>
         </div>
 

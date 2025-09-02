@@ -82,12 +82,15 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew }: Or
     return filtered.sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
   }, [orders, activeTab, searchQuery, statusFilter, vendeurFilter, categoryFilter]);
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
+    if (!date) return '';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) return '';
     return new Intl.DateTimeFormat('fr-FR', {
       day: '2-digit',
       month: '2-digit', 
       year: 'numeric'
-    }).format(date);
+    }).format(dateObj);
   };
 
   const formatPrice = (price?: number) => {

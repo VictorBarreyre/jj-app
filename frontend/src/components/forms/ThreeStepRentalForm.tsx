@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { GroupSetupForm } from './GroupSetupForm';
 import { GroupMeasurementForm } from './GroupMeasurementForm';
 import { RentalContractForm } from './RentalContractForm';
-import { AutoSaveIndicator } from '@/components/ui/AutoSaveIndicator';
 import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, RotateCcw } from 'lucide-react';
 
 // Clés pour localStorage
 const STORAGE_KEYS = {
@@ -62,19 +61,24 @@ const clearFormStorage = () => {
     Object.values(STORAGE_KEYS).forEach(key => {
       localStorage.removeItem(key);
     });
+    // Nettoyer aussi le localStorage du GroupSetupForm
+    localStorage.removeItem('group_setup_form_data');
   } catch (error) {
     console.warn('Erreur lors du nettoyage du localStorage:', error);
   }
 };
 
-export function ThreeStepRentalForm({ 
+export const ThreeStepRentalForm = forwardRef<
+  { resetForm: () => void },
+  ThreeStepRentalFormProps
+>(function ThreeStepRentalForm({ 
   onSubmitComplete, 
   onSaveDraft, 
   onPrint, 
   onStepChange,
   initialGroup, 
   initialContract 
-}: ThreeStepRentalFormProps) {
+}, ref) {
   // Initialiser les états avec les données du localStorage ou les valeurs par défaut
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(() => {
     const savedStep = loadFromStorage<number>(STORAGE_KEYS.CURRENT_STEP);
@@ -91,7 +95,7 @@ export function ThreeStepRentalForm({
     return savedData || null;
   });
   
-  const [showAutoSaveIndicator, setShowAutoSaveIndicator] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
   // Sauvegarde automatique des données
   const saveCurrentData = () => {
@@ -108,13 +112,6 @@ export function ThreeStepRentalForm({
   useEffect(() => {
     if (groupData || contractData || currentStep > 1) {
       saveCurrentData();
-      // Afficher brièvement l'indicateur puis le masquer
-      setShowAutoSaveIndicator(true);
-      const timeout = setTimeout(() => {
-        setShowAutoSaveIndicator(false);
-      }, 2000); // Masquer après 2 secondes
-      
-      return () => clearTimeout(timeout);
     }
   }, [currentStep, groupData, contractData]);
 
@@ -259,28 +256,22 @@ export function ThreeStepRentalForm({
     setCurrentStep(1);
     setGroupData(null);
     setContractData(null);
+    setFormKey(prev => prev + 1); // Force le re-render des composants
     clearFormStorage();
   };
 
+  // Exposer la fonction resetForm au parent
+  useImperativeHandle(ref, () => ({
+    resetForm
+  }));
+
   return (
     <div className="mx-auto">
-      {/* Indicateurs et boutons en haut */}
-      {(groupData || contractData || currentStep > 1) && (
-        <div className="mb-4 flex justify-between items-center">
-          <AutoSaveIndicator isVisible={showAutoSaveIndicator} />
-          <button
-            onClick={resetForm}
-            className="px-3 py-1.5 text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            Nouveau formulaire
-          </button>
-        </div>
-      )}
-      
       {/* Contenu de l'étape */}
       <div className="bg-white rounded-lg">
         {currentStep === 1 && (
           <GroupSetupForm
+            key={formKey}
             onSubmit={handleGroupSetupSubmit}
             onSave={handleGroupSetupSave}
             initialData={initialGroup}
@@ -359,4 +350,4 @@ export function ThreeStepRentalForm({
       </div>
     </div>
   );
-}
+});
