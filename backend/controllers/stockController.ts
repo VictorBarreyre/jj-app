@@ -336,6 +336,116 @@ export const stockController = {
     }
   },
 
+  // GET /api/stock/items/grouped - Nouveau endpoint pour affichage groupé par référence
+  getGroupedStockItems: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { category, search, taille, page = '1', limit = '20' } = req.query;
+      
+      let matchFilter: any = {};
+      
+      if (category && category !== 'all') {
+        matchFilter.category = category;
+      }
+      
+      if (taille) {
+        matchFilter.taille = taille;
+      }
+      
+      if (search) {
+        const searchTerm = search.toString();
+        matchFilter.$or = [
+          { reference: { $regex: searchTerm, $options: 'i' } },
+          { taille: { $regex: searchTerm, $options: 'i' } },
+          { couleur: { $regex: searchTerm, $options: 'i' } }
+        ];
+      }
+      
+      const pageNum = Math.max(1, parseInt(page.toString()));
+      const limitNum = Math.min(50, Math.max(1, parseInt(limit.toString())));
+      const skip = (pageNum - 1) * limitNum;
+      
+      // Agrégation pour grouper par référence
+      const groupedItems = await StockItem.aggregate([
+        { $match: matchFilter },
+        {
+          $group: {
+            _id: {
+              reference: '$reference',
+              category: '$category',
+              subCategory: '$subCategory',
+              couleur: '$couleur'
+            },
+            items: {
+              $push: {
+                id: { $toString: '$_id' },
+                taille: '$taille',
+                quantiteStock: '$quantiteStock',
+                quantiteReservee: '$quantiteReservee',
+                quantiteDisponible: '$quantiteDisponible',
+                seuilAlerte: '$seuilAlerte',
+                createdAt: '$createdAt',
+                updatedAt: '$updatedAt'
+              }
+            },
+            totalStock: { $sum: '$quantiteStock' },
+            totalReserved: { $sum: '$quantiteReservee' },
+            totalAvailable: { $sum: '$quantiteDisponible' },
+            itemCount: { $sum: 1 }
+          }
+        },
+        {
+          $project: {
+            reference: '$_id.reference',
+            category: '$_id.category',
+            subCategory: '$_id.subCategory',
+            couleur: '$_id.couleur',
+            items: {
+              $sortArray: {
+                input: '$items',
+                sortBy: { taille: 1 }
+              }
+            },
+            totalStock: 1,
+            totalReserved: 1,
+            totalAvailable: 1,
+            itemCount: 1,
+            _id: 0
+          }
+        },
+        { $sort: { reference: 1 } },
+        { $skip: skip },
+        { $limit: limitNum }
+      ]);
+      
+      // Compter le total de références pour la pagination
+      const totalCountPipeline = await StockItem.aggregate([
+        { $match: matchFilter },
+        {
+          $group: {
+            _id: {
+              reference: '$reference',
+              couleur: '$couleur'
+            }
+          }
+        },
+        { $count: 'total' }
+      ]);
+      
+      const totalCount = totalCountPipeline.length > 0 ? totalCountPipeline[0].total : 0;
+      
+      res.json({
+        references: groupedItems,
+        total: totalCount,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(totalCount / limitNum),
+        hasMore: skip + groupedItems.length < totalCount
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   // GET /api/stock/items
   getAllStockItems: async (req: Request, res: Response, next: NextFunction) => {
     try {

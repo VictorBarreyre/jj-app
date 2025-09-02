@@ -3,10 +3,11 @@ import { StockItem, StockAlert, CreateStockItemData } from '@/types/stock';
 import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
 import { StockList } from '@/components/stock/StockList';
+import { StockReferenceList } from '@/components/stock/StockReferenceList';
 import { AddStockItemModal } from '@/components/stock/AddStockItemModal';
 import { DeleteStockItemModal } from '@/components/stock/DeleteStockItemModal';
 import { Button } from '@/components/ui/button';
-import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight, Grid3X3, List } from 'lucide-react';
 
 type StockCategory = 'veste' | 'gilet' | 'pantalon' | 'accessoire';
 
@@ -17,14 +18,37 @@ interface CategoryTab {
   count: number;
 }
 
+interface StockReferenceGroupData {
+  reference: string;
+  category: string;
+  subCategory?: string;
+  couleur?: string;
+  items: Array<{
+    id: string;
+    taille: string;
+    quantiteStock: number;
+    quantiteReservee: number;
+    quantiteDisponible: number;
+    seuilAlerte: number;
+    createdAt: string;
+    updatedAt: string;
+  }>;
+  totalStock: number;
+  totalReserved: number;
+  totalAvailable: number;
+  itemCount: number;
+}
+
 export function StockManagement() {
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
+  const [stockGroups, setStockGroups] = useState<StockReferenceGroupData[]>([]);
   const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<StockCategory>('veste');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [viewMode, setViewMode] = useState<'grouped' | 'list'>('grouped');
   
   // Filtres (simplifiés car on filtre par onglet)
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,11 +67,11 @@ export function StockManagement() {
     setCurrentPage(1); // Reset to first page when category changes
     loadStockData();
     loadAlerts();
-  }, [activeCategory]);
+  }, [activeCategory, viewMode]);
 
   useEffect(() => {
     loadStockData();
-  }, [currentPage]);
+  }, [currentPage, viewMode]);
 
   const loadStockData = async () => {
     setLoading(true);
@@ -55,15 +79,26 @@ export function StockManagement() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       params.append('category', activeCategory); // Filtre par catégorie active
-      if (tailleFilter) params.append('taille', tailleFilter);
       params.append('page', currentPage.toString());
-      params.append('limit', '100'); // Load more per page for better UX
-
-      const response = await fetch(`http://localhost:3001/api/stock/items?${params}`);
-      const data = await response.json();
-      setStockItems(data.items || []);
-      setTotalPages(data.totalPages || 1);
-      setTotalItems(data.total || 0);
+      
+      if (viewMode === 'grouped') {
+        // En mode groupé, on peut chercher par taille aussi
+        if (tailleFilter) params.append('taille', tailleFilter);
+        params.append('limit', '20'); // Moins de références par page
+        const response = await fetch(`http://localhost:3001/api/stock/items/grouped?${params}`);
+        const data = await response.json();
+        setStockGroups(data.references || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalItems(data.total || 0);
+      } else {
+        if (tailleFilter) params.append('taille', tailleFilter);
+        params.append('limit', '100');
+        const response = await fetch(`http://localhost:3001/api/stock/items?${params}`);
+        const data = await response.json();
+        setStockItems(data.items || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalItems(data.total || 0);
+      }
     } catch (error) {
       console.error('Erreur lors du chargement du stock:', error);
     } finally {
@@ -201,8 +236,23 @@ export function StockManagement() {
     setIsAddModalOpen(true);
   };
 
-  const handleDeleteItem = (item: StockItem) => {
-    setItemToDelete(item);
+  const handleDeleteItem = (item: StockItem | any) => {
+    // Adapter l'item selon le format nécessaire pour la modal
+    const standardizedItem: StockItem = {
+      id: item.id,
+      category: item.category,
+      subCategory: item.subCategory,
+      reference: item.reference,
+      taille: item.taille,
+      couleur: item.couleur,
+      quantiteStock: item.quantiteStock,
+      quantiteReservee: item.quantiteReservee,
+      quantiteDisponible: item.quantiteDisponible,
+      seuilAlerte: item.seuilAlerte,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    };
+    setItemToDelete(standardizedItem);
     setIsDeleteModalOpen(true);
   };
 
@@ -229,9 +279,10 @@ export function StockManagement() {
         throw new Error(error.message || 'Erreur lors de la création');
       }
 
-      // Recharger les données
+      // Recharger les données et compteurs
       await loadStockData();
       await loadAlerts();
+      await loadCategoryCounts();
     } catch (error) {
       console.error('Erreur:', error);
       throw error;
@@ -249,9 +300,10 @@ export function StockManagement() {
         throw new Error(error.message || 'Erreur lors de la suppression');
       }
 
-      // Recharger les données
+      // Recharger les données et compteurs
       await loadStockData();
       await loadAlerts();
+      await loadCategoryCounts();
     } catch (error) {
       console.error('Erreur:', error);
       throw error;
@@ -267,14 +319,42 @@ export function StockManagement() {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-left">Gestion du Stock</h1>
             <p className="text-gray-600 text-sm mt-1 text-left">Suivi en temps réel des articles et disponibilités</p>
           </div>
-          <Button 
-            onClick={handleAddNewItem}
-            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="hidden sm:inline">Nouvel article</span>
-            <span className="sm:hidden">Nouveau</span>
-          </Button>
+          <div className="flex gap-2">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <Button
+                size="sm"
+                variant={viewMode === 'grouped' ? 'default' : 'ghost'}
+                onClick={() => {
+                  setViewMode('grouped');
+                  setCurrentPage(1);
+                }}
+                className="flex items-center gap-1 px-3 py-1.5"
+              >
+                <Grid3X3 className="w-4 h-4" />
+                <span className="hidden sm:inline">Par référence</span>
+              </Button>
+              <Button
+                size="sm"
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                onClick={() => {
+                  setViewMode('list');
+                  setCurrentPage(1);
+                }}
+                className="flex items-center gap-1 px-3 py-1.5"
+              >
+                <List className="w-4 h-4" />
+                <span className="hidden sm:inline">Liste</span>
+              </Button>
+            </div>
+            <Button 
+              onClick={handleAddNewItem}
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span className="hidden sm:inline">Nouvel article</span>
+              <span className="sm:hidden">Nouveau</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -331,21 +411,33 @@ export function StockManagement() {
         </div>
 
         {/* Liste des articles */}
-        <StockList
-          items={filteredItems}
-          loading={loading}
-          onEdit={handleEditItem}
-          onViewMovements={handleViewMovements}
-          onAddNew={() => {}} // Désactivé car bouton déjà en haut
-          onDelete={handleDeleteItem}
-          hideHeader={true} // Nouvelle prop pour masquer l'en-tête
-        />
+        {viewMode === 'grouped' ? (
+          <StockReferenceList
+            groups={stockGroups}
+            loading={loading}
+            onEditItem={handleEditItem}
+            onViewMovements={handleViewMovements}
+            onAddNew={() => {}} // Désactivé car bouton déjà en haut
+            onDeleteItem={handleDeleteItem}
+            hideHeader={true} // Nouvelle prop pour masquer l'en-tête
+          />
+        ) : (
+          <StockList
+            items={filteredItems}
+            loading={loading}
+            onEdit={handleEditItem}
+            onViewMovements={handleViewMovements}
+            onAddNew={() => {}} // Désactivé car bouton déjà en haut
+            onDelete={handleDeleteItem}
+            hideHeader={true} // Nouvelle prop pour masquer l'en-tête
+          />
+        )}
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div className="text-sm text-gray-700">
-              Page {currentPage} sur {totalPages} • {totalItems} article{totalItems > 1 ? 's' : ''} au total
+              Page {currentPage} sur {totalPages} • {totalItems} {viewMode === 'grouped' ? 'référence' : 'article'}{totalItems > 1 ? 's' : ''} au total
             </div>
             <div className="flex gap-2">
               <Button
