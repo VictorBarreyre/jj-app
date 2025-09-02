@@ -46,7 +46,7 @@ export interface RentalContractsListResponse {
 }
 
 class RentalContractApi {
-  private baseUrl = '/api/contracts';
+  private baseUrl = '/contracts';
 
   async create(data: CreateRentalContractRequest): Promise<RentalContract> {
     const response = await apiClient.post(this.baseUrl, data);
