@@ -155,7 +155,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
+            className="flex items-center gap-2 px-3 py-3 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50 min-h-[48px]"
           >
             <ChevronLeft className="w-3 h-3" />
             Retour au groupe
@@ -166,7 +166,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
           </div>
         </div>
 
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Shirt className="w-5 h-5 text-white" />
           </div>

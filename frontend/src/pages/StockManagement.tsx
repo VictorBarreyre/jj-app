@@ -308,7 +308,7 @@ export function StockManagement() {
           {/* En-tête avec titre et bouton - maintenant dans le bloc */}
           <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row sm:justify-between sm:items-center p-4 sm:p-6 border-b border-gray-200">
             <div className="text-left">
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 leading-tight">Gestion du Stock</h1>
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 leading-tight text-left">Gestion du Stock</h1>
               <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-relaxed">Suivi en temps réel des articles et disponibilités</p>
             </div>
             <div className="flex justify-center sm:justify-end">

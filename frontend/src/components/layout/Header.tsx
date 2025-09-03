@@ -32,7 +32,7 @@ export function Header({
             <div className="flex items-center gap-3">
              
               <div className="flex items-start flex-col leading-tight ml-2 sm:ml-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Jean Jacques Cérémonie</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight text-left">Jean Jacques Cérémonie</h1>
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Maître tailleur depuis 1867</p>
               </div>
             </div>

@@ -44,7 +44,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
               <div className="bg-gradient-to-br from-slate-600 to-slate-700 p-3 rounded-xl shadow-md">
                 <Package className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-800">
+              <h2 className="text-2xl font-bold text-slate-800 text-left">
                 Gestion du stock
               </h2>
             </div>

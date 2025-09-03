@@ -222,7 +222,7 @@ export const ThreeStepRentalForm = forwardRef<
         };
       case 2:
         return {
-          title: 'Étape 2/3 : Sélection des tenues',
+          title: 'Étape 2/3 : Choix des vêtements',
           description: isGroup 
             ? 'Choisissez les vêtements pour chaque personne du groupe'
             : 'Choisissez les vêtements du client'
@@ -307,7 +307,7 @@ export const ThreeStepRentalForm = forwardRef<
             <div className="mb-6 flex items-center justify-start">
               <button
                 onClick={goBackToStep2}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
+                className="flex items-center gap-2 px-3 py-3 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50 min-h-[48px]"
               >
                 <ChevronLeft className="w-3 h-3" />
                 Retour aux tenues

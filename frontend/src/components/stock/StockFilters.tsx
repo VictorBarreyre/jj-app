@@ -52,7 +52,7 @@ export function StockFilters({
       {/* Bouton rechercher */}
       <Button 
         onClick={onSearch}
-        className="flex-shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+        className="flex-shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-4 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px]"
       >
         <Search className="w-4 h-4" />
       </Button>

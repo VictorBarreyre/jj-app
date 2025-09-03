@@ -133,21 +133,21 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
 
         {/* Totaux à droite - desktop seulement */}
         <div className="hidden sm:flex sm:items-center sm:gap-8">
-          <div className="text-center">
+          <div className="text-left">
             <div className="text-xs text-gray-500 mb-1 font-medium">Stock</div>
             <div className="flex items-center">
               <TrendingUp className="w-4 h-4 text-amber-600 mr-1" />
               <span className="font-bold text-gray-900 text-base">{group.totalStock}</span>
             </div>
           </div>
-          <div className="text-center">
+          <div className="text-left">
             <div className="text-xs text-gray-500 mb-1 font-medium">Réservé</div>
             <div className="flex items-center">
               <TrendingDown className="w-4 h-4 text-orange-500 mr-1" />
               <span className="font-bold text-gray-900 text-base">{group.totalReserved}</span>
             </div>
           </div>
-          <div className="text-center">
+          <div className="text-left">
             <div className="text-xs text-gray-500 mb-1 font-medium">Disponible</div>
             <div className="flex items-center">
               {group.totalAvailable === 0 ? (

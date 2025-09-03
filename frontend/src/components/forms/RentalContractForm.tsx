@@ -248,7 +248,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               <Button
                 variant="outline"
                 onClick={() => onPrint(initialData.id!, 'jj')}
-                className="flex items-center gap-2 px-4 py-2 bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm min-h-[48px]"
               >
                 <Printer className="w-4 h-4" />
                 Imprimer JJ
@@ -257,7 +257,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               <Button
                 variant="outline"
                 onClick={() => onPrint(initialData.id!, 'client')}
-                className="flex items-center gap-2 px-4 py-2 bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm min-h-[48px]"
               >
                 <Printer className="w-4 h-4" />
                 Imprimer Client
