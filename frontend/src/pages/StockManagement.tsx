@@ -42,6 +42,7 @@ interface StockReferenceGroupData {
 export function StockManagement() {
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [stockGroups, setStockGroups] = useState<StockReferenceGroupData[]>([]);
+  const [allStockGroups, setAllStockGroups] = useState<StockReferenceGroupData[]>([]); // Toutes les données
   const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<StockCategory>('veste');
@@ -52,8 +53,6 @@ export function StockManagement() {
   
   // Filtres (simplifiés car on filtre par onglet)
   const [searchTerm, setSearchTerm] = useState('');
-  const [tailleFilter, setTailleFilter] = useState('');
-  const [showAlertsOnly, setShowAlertsOnly] = useState(false);
 
   // État pour la vérification de disponibilité
   const [checkDate, setCheckDate] = useState(new Date().toISOString().split('T')[0]);
@@ -69,26 +68,84 @@ export function StockManagement() {
     loadAlerts();
   }, [activeCategory]);
 
+  // Plus besoin de recharger les données quand la page change, c'est géré côté client
+
+  // Fonction de normalisation pour la recherche flexible
+  const normalizeText = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+      .replace(/[-\s_]/g, '') // Supprimer tirets, espaces, underscores
+      .trim();
+  };
+
+  // Filtrage côté client
+  const filterGroups = (groups: StockReferenceGroupData[], searchTerm: string) => {
+    if (!searchTerm.trim()) return groups;
+    
+    const normalizedSearch = normalizeText(searchTerm);
+    
+    return groups.filter(group => {
+      // Chercher dans la référence
+      if (normalizeText(group.reference).includes(normalizedSearch)) return true;
+      
+      // Chercher dans la couleur
+      if (group.couleur && normalizeText(group.couleur).includes(normalizedSearch)) return true;
+      
+      // Chercher dans les tailles des items
+      if (group.items.some(item => normalizeText(item.taille).includes(normalizedSearch))) return true;
+      
+      // Chercher dans la catégorie
+      if (normalizeText(group.category).includes(normalizedSearch)) return true;
+      
+      // Chercher dans la sous-catégorie
+      if (group.subCategory && normalizeText(group.subCategory).includes(normalizedSearch)) return true;
+      
+      return false;
+    });
+  };
+
+  // Recherche avec debounce côté client
   useEffect(() => {
-    loadStockData();
-  }, [currentPage]);
+    const timeoutId = setTimeout(() => {
+      const filtered = filterGroups(allStockGroups, searchTerm);
+      
+      // Calculer pagination côté client
+      const itemsPerPage = 20;
+      const totalPages = Math.ceil(filtered.length / itemsPerPage);
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = filtered.slice(startIndex, endIndex);
+      
+      setStockGroups(paginatedData);
+      setTotalPages(totalPages);
+      setTotalItems(filtered.length);
+      
+      // Reset à la page 1 si on est au-delà du nombre de pages disponibles
+      if (currentPage > totalPages && totalPages > 0) {
+        setCurrentPage(1);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, allStockGroups, currentPage]);
 
   const loadStockData = async () => {
     setLoading(true);
     try {
+      // Charger toutes les données pour la catégorie active, sans limite
       const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      params.append('category', activeCategory); // Filtre par catégorie active
-      params.append('page', currentPage.toString());
+      params.append('category', activeCategory);
+      params.append('limit', '1000'); // Charger beaucoup de données d'un coup
       
-      // En mode groupé, on peut chercher par taille aussi
-      if (tailleFilter) params.append('taille', tailleFilter);
-      params.append('limit', '20'); // Moins de références par page
       const response = await fetch(`http://localhost:3001/api/stock/items/grouped?${params}`);
       const data = await response.json();
-      setStockGroups(data.references || []);
-      setTotalPages(data.totalPages || 1);
-      setTotalItems(data.total || 0);
+      
+      const allData = data.references || [];
+      setAllStockGroups(allData); // Stocker toutes les données
+      
+      // La pagination et le filtrage seront gérés par l'useEffect de recherche
     } catch (error) {
       console.error('Erreur lors du chargement du stock:', error);
     } finally {
@@ -250,8 +307,6 @@ export function StockManagement() {
     setActiveCategory(category);
     setCurrentPage(1); // Reset to first page
     setSearchTerm(''); // Reset search when changing category
-    setTailleFilter(''); // Reset size filter when changing category
-    setShowAlertsOnly(false); // Reset alerts filter when changing category
   };
 
   const createStockItem = async (data: CreateStockItemData) => {
@@ -306,18 +361,18 @@ export function StockManagement() {
         {/* Bloc principal avec titre et contenu */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* En-tête avec titre et bouton - maintenant dans le bloc */}
-          <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row sm:justify-between sm:items-center p-4 sm:p-6 border-b border-gray-200">
-            <div className="text-left">
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 leading-tight text-left">Gestion du Stock</h1>
+          <div className="flex justify-between items-start p-6 sm:p-8 border-b border-gray-200">
+            <div className="text-left flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight text-left">Gestion du stock</h1>
               <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-relaxed">Suivi en temps réel des articles et disponibilités</p>
             </div>
-            <div className="flex justify-center sm:justify-end">
+            <div className="ml-4">
               <Button 
                 onClick={handleAddNewItem}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-4 sm:px-6 sm:py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-3 w-full sm:w-auto justify-center text-lg sm:text-base min-h-[56px] sm:min-h-0"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 py-2 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center w-12 sm:w-auto text-lg sm:text-base min-h-[48px] sm:min-h-0 sm:gap-3"
               >
-                <Plus className="w-6 h-6 sm:w-5 sm:h-5" />
-                <span>Nouvel article</span>
+                <Plus className="w-5 h-5 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline ml-0 sm:ml-0">Nouvel article</span>
               </Button>
             </div>
           </div>
@@ -361,15 +416,15 @@ export function StockManagement() {
             <StockFilters
               searchTerm={searchTerm}
               categoryFilter={activeCategory}
-              tailleFilter={tailleFilter}
+              tailleFilter=""
               showAlertsOnly={false}
               checkDate=""
               onSearchChange={setSearchTerm}
               onCategoryChange={() => {}}
-              onTailleChange={setTailleFilter}
+              onTailleChange={() => {}}
               onAlertsOnlyChange={() => {}}
               onCheckDateChange={() => {}}
-              onSearch={loadStockData}
+              onSearch={() => {}}
               onCheckAvailability={() => {}}
             />
           </div>

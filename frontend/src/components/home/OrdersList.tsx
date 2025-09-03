@@ -143,12 +143,12 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
               <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
                 <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
                   <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <User className="sm:hidden w-4 h-4 text-amber-600 flex-shrink-0" />
                     <SelectValue placeholder="Filtrer par vendeur" />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="all">Tous les vendeurs</SelectItem>
+                  <SelectItem value="all">Vendeurs</SelectItem>
                   {VENDEURS.map(vendeur => (
                     <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
                   ))}
@@ -159,12 +159,12 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger className="w-full md:w-auto bg-white/70 border-gray-300 text-gray-900 rounded-xl focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm [&>svg]:ml-3">
                   <div className="flex items-center gap-2">
-                    <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    <Shirt className="sm:hidden w-4 h-4 text-amber-600 flex-shrink-0" />
                     <SelectValue placeholder="Filtrer par article" />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="all">Tous les articles</SelectItem>
+                  <SelectItem value="all">Articles</SelectItem>
                   {CATEGORIES.map(category => (
                     <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
                   ))}
@@ -206,12 +206,12 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
                 <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
                   <SelectTrigger className="w-full sm:w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
                     <div className="flex items-center gap-1">
-                      <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <User className="hidden w-4 h-4 text-amber-600 flex-shrink-0" />
                       <SelectValue placeholder="Vendeur" />
                     </div>
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    <SelectItem value="all">Tous vendeurs</SelectItem>
+                    <SelectItem value="all">Vendeurs</SelectItem>
                     {VENDEURS.map(vendeur => (
                       <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
                     ))}
@@ -224,12 +224,12 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-full sm:w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
                     <div className="flex items-center gap-1">
-                      <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <Shirt className="hidden w-4 h-4 text-amber-600 flex-shrink-0" />
                       <SelectValue placeholder="Article" />
                     </div>
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    <SelectItem value="all">Tous articles</SelectItem>
+                    <SelectItem value="all">Articles</SelectItem>
                     {CATEGORIES.map(category => (
                       <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
                     ))}
@@ -242,7 +242,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
       )}
 
       {/* Contenu de la liste */}
-      <div className={hideHeader ? "p-6" : ""}>
+      <div className={hideHeader ? "p-4 sm:p-6" : ""}>
         {/* Version desktop - En-tête du tableau */}
         <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
           <div className="col-span-2 text-left">Numéro</div>

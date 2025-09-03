@@ -94,7 +94,7 @@ export function StockReferenceList({
           </Button>
         </div>
       ) : (
-        <div className="p-6 bg-slate-50/30">
+        <div className="p-4 sm:p-6 bg-slate-50/30">
           {groups.map((group, index) => (
             <StockReferenceGroup
               key={`${group.reference}-${group.couleur}-${index}`}

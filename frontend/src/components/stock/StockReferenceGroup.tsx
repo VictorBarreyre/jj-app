@@ -80,7 +80,7 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-5">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-5">
       {/* En-tête du groupe */}
       <div 
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-5 sm:p-4 bg-gradient-to-r from-slate-50 to-white border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors gap-4 sm:gap-6 min-h-[120px] sm:min-h-0"
@@ -96,13 +96,15 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
           </div>
           
           <div className="text-left flex-1">
-            <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-2 sm:mb-1 leading-tight">{group.reference}</h3>
-            <div className="flex items-center gap-2 text-base sm:text-base text-gray-600 mb-4 sm:mb-0">
-              <span className="font-medium">{group.itemCount} taille{group.itemCount > 1 ? 's' : ''}</span>
+            <div className="flex items-center justify-between sm:block">
+              <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
+              <div className="flex items-center gap-2 text-base sm:text-base text-gray-600 sm:mb-0 sm:mt-1">
+                <span className="font-medium">{group.itemCount} taille{group.itemCount > 1 ? 's' : ''}</span>
+              </div>
             </div>
             
             {/* Totaux alignés sous le titre - mobile seulement */}
-            <div className="grid grid-cols-3 gap-5 text-left sm:hidden">
+            <div className="grid grid-cols-3 gap-5 text-left sm:hidden mt-4">
               <div className="min-w-0">
                 <div className="text-sm text-gray-500 mb-2 font-medium">Stock</div>
                 <div className="flex items-center">
@@ -167,7 +169,7 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
           <div className="block sm:hidden">
             <div className="space-y-3 p-4">
               {group.items.map((item) => (
-                <div key={item.id} className="bg-white rounded-2xl border border-gray-200 p-5">
+                <div key={item.id} className="bg-white rounded-2xl border border-gray-200/50 p-5">
                   <div className="flex items-center justify-between mb-4">
                     <span className="font-bold text-gray-900 text-lg">Taille {item.taille}</span>
                     <Badge className={`${getStatusColor(item.quantiteDisponible, item.seuilAlerte)} border text-sm font-bold px-3 py-1`}>

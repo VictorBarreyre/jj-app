@@ -88,7 +88,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
           {/* Version mobile - Cards */}
           <div className="block sm:hidden space-y-5 p-5">
             {items.map(item => (
-              <div key={item.id} className="bg-white/80 rounded-xl p-5 shadow-sm border border-gray-200">
+              <div key={item.id} className="bg-white/80 rounded-xl p-5 shadow-sm border border-gray-200/50">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900 text-sm">{item.reference}</div>
@@ -127,7 +127,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                   </div>
                 </div>
                 
-                <div className="flex justify-end items-center pt-3 border-t border-gray-100">
+                <div className="flex justify-end items-center pt-3 border-t border-gray-200/50">
                   <div className="flex items-center gap-1">
                     <Button 
                       size="sm" 
@@ -160,14 +160,14 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
           </div>
 
           {/* Version desktop - Table */}
-          <div className="hidden sm:block p-6 bg-slate-50/30">
+          <div className="hidden sm:block p-4 sm:p-6 bg-slate-50/30">
             {/* Groupement par catégorie */}
             {['veste', 'gilet', 'pantalon', 'accessoire'].map(category => {
               const categoryItems = items.filter(item => item.category === category);
               if (categoryItems.length === 0) return null;
               
               return (
-                <div key={category} className="mb-8 last:mb-0 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-lg hover:shadow-lg transition-shadow duration-200">
+                <div key={category} className="mb-8 last:mb-0 bg-white border border-gray-200/50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-200">
                   {/* En-tête de catégorie */}
                   <div className="bg-gradient-to-r from-slate-100 to-slate-50 border-b border-slate-200 px-8 py-5">
                     <div className="flex items-center justify-between">

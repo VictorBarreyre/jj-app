@@ -72,18 +72,18 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
         {/* Bloc principal avec titre et contenu */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* En-tête avec titre et bouton - maintenant dans le bloc */}
-          <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row sm:justify-between sm:items-center p-4 sm:p-6 border-b border-gray-200">
-            <div className="text-left">
-              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 leading-tight text-left">Gestion des commandes</h1>
+          <div className="flex justify-between items-start p-6 sm:p-8 border-b border-gray-200">
+            <div className="text-left flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight text-left">Gestion des commandes</h1>
               <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-relaxed">Consultez, modifiez et gérez toutes vos commandes de cérémonie</p>
             </div>
-            <div className="flex justify-center sm:justify-end">
+            <div className="ml-4">
               <Button 
                 onClick={onCreateNew}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-4 sm:px-6 sm:py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-3 w-full sm:w-auto justify-center text-lg sm:text-base min-h-[56px] sm:min-h-0"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 py-2 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center w-12 sm:w-auto text-lg sm:text-base min-h-[48px] sm:min-h-0 sm:gap-3"
               >
-                <Plus className="w-6 h-6 sm:w-5 sm:h-5" />
-                <span>Nouvelle commande</span>
+                <Plus className="w-5 h-5 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline ml-0 sm:ml-0">Nouvelle commande</span>
               </Button>
             </div>
           </div>

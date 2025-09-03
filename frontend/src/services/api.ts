@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-import { Order } from '@/types/order';
 import { MeasurementForm } from '@/types/measurement-form';
 import { RentalContract } from '@/types/rental-contract';
 
@@ -26,11 +25,6 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-export interface OrdersResponse {
-  orders: Order[];
-  total: number;
-}
-
 export interface MeasurementsResponse {
   measurements: MeasurementForm[];
   total: number;
@@ -45,33 +39,6 @@ export interface ContractsResponse {
     prefix?: string;
   };
 }
-
-// Orders API
-export const ordersAPI = {
-  getAll: async (params?: { status?: string; search?: string }): Promise<OrdersResponse> => {
-    const response: AxiosResponse<OrdersResponse> = await api.get('/orders', { params });
-    return response.data;
-  },
-
-  getById: async (id: string): Promise<Order> => {
-    const response: AxiosResponse<Order> = await api.get(`/orders/${id}`);
-    return response.data;
-  },
-
-  create: async (orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<Order> => {
-    const response: AxiosResponse<Order> = await api.post('/orders', orderData);
-    return response.data;
-  },
-
-  update: async (id: string, orderData: Partial<Order>): Promise<Order> => {
-    const response: AxiosResponse<Order> = await api.put(`/orders/${id}`, orderData);
-    return response.data;
-  },
-
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/orders/${id}`);
-  }
-};
 
 // Measurements API
 export const measurementsAPI = {
