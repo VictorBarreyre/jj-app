@@ -57,15 +57,6 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
     return 'Disponible';
   };
 
-  const getCategoryIcon = () => {
-    switch (group.category) {
-      case 'veste': return '🧥';
-      case 'gilet': return '🦺';
-      case 'pantalon': return '👖';
-      case 'accessoire': return '👔';
-      default: return '📦';
-    }
-  };
 
   const getSubCategoryLabel = (subCategory?: string) => {
     if (!subCategory) return '';
@@ -89,78 +80,168 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden mb-4">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-5">
       {/* En-tête du groupe */}
       <div 
-        className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-white border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-5 sm:p-4 bg-gradient-to-r from-slate-50 to-white border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors gap-4 sm:gap-6 min-h-[120px] sm:min-h-0"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start gap-4 sm:gap-3 flex-1">
+          <div className="flex items-center gap-2 mt-2 sm:mt-1">
             {isExpanded ? (
-              <ChevronDown className="w-5 h-5 text-gray-500" />
+              <ChevronDown className="w-6 h-6 sm:w-5 sm:h-5 text-gray-500" />
             ) : (
-              <ChevronRight className="w-5 h-5 text-gray-500" />
+              <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5 text-gray-500" />
             )}
-            <span className="text-2xl">{getCategoryIcon()}</span>
           </div>
           
-          <div className="text-left">
-            <h3 className="font-semibold text-lg text-gray-900 text-left">{group.reference}</h3>
-            <div className="flex items-center gap-2 text-sm text-gray-600 text-left">
-              <span>{getSubCategoryLabel(group.subCategory)}</span>
-              {group.couleur && (
-                <>
-                  <span>•</span>
-                  <span className="capitalize">{group.couleur}</span>
-                </>
-              )}
-              <span>•</span>
-              <span>{group.itemCount} taille{group.itemCount > 1 ? 's' : ''}</span>
+          <div className="text-left flex-1">
+            <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-2 sm:mb-1 leading-tight">{group.reference}</h3>
+            <div className="flex items-center gap-2 text-base sm:text-base text-gray-600 mb-4 sm:mb-0">
+              <span className="font-medium">{group.itemCount} taille{group.itemCount > 1 ? 's' : ''}</span>
+            </div>
+            
+            {/* Totaux alignés sous le titre - mobile seulement */}
+            <div className="grid grid-cols-3 gap-5 text-left sm:hidden">
+              <div className="min-w-0">
+                <div className="text-sm text-gray-500 mb-2 font-medium">Stock</div>
+                <div className="flex items-center">
+                  <TrendingUp className="w-4 h-4 text-amber-600 mr-2" />
+                  <span className="font-bold text-gray-900 text-lg">{group.totalStock}</span>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm text-gray-500 mb-2 font-medium">Réservé</div>
+                <div className="flex items-center">
+                  <TrendingDown className="w-4 h-4 text-orange-500 mr-2" />
+                  <span className="font-bold text-gray-900 text-lg">{group.totalReserved}</span>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm text-gray-500 mb-2 font-medium">Disponible</div>
+                <div className="flex items-center">
+                  {group.totalAvailable === 0 ? (
+                    <span className="text-lg font-bold text-red-500">Épuisé</span>
+                  ) : (
+                    <span className="text-lg font-bold text-green-600">{group.totalAvailable}</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {/* Totaux */}
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-xs text-gray-500 mb-1">Stock total</div>
-              <div className="flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-amber-600 mr-1" />
-                <span className="font-bold text-gray-900">{group.totalStock}</span>
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-gray-500 mb-1">Réservé</div>
-              <div className="flex items-center justify-center">
-                <TrendingDown className="w-4 h-4 text-orange-500 mr-1" />
-                <span className="font-bold text-gray-900">{group.totalReserved}</span>
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-gray-500 mb-1">Disponible</div>
-              <div className="flex items-center justify-center">
-                {group.totalAvailable === 0 ? (
-                  <span className="text-lg font-bold text-red-500">Épuisé</span>
-                ) : (
-                  <span className="text-lg font-bold text-green-600">{group.totalAvailable}</span>
-                )}
-              </div>
+        {/* Totaux à droite - desktop seulement */}
+        <div className="hidden sm:flex sm:items-center sm:gap-8">
+          <div className="text-center">
+            <div className="text-xs text-gray-500 mb-1 font-medium">Stock</div>
+            <div className="flex items-center">
+              <TrendingUp className="w-4 h-4 text-amber-600 mr-1" />
+              <span className="font-bold text-gray-900 text-base">{group.totalStock}</span>
             </div>
           </div>
-
-          {/* Statut global */}
-          <Badge className={`${getStatusColor(group.totalAvailable, 5)} border font-semibold`}>
-            {getStatusText(group.totalAvailable, 5)}
-          </Badge>
+          <div className="text-center">
+            <div className="text-xs text-gray-500 mb-1 font-medium">Réservé</div>
+            <div className="flex items-center">
+              <TrendingDown className="w-4 h-4 text-orange-500 mr-1" />
+              <span className="font-bold text-gray-900 text-base">{group.totalReserved}</span>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-xs text-gray-500 mb-1 font-medium">Disponible</div>
+            <div className="flex items-center">
+              {group.totalAvailable === 0 ? (
+                <span className="text-lg font-bold text-red-500">Épuisé</span>
+              ) : (
+                <span className="text-lg font-bold text-green-600">{group.totalAvailable}</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Détail des tailles (collapsible) */}
       {isExpanded && (
         <div className="bg-gray-50">
-          <div className="overflow-x-auto">
+          {/* Vue mobile : cartes */}
+          <div className="block sm:hidden">
+            <div className="space-y-3 p-4">
+              {group.items.map((item) => (
+                <div key={item.id} className="bg-white rounded-2xl border border-gray-200 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-bold text-gray-900 text-lg">Taille {item.taille}</span>
+                    <Badge className={`${getStatusColor(item.quantiteDisponible, item.seuilAlerte)} border text-sm font-bold px-3 py-1`}>
+                      {getStatusText(item.quantiteDisponible, item.seuilAlerte)}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-5 mb-5">
+                    <div className="text-left">
+                      <div className="text-sm text-gray-500 mb-2 font-medium">Stock</div>
+                      <div className="flex items-center">
+                        <TrendingUp className="w-4 h-4 text-amber-600 mr-2" />
+                        <span className="font-bold text-gray-900 text-lg">{item.quantiteStock}</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm text-gray-500 mb-2 font-medium">Réservé</div>
+                      <div className="flex items-center">
+                        <TrendingDown className="w-4 h-4 text-orange-500 mr-2" />
+                        <span className="font-bold text-gray-900 text-lg">{item.quantiteReservee}</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm text-gray-500 mb-2 font-medium">Disponible</div>
+                      <div className="flex items-center">
+                        {item.quantiteDisponible === 0 ? (
+                          <span className="text-lg font-bold text-red-500">Épuisé</span>
+                        ) : (
+                          <span className="text-lg font-bold text-green-600">{item.quantiteDisponible}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 justify-center">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onEditItem(item.id)}
+                      className="bg-white border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm flex-1 py-3 font-medium min-h-[56px]"
+                    >
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      <span className="text-sm">Éditer</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onViewMovements(item.id)}
+                      className="bg-white border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 rounded-xl transition-all shadow-sm flex-1 py-3 font-medium min-h-[56px]"
+                    >
+                      <History className="w-4 h-4 mr-2" />
+                      <span className="text-sm">Historique</span>
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => onDeleteItem({
+                        ...item,
+                        reference: group.reference,
+                        category: group.category,
+                        couleur: group.couleur
+                      })}
+                      className="bg-white border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 rounded-xl transition-all shadow-sm w-14 py-3 font-medium min-h-[56px] flex items-center justify-center"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Vue desktop : tableau */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-100">
                 <tr>

@@ -38,7 +38,7 @@ const saveToStorage = (key: string, data: any) => {
   }
 };
 
-const loadFromStorage = <T>(key: string): T | null => {
+const loadFromStorage = <T,>(key: string): T | null => {
   try {
     const data = localStorage.getItem(key);
     if (!data) return null;
@@ -215,7 +215,7 @@ export const ThreeStepRentalForm = forwardRef<
     switch (currentStep) {
       case 1:
         return {
-          title: `Étape 1/3 : Configuration du ${entityType}`,
+          title: 'Étape 1/3 : Informations clients',
           description: isGroup 
             ? 'Définissez les informations de base et ajoutez les participants'
             : 'Définissez les informations de base du client'
@@ -267,6 +267,21 @@ export const ThreeStepRentalForm = forwardRef<
 
   return (
     <div className="mx-auto">
+      {/* En-tête avec titre et bouton reset */}
+      <div className="flex items-start justify-between mb-6 pb-4 border-b border-gray-200">
+        <div className="flex-1 text-left">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-left">{stepInfo.title}</h2>
+          <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-relaxed text-left">{stepInfo.description}</p>
+        </div>
+        <button
+          onClick={resetForm}
+          className="text-sm text-black underline hover:text-gray-700 transition-colors font-bold sm:font-semibold flex items-center gap-2 px-2 py-1 sm:px-3 sm:py-2 ml-4"
+        >
+          <RotateCcw className="w-5 h-5 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Nouveau formulaire</span>
+        </button>
+      </div>
+
       {/* Contenu de l'étape */}
       <div className="bg-white rounded-lg">
         {currentStep === 1 && (

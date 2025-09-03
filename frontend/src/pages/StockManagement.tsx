@@ -48,7 +48,7 @@ export function StockManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [viewMode, setViewMode] = useState<'grouped' | 'list'>('grouped');
+  const viewMode = 'grouped';
   
   // Filtres (simplifiés car on filtre par onglet)
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,11 +67,11 @@ export function StockManagement() {
     setCurrentPage(1); // Reset to first page when category changes
     loadStockData();
     loadAlerts();
-  }, [activeCategory, viewMode]);
+  }, [activeCategory]);
 
   useEffect(() => {
     loadStockData();
-  }, [currentPage, viewMode]);
+  }, [currentPage]);
 
   const loadStockData = async () => {
     setLoading(true);
@@ -81,24 +81,14 @@ export function StockManagement() {
       params.append('category', activeCategory); // Filtre par catégorie active
       params.append('page', currentPage.toString());
       
-      if (viewMode === 'grouped') {
-        // En mode groupé, on peut chercher par taille aussi
-        if (tailleFilter) params.append('taille', tailleFilter);
-        params.append('limit', '20'); // Moins de références par page
-        const response = await fetch(`http://localhost:3001/api/stock/items/grouped?${params}`);
-        const data = await response.json();
-        setStockGroups(data.references || []);
-        setTotalPages(data.totalPages || 1);
-        setTotalItems(data.total || 0);
-      } else {
-        if (tailleFilter) params.append('taille', tailleFilter);
-        params.append('limit', '100');
-        const response = await fetch(`http://localhost:3001/api/stock/items?${params}`);
-        const data = await response.json();
-        setStockItems(data.items || []);
-        setTotalPages(data.totalPages || 1);
-        setTotalItems(data.total || 0);
-      }
+      // En mode groupé, on peut chercher par taille aussi
+      if (tailleFilter) params.append('taille', tailleFilter);
+      params.append('limit', '20'); // Moins de références par page
+      const response = await fetch(`http://localhost:3001/api/stock/items/grouped?${params}`);
+      const data = await response.json();
+      setStockGroups(data.references || []);
+      setTotalPages(data.totalPages || 1);
+      setTotalItems(data.total || 0);
     } catch (error) {
       console.error('Erreur lors du chargement du stock:', error);
     } finally {
@@ -311,107 +301,80 @@ export function StockManagement() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
-      {/* En-tête avec titre et bouton */}
-      <div className="pt-4 sm:pt-16">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-left">Gestion du Stock</h1>
-            <p className="text-gray-600 text-sm mt-1 text-left">Suivi en temps réel des articles et disponibilités</p>
-          </div>
-          <div className="flex gap-2">
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <Button
-                size="sm"
-                variant={viewMode === 'grouped' ? 'default' : 'ghost'}
-                onClick={() => {
-                  setViewMode('grouped');
-                  setCurrentPage(1);
-                }}
-                className="flex items-center gap-1 px-3 py-1.5"
+    <div className="max-w-6xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-8">
+      <div className="pt-2 sm:pt-16">
+        {/* Bloc principal avec titre et contenu */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* En-tête avec titre et bouton - maintenant dans le bloc */}
+          <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row sm:justify-between sm:items-center p-4 sm:p-6 border-b border-gray-200">
+            <div className="text-left">
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 leading-tight">Gestion du Stock</h1>
+              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-relaxed">Suivi en temps réel des articles et disponibilités</p>
+            </div>
+            <div className="flex justify-center sm:justify-end">
+              <Button 
+                onClick={handleAddNewItem}
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-4 sm:px-6 sm:py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-3 w-full sm:w-auto justify-center text-lg sm:text-base min-h-[56px] sm:min-h-0"
               >
-                <Grid3X3 className="w-4 h-4" />
-                <span className="hidden sm:inline">Par référence</span>
-              </Button>
-              <Button
-                size="sm"
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                onClick={() => {
-                  setViewMode('list');
-                  setCurrentPage(1);
-                }}
-                className="flex items-center gap-1 px-3 py-1.5"
-              >
-                <List className="w-4 h-4" />
-                <span className="hidden sm:inline">Liste</span>
+                <Plus className="w-6 h-6 sm:w-5 sm:h-5" />
+                <span>Nouvel article</span>
               </Button>
             </div>
-            <Button 
-              onClick={handleAddNewItem}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">Nouvel article</span>
-              <span className="sm:hidden">Nouveau</span>
-            </Button>
           </div>
-        </div>
-      </div>
 
-      {/* Bloc onglets, recherche et liste */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Onglets par catégories */}
+          <div className="border-b border-gray-200">
+            <nav className="flex overflow-x-auto px-3 sm:px-6 scrollbar-hide" aria-label="Tabs">
+            <div className="flex space-x-3 sm:space-x-8 min-w-max py-1">
+              {categoryTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleCategoryChange(tab.id)}
+                  className={`
+                    flex items-center gap-3 sm:gap-2 py-4 sm:py-4 px-4 sm:px-1 border-b-2 font-semibold text-base sm:text-sm transition-colors duration-200 whitespace-nowrap min-h-[60px] sm:min-h-0
+                    ${activeCategory === tab.id
+                      ? 'border-amber-500 text-amber-700 bg-amber-50/70'
+                      : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50/50'
+                    }
+                  `}
+                >
+                  <span className="w-5 h-5 sm:w-5 sm:h-5">{tab.icon}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden font-medium">{tab.label.slice(0, -1)}</span>
+                  <span className={`
+                    ml-1 sm:ml-2 py-1 px-2 sm:py-0.5 sm:px-2 rounded-full text-sm sm:text-xs font-bold min-w-[28px] text-center
+                    ${activeCategory === tab.id
+                      ? 'bg-amber-200 text-amber-900'
+                      : 'bg-gray-200 text-gray-700'
+                    }
+                  `}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+              </div>
+            </nav>
+          </div>
 
-        {/* Onglets par catégories */}
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6" aria-label="Tabs">
-            {categoryTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleCategoryChange(tab.id)}
-                className={`
-                  flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200
-                  ${activeCategory === tab.id
-                    ? 'border-amber-500 text-amber-600 bg-amber-50/50'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }
-                `}
-              >
-                {tab.icon}
-                {tab.label}
-                <span className={`
-                  ml-2 py-0.5 px-2 rounded-full text-xs
-                  ${activeCategory === tab.id
-                    ? 'bg-amber-100 text-amber-800'
-                    : 'bg-gray-100 text-gray-600'
-                  }
-                `}>
-                  {tab.count}
-                </span>
-              </button>
-            ))}
-          </nav>
-        </div>
+          {/* Recherche intégrée */}
+          <div className="border-b border-gray-100 p-4">
+            <StockFilters
+              searchTerm={searchTerm}
+              categoryFilter={activeCategory}
+              tailleFilter={tailleFilter}
+              showAlertsOnly={false}
+              checkDate=""
+              onSearchChange={setSearchTerm}
+              onCategoryChange={() => {}}
+              onTailleChange={setTailleFilter}
+              onAlertsOnlyChange={() => {}}
+              onCheckDateChange={() => {}}
+              onSearch={loadStockData}
+              onCheckAvailability={() => {}}
+            />
+          </div>
 
-        {/* Recherche intégrée */}
-        <div className="border-b border-gray-100 p-4">
-          <StockFilters
-            searchTerm={searchTerm}
-            categoryFilter={activeCategory}
-            tailleFilter={tailleFilter}
-            showAlertsOnly={false}
-            checkDate=""
-            onSearchChange={setSearchTerm}
-            onCategoryChange={() => {}}
-            onTailleChange={setTailleFilter}
-            onAlertsOnlyChange={() => {}}
-            onCheckDateChange={() => {}}
-            onSearch={loadStockData}
-            onCheckAvailability={() => {}}
-          />
-        </div>
-
-        {/* Liste des articles */}
-        {viewMode === 'grouped' ? (
+          {/* Liste des articles */}
           <StockReferenceList
             groups={stockGroups}
             loading={loading}
@@ -421,48 +384,38 @@ export function StockManagement() {
             onDeleteItem={handleDeleteItem}
             hideHeader={true} // Nouvelle prop pour masquer l'en-tête
           />
-        ) : (
-          <StockList
-            items={filteredItems}
-            loading={loading}
-            onEdit={handleEditItem}
-            onViewMovements={handleViewMovements}
-            onAddNew={() => {}} // Désactivé car bouton déjà en haut
-            onDelete={handleDeleteItem}
-            hideHeader={true} // Nouvelle prop pour masquer l'en-tête
-          />
-        )}
 
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
-            <div className="text-sm text-gray-700">
-              Page {currentPage} sur {totalPages} • {totalItems} {viewMode === 'grouped' ? 'référence' : 'article'}{totalItems > 1 ? 's' : ''} au total
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div className="text-sm text-gray-700">
+                Page {currentPage} sur {totalPages} • {totalItems} référence{totalItems > 1 ? 's' : ''} au total
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage <= 1}
+                  className="flex items-center gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Précédent
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage >= totalPages}
+                  className="flex items-center gap-1"
+                >
+                  Suivant
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage <= 1}
-                className="flex items-center gap-1"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Précédent
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage >= totalPages}
-                className="flex items-center gap-1"
-              >
-                Suivant
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Modales */}

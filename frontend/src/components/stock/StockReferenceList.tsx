@@ -71,16 +71,16 @@ export function StockReferenceList({
       )}
       
       {loading ? (
-        <div className="p-12 text-center">
+        <div className="p-12 text-left">
           <div className="relative">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-3 border-slate-400 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-3 border-slate-400"></div>
             <div className="absolute inset-0 rounded-full border-2 border-slate-100 animate-pulse"></div>
           </div>
           <p className="text-slate-500 mt-4 text-lg font-medium">Chargement des références...</p>
         </div>
       ) : groups.length === 0 ? (
-        <div className="p-16 text-center">
-          <div className="bg-slate-100 w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+        <div className="p-16 text-left">
+          <div className="bg-slate-100 w-20 h-20 rounded-2xl mb-6 flex items-center justify-center">
             <Package className="w-10 h-10 text-slate-400" />
           </div>
           <h3 className="text-xl font-bold text-slate-800 mb-2">Aucune référence trouvée</h3>

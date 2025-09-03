@@ -171,13 +171,14 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
                 </SelectContent>
               </Select>
 
-              {/* Bouton nouvelle commande */}
+              {/* Bouton nouvelle commande - hauteur harmonisée */}
               <Button 
                 onClick={onCreateNew} 
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-4 py-3 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base min-h-[48px] sm:min-h-0"
               >
-                <Plus className="w-5 h-5 mr-2" />
-                Nouvelle prise de mesure
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Nouvelle prise de mesure</span>
+                <span className="sm:hidden">Nouveau</span>
               </Button>
             </div>
           </div>
@@ -187,7 +188,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
       {/* Recherche simplifiée quand hideHeader est actif */}
       {hideHeader && (
         <div className="border-b border-gray-100 p-4">
-          <div className="flex gap-3 items-end">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             {/* Barre de recherche */}
             <div className="flex-1 min-w-0 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -199,40 +200,42 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
               />
             </div>
             
-            {/* Filtre par vendeur */}
-            <div className="flex-shrink-0">
-              <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
-                <SelectTrigger className="w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
-                  <div className="flex items-center gap-1">
-                    <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                    <SelectValue placeholder="Vendeur" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="all">Tous vendeurs</SelectItem>
-                  {VENDEURS.map(vendeur => (
-                    <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="flex gap-3 sm:gap-2">
+              {/* Filtre par vendeur */}
+              <div className="flex-1 sm:flex-shrink-0">
+                <Select value={vendeurFilter} onValueChange={setVendeurFilter}>
+                  <SelectTrigger className="w-full sm:w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
+                    <div className="flex items-center gap-1">
+                      <User className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <SelectValue placeholder="Vendeur" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-gray-300 text-gray-900">
+                    <SelectItem value="all">Tous vendeurs</SelectItem>
+                    {VENDEURS.map(vendeur => (
+                      <SelectItem key={vendeur} value={vendeur}>{vendeur}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Filtre par catégorie d'articles */}
-            <div className="flex-shrink-0">
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
-                  <div className="flex items-center gap-1">
-                    <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                    <SelectValue placeholder="Article" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="all">Tous articles</SelectItem>
-                  {CATEGORIES.map(category => (
-                    <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {/* Filtre par catégorie d'articles */}
+              <div className="flex-1 sm:flex-shrink-0">
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-full sm:w-auto bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl pr-4 [&>svg]:ml-3">
+                    <div className="flex items-center gap-1">
+                      <Shirt className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <SelectValue placeholder="Article" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-gray-300 text-gray-900">
+                    <SelectItem value="all">Tous articles</SelectItem>
+                    {CATEGORIES.map(category => (
+                      <SelectItem key={category.value} value={category.value}>{category.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
@@ -341,8 +344,8 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
             <div className="block md:hidden p-5 hover:bg-gray-50/30 transition-colors">
               <div className="flex justify-between items-start mb-3">
                 <div className="text-left">
-                  <div className="font-semibold text-amber-600 text-left">#{order.numero}</div>
-                  <div className="text-xs text-gray-500 text-left">par {order.createdBy}</div>
+                  <div className="font-bold text-base text-amber-600 text-left">#{order.numero}</div>
+                  <div className="text-xs text-gray-500 text-left font-medium">par {order.createdBy}</div>
                 </div>
                 <Badge className={`${statusColors[order.status]} text-white text-xs`}>
                   {statusLabels[order.status]}
@@ -350,7 +353,7 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
               </div>
 
               <div className="space-y-2 mb-3">
-                <div className="font-medium text-gray-900 text-left">
+                <div className="font-bold text-lg text-gray-900 text-left">
                   {order.client.nom} {order.client.prenom}
                 </div>
                 
@@ -382,32 +385,32 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
               </div>
 
               {/* Actions mobile */}
-              <div className="flex gap-2 pt-3 border-t border-gray-200/50">
+              <div className="flex gap-3 pt-4 border-t border-gray-200/50">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onView(order)}
-                  className="flex-1 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="flex-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium min-h-[48px]"
                 >
-                  <Eye className="w-4 h-4 mr-1" />
-                  Voir
+                  <Eye className="w-5 h-5 mr-2" />
+                  <span className="text-sm">Voir</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onEdit(order)}
-                  className="flex-1 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="flex-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium min-h-[48px]"
                 >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Modifier
+                  <Edit className="w-5 h-5 mr-2" />
+                  <span className="text-sm">Modifier</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onDelete(order.id)}
-                  className="bg-red-50 border-red-300 text-red-600 hover:bg-red-100"
+                  className="bg-white border-red-300 text-red-600 hover:bg-red-50 rounded-xl px-4 py-3 font-medium min-h-[48px]"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-5 h-5" />
                 </Button>
               </div>
             </div>
@@ -415,12 +418,12 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
         ))}
         {/* Message si liste vide */}
         {filteredOrders.length === 0 && (
-          <div className="border border-gray-200/50 rounded-xl p-8 text-center">
+          <div className="border border-gray-200/50 rounded-xl p-8 text-left">
             <div className="text-gray-400 mb-4">
               {searchQuery || statusFilter !== 'all' || vendeurFilter !== 'all' || categoryFilter !== 'all' ? (
-                <Search className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                <Search className="w-16 h-16 mb-2 opacity-50" />
               ) : (
-                <Package className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                <Package className="w-16 h-16 mb-2 opacity-50" />
               )}
             </div>
             <div className="text-base sm:text-lg font-medium text-gray-600 mb-2">

@@ -27,20 +27,18 @@ export function GroupRentalPage({
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6">
-      <div className="pt-4 sm:pt-16 mx-4 mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-start mb-2">{pageTitle}</h1>
-        <p className="text-gray-600 text-xs sm:text-sm text-start">{pageDescription}</p>
-      </div>
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-4 sm:p-6">
-        <ThreeStepRentalForm
-          onSubmitComplete={onSubmitComplete}
-          onSaveDraft={onSaveDraft}
-          onPrint={onPrint}
-          onStepChange={handleStepChange}
-          initialGroup={initialGroup}
-          initialContract={initialContract}
-        />
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <div className="pt-4 sm:pt-16">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+          <ThreeStepRentalForm
+            onSubmitComplete={onSubmitComplete}
+            onSaveDraft={onSaveDraft}
+            onPrint={onPrint}
+            onStepChange={handleStepChange}
+            initialGroup={initialGroup}
+            initialContract={initialContract}
+          />
+        </div>
       </div>
     </div>
   );
