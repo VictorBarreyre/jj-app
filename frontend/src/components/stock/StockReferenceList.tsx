@@ -29,7 +29,7 @@ interface StockReferenceGroupData {
 export interface StockReferenceListProps {
   groups: StockReferenceGroupData[];
   loading: boolean;
-  onEditItem: (itemId: string) => void;
+  onEditItem: (item: StockItemInGroup & { reference: string; category: string; couleur?: string; subCategory?: string }) => void;
   onViewMovements: (itemId: string) => void;
   onAddNew: () => void;
   onDeleteItem: (item: StockItemInGroup & { reference: string; category: string; couleur?: string }) => void;

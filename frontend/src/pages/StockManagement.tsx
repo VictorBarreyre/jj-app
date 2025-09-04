@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StockItem, StockAlert, CreateStockItemData } from '@/types/stock';
+import { StockItem, StockAlert, CreateStockItemData, UpdateStockItemData } from '@/types/stock';
 import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
 import { StockList } from '@/components/stock/StockList';
 import { StockReferenceList } from '@/components/stock/StockReferenceList';
 import { AddStockItemModal } from '@/components/stock/AddStockItemModal';
+import { EditStockItemModal } from '@/components/stock/EditStockItemModal';
 import { DeleteStockItemModal } from '@/components/stock/DeleteStockItemModal';
 import { Button } from '@/components/ui/button';
 import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight, Grid3X3, List } from 'lucide-react';
@@ -59,7 +60,9 @@ export function StockManagement() {
   
   // États des modales
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<StockItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<StockItem | null>(null);
   
   useEffect(() => {
@@ -263,16 +266,27 @@ export function StockManagement() {
   const filteredItems = stockItems.filter(item => {
     // Filtrer par catégorie active
     if (item.category !== activeCategory) return false;
-    
-    // Filtrer par alertes seulement si demandé
-    if (showAlertsOnly) {
-      return stockAlerts.some(alert => alert.stockItemId === item.id && alert.estActive);
-    }
     return true;
   });
 
-  const handleEditItem = (itemId: string) => {
-    // TODO: Implémenter l'édition
+  const handleEditItem = (item: StockItem | any) => {
+    // Adapter l'item selon le format nécessaire pour la modal
+    const standardizedItem: StockItem = {
+      id: item.id,
+      category: item.category,
+      subCategory: item.subCategory,
+      reference: item.reference,
+      taille: item.taille,
+      couleur: item.couleur,
+      quantiteStock: item.quantiteStock,
+      quantiteReservee: item.quantiteReservee,
+      quantiteDisponible: item.quantiteDisponible,
+      seuilAlerte: item.seuilAlerte,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    };
+    setItemToEdit(standardizedItem);
+    setIsEditModalOpen(true);
   };
 
   const handleViewMovements = (itemId: string) => {
@@ -322,6 +336,31 @@ export function StockManagement() {
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Erreur lors de la création');
+      }
+
+      // Recharger les données et compteurs
+      await loadStockData();
+      await loadAlerts();
+      await loadCategoryCounts();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  };
+
+  const updateStockItem = async (itemId: string, data: UpdateStockItemData) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/stock/items/${itemId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la modification');
       }
 
       // Recharger les données et compteurs
@@ -479,6 +518,16 @@ export function StockManagement() {
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={createStockItem}
         defaultCategory={activeCategory} // Pré-sélectionner la catégorie active
+      />
+
+      <EditStockItemModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setItemToEdit(null);
+        }}
+        onSubmit={updateStockItem}
+        item={itemToEdit}
       />
 
       <DeleteStockItemModal

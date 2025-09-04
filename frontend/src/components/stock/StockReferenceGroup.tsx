@@ -37,7 +37,7 @@ interface StockReferenceGroupData {
 
 interface StockReferenceGroupProps {
   group: StockReferenceGroupData;
-  onEditItem: (itemId: string) => void;
+  onEditItem: (item: StockItemInGroup & { reference: string; category: string; couleur?: string; subCategory?: string }) => void;
   onViewMovements: (itemId: string) => void;
   onDeleteItem: (item: StockItemInGroup & { reference: string; category: string; couleur?: string }) => void;
 }
@@ -208,7 +208,13 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => onEditItem(item.id)}
+                      onClick={() => onEditItem({
+                        ...item,
+                        reference: group.reference,
+                        category: group.category,
+                        subCategory: group.subCategory,
+                        couleur: group.couleur
+                      })}
                       className="bg-white border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm flex-1 py-3 font-medium min-h-[56px]"
                     >
                       <Edit3 className="w-4 h-4 mr-2" />
@@ -252,7 +258,7 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
                   <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Réservé</th>
                   <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Disponible</th>
                   <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Statut</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -286,12 +292,19 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-end gap-2">
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          onClick={() => onEditItem(item.id)}
+                          onClick={() => onEditItem({
+                        ...item,
+                        reference: group.reference,
+                        category: group.category,
+                        subCategory: group.subCategory,
+                        couleur: group.couleur
+                      })}
                           className="bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-lg transition-all shadow-sm"
+                          title="Modifier"
                         >
                           <Edit3 className="w-3 h-3" />
                         </Button>
@@ -299,7 +312,8 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
                           size="sm" 
                           variant="outline" 
                           onClick={() => onViewMovements(item.id)}
-                          className="bg-white/70 border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 rounded-lg transition-all shadow-sm"
+                          className="bg-white/70 border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 rounded-lg transition-all shadow-sm"
+                          title="Voir l'historique"
                         >
                           <History className="w-3 h-3" />
                         </Button>
@@ -313,6 +327,7 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
                             couleur: group.couleur
                           })}
                           className="bg-white/70 border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-700 rounded-lg transition-all shadow-sm"
+                          title="Supprimer"
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
