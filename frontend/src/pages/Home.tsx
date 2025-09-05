@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { OrdersList } from '../components/home/OrdersList';
+import { OrderViewEditModal } from '../components/orders/OrderViewEditModal';
 import { Order } from '@/types/order';
-import { useOrders, useDeleteOrder } from '@/hooks/useOrders';
+import { useOrders, useDeleteOrder, useUpdateOrder } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
 import { User, Users, Plus } from 'lucide-react';
 
@@ -23,13 +24,59 @@ interface TypeTab {
 export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const { data: ordersData, isLoading, error } = useOrders();
   const deleteOrderMutation = useDeleteOrder();
+  const updateOrderMutation = useUpdateOrder();
   const [activeType, setActiveType] = useState<OrderType>('individuel');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const orders = ordersData?.orders || [];
 
   const handleDeleteOrder = (orderId: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
       deleteOrderMutation.mutate(orderId);
+    }
+  };
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+    setIsEditing(false);
+  };
+
+  const handleEditOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+    setIsEditing(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+    setIsEditing(false);
+  };
+
+  const handleStartEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveOrder = async (updatedOrder: Partial<Order>) => {
+    if (!selectedOrder) return;
+    
+    try {
+      await updateOrderMutation.mutateAsync({
+        id: selectedOrder.id,
+        data: updatedOrder
+      });
+      setIsEditing(false);
+      // La commande sera automatiquement mise à jour grâce à la réactualisation de la query
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      throw error;
     }
   };
   
@@ -125,8 +172,8 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
           {/* Liste des commandes */}
           <OrdersList
             orders={filteredOrders}
-            onView={onViewOrder}
-            onEdit={onEditOrder}
+            onView={handleViewOrder}
+            onEdit={handleEditOrder}
             onDelete={handleDeleteOrder}
             onCreateNew={onCreateNew}
             hideHeader={true}
@@ -134,6 +181,17 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
           />
         </div>
       </div>
+
+      {/* Modal de visualisation/édition */}
+      <OrderViewEditModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        order={selectedOrder}
+        isEditing={isEditing}
+        onEdit={handleStartEdit}
+        onSave={handleSaveOrder}
+        onCancel={handleCancelEdit}
+      />
     </div>
   );
 }

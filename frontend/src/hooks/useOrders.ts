@@ -10,26 +10,103 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
       const response = await contractsAPI.getAll(params);
       // Transformer les contrats en format compatible avec l'interface existante
       return {
-        orders: response.contracts.map((contract: RentalContract) => ({
-          ...contract,
-          id: contract.id || contract._id, // Assurer compatibilité avec MongoDB _id
-          type: contract.type || 'individuel',
-          // Mapper les champs nécessaires
-          client: {
-            nom: contract.client.nom,
-            prenom: '', // Les contrats n'ont pas de prénom séparé
-            telephone: contract.client.telephone || '',
-            email: contract.client.email
-          },
-          dateCommande: contract.dateCreation,
-          dateLivraison: contract.dateEvenement,
-          status: contract.rendu ? 'rendue' : (contract.status === 'confirme' ? 'livree' : 'commandee'),
-          articles: contract.articlesStock || [],
-          items: contract.articlesStock || [], // Pour compatibilité avec OrdersList
-          montantTotal: contract.tarifLocation,
-          notes: contract.notes,
-          createdBy: contract.vendeur || 'N/A'
-        })),
+        orders: response.contracts.map((contract: RentalContract) => {
+          // Transformer la tenue en items
+          const items = [];
+          
+          if (contract.tenue?.veste) {
+            items.push({
+              id: `veste-${contract._id}`,
+              category: 'veste',
+              reference: contract.tenue.veste.reference,
+              quantity: 1,
+              measurements: { taille: contract.tenue.veste.taille },
+              notes: ''
+            });
+          }
+          
+          if (contract.tenue?.gilet) {
+            items.push({
+              id: `gilet-${contract._id}`,
+              category: 'gilet',
+              reference: contract.tenue.gilet.reference,
+              quantity: 1,
+              measurements: { taille: contract.tenue.gilet.taille },
+              notes: ''
+            });
+          }
+          
+          if (contract.tenue?.pantalon) {
+            items.push({
+              id: `pantalon-${contract._id}`,
+              category: 'pantalon',
+              reference: contract.tenue.pantalon.reference,
+              quantity: 1,
+              measurements: { taille: contract.tenue.pantalon.taille },
+              notes: ''
+            });
+          }
+          
+          if (contract.tenue?.chapeau) {
+            items.push({
+              id: `chapeau-${contract._id}`,
+              category: 'chapeau',
+              reference: contract.tenue.chapeau.reference,
+              quantity: 1,
+              measurements: { taille: contract.tenue.chapeau.taille },
+              notes: ''
+            });
+          }
+          
+          if (contract.tenue?.chaussures) {
+            items.push({
+              id: `chaussures-${contract._id}`,
+              category: 'chaussures',
+              reference: contract.tenue.chaussures.reference,
+              quantity: 1,
+              measurements: { pointure: contract.tenue.chaussures.taille },
+              notes: ''
+            });
+          }
+          
+          // Ajouter les articles de stock s'il y en a
+          if (contract.articlesStock?.length > 0) {
+            contract.articlesStock.forEach((stockItem, index) => {
+              items.push({
+                id: `stock-${contract._id}-${index}`,
+                category: 'stock',
+                reference: stockItem.reference,
+                quantity: stockItem.quantiteReservee,
+                measurements: { taille: stockItem.taille },
+                unitPrice: stockItem.prix,
+                notes: stockItem.couleur ? `Couleur: ${stockItem.couleur}` : ''
+              });
+            });
+          }
+          
+          return {
+            ...contract,
+            id: contract._id, // Utiliser _id de MongoDB
+            numero: contract.numero,
+            type: contract.type || 'individuel',
+            // Mapper les champs nécessaires
+            client: {
+              nom: contract.client.nom,
+              prenom: contract.client.prenom || '', // Ajouté au cas où
+              telephone: contract.client.telephone || '',
+              email: contract.client.email || '',
+              adresse: contract.client.adresse || {}
+            },
+            dateCreation: contract.dateCreation,
+            dateLivraison: contract.dateEvenement,
+            status: contract.rendu ? 'rendue' : (contract.status === 'confirme' ? 'livree' : 'commandee'),
+            items: items,
+            sousTotal: contract.tarifLocation,
+            total: contract.tarifLocation,
+            notes: contract.notes,
+            createdBy: contract.vendeur || 'N/A'
+          };
+        }),
         total: response.total
       };
     },
