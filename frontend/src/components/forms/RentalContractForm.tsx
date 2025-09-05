@@ -243,27 +243,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             📤 Créer le bon de location
           </Button>
           
-          {initialData?.id && onPrint && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => onPrint(initialData.id!, 'jj')}
-                className="flex items-center gap-2 px-4 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm min-h-[48px]"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimer JJ
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => onPrint(initialData.id!, 'client')}
-                className="flex items-center gap-2 px-4 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm min-h-[48px]"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimer Client
-              </Button>
-            </div>
-          )}
         </div>
         {!isFormValid && (
           <p className="text-sm text-red-600 text-center mt-3">

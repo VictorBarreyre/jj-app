@@ -15,7 +15,6 @@ import {
   Package,
   Euro,
   FileText,
-  Users,
   X
 } from 'lucide-react';
 import { Order, OrderItem } from '@/types/order';
@@ -29,6 +28,7 @@ interface OrderViewEditModalProps {
   onEdit: () => void;
   onSave: (updatedOrder: Partial<Order>) => Promise<void>;
   onCancel: () => void;
+  onEditOrder?: (order: Order) => void; // Nouvelle prop pour rediriger vers le formulaire
 }
 
 export function OrderViewEditModal({ 
@@ -38,7 +38,8 @@ export function OrderViewEditModal({
   isEditing, 
   onEdit, 
   onSave, 
-  onCancel 
+  onCancel,
+  onEditOrder 
 }: OrderViewEditModalProps) {
   const [formData, setFormData] = useState<Partial<Order>>({});
 
@@ -89,9 +90,6 @@ export function OrderViewEditModal({
     }
   };
 
-  const getTypeIcon = (type: Order['type']) => {
-    return type === 'groupe' ? <Users className="w-4 h-4" /> : <User className="w-4 h-4" />;
-  };
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString('fr-FR');
@@ -109,6 +107,36 @@ export function OrderViewEditModal({
     }
   };
 
+  const handleEditItem = (itemId: string) => {
+    console.log('Edit item:', itemId);
+    // La fonctionnalité d'édition est maintenant gérée au niveau de la page Home
+  };
+
+  const handleEditOrderRedirect = () => {
+    if (order && onEditOrder) {
+      onClose(); // Fermer la modal
+      onEditOrder(order); // Rediriger vers le formulaire
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
+    
+    try {
+      // Supprimer l'article de la liste locale
+      const updatedItems = formData.items?.filter(item => item.id !== itemId) || order.items.filter(item => item.id !== itemId);
+      setFormData(prev => ({
+        ...prev,
+        items: updatedItems
+      }));
+      
+      // TODO: Appeler l'API pour mettre à jour le backend et les stocks
+      console.log('Delete item:', itemId);
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    }
+  };
+
 
   return (
     <div className={`fixed inset-0 z-50 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
@@ -119,64 +147,39 @@ export function OrderViewEditModal({
       />
       
       {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
         <div 
-          className="relative w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all"
+          className="relative w-full max-w-4xl transform rounded-xl sm:rounded-2xl bg-white shadow-2xl transition-all"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="max-h-[80vh] overflow-y-scroll scrollbar-none">
+          <div className="max-h-[90vh] sm:max-h-[80vh] overflow-y-scroll scrollbar-none">
             {/* Header personnalisé avec titre, statut et actions */}
-            <div className="px-8 py-6">
-              <div className="flex items-center justify-between pl-4">
+            <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
+              <div className="flex items-start sm:items-center justify-between pl-2 sm:pl-4">
                 {/* Titre avec statut */}
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-bold text-gray-900">Commande #{order.numero}</h2>
-                  <Badge className={`${getStatusColor(order.status)} border text-sm font-semibold`}>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate text-left">Commande #{order.numero}</h2>
+                  <Badge className={`${getStatusColor(order.status)} border text-xs sm:text-sm font-semibold self-start`}>
                     {getStatusLabel(order.status)}
                   </Badge>
                 </div>
                 
-                {/* Actions à droite */}
-                <div className="flex items-center gap-2">
-                  {!isEditing ? (
-                    <Button 
-                      onClick={onEdit}
-                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
-                    >
-                      Modifier
-                    </Button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={onCancel}
-                        variant="outline"
-                        className="px-4 py-2 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        Annuler
-                      </Button>
-                      <Button 
-                        onClick={handleSave}
-                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
-                      >
-                        <Save className="w-4 h-4" />
-                        Sauvegarder
-                      </Button>
-                    </div>
-                  )}
+                {/* Bouton fermer seulement */}
+                <div className="flex items-center flex-shrink-0">
                   <Button 
                     onClick={onClose} 
                     variant="ghost" 
                     size="sm" 
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 ml-2"
+                    className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
-              {/* Métadonnées sous le titre */}
-              <div className="flex items-center gap-4 mt-4 pl-4">
-                <div className="text-xs text-gray-500 space-y-1 text-left">
+              {/* Métadonnées sous le titre avec boutons d'action */}
+              <div className="mt-3 sm:mt-4 pl-2 sm:pl-4 flex justify-between items-end">
+                <div className="text-xs sm:text-xs text-gray-500 space-y-1 text-left">
                   <div className="text-left">Créée le {formatDate(order.dateCreation)}</div>
                   {order.updatedAt && (
                     <div className="text-left">Modifiée le {formatDate(order.updatedAt)}</div>
@@ -186,9 +189,35 @@ export function OrderViewEditModal({
                   )}
                 </div>
                 
-                {/* Icône de type */}
-                <div className="flex items-center">
-                  {getTypeIcon(order.type)}
+                {/* Boutons d'action en bas à droite */}
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                  {!isEditing ? (
+                    <Button 
+                      onClick={handleEditOrderRedirect}
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      <span>Modifier</span>
+                    </Button>
+                  ) : (
+                    <div className="flex gap-1 sm:gap-2">
+                      <Button 
+                        onClick={onCancel}
+                        variant="outline"
+                        className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50 text-sm sm:text-base"
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        onClick={handleSave}
+                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span className="hidden sm:inline">Sauvegarder</span>
+                        <span className="sm:hidden">Sauver</span>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -196,16 +225,16 @@ export function OrderViewEditModal({
             {/* Séparateur */}
             <div className="border-b border-gray-200"></div>
 
-            <div className="space-y-6 px-8 py-6">
+            <div className="space-y-4 sm:space-y-6 px-4 sm:px-8 py-4 sm:py-6">
           {/* Informations client */}
-          <div className="bg-gray-50 rounded-xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3 text-left">
-              <User className="w-6 h-6 text-amber-600" />
+          <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
+              <User className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
               Informations client
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-2 text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Nom complet
                 </label>
                 {isEditing ? (
@@ -225,13 +254,13 @@ export function OrderViewEditModal({
                     className="bg-white"
                   />
                 ) : (
-                  <div className="flex items-start gap-2 text-left">
+                  <div className="text-left">
                     <span className="text-base font-medium text-gray-900 text-left">{order.client.nom} {order.client.prenom || ''}</span>
                   </div>
                 )}
               </div>
               <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-2 text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Téléphone
                 </label>
                 {isEditing ? (
@@ -251,7 +280,7 @@ export function OrderViewEditModal({
                 )}
               </div>
               <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-2 text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Email
                 </label>
                 {isEditing ? (
@@ -271,7 +300,7 @@ export function OrderViewEditModal({
                 )}
               </div>
               <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-2 text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Adresse
                 </label>
                 {isEditing ? (
@@ -305,119 +334,241 @@ export function OrderViewEditModal({
           </div>
 
           {/* Dates importantes */}
-          <div className="bg-gray-50 rounded-xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3 text-left">
-              <Calendar className="w-6 h-6 text-amber-600" />
+          <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
+              <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
               Dates importantes
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-2 text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Date de création
                 </label>
                 <span className="text-base text-gray-900 block text-left">{formatDate(order.dateCreation)}</span>
               </div>
               <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-2 text-left">
-                  Date de livraison prévue
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
+                  Date de l'événement
                 </label>
-                {isEditing ? (
-                  <Input
-                    type="date"
-                    value={formData.dateLivraison ? new Date(formData.dateLivraison).toISOString().split('T')[0] : ''}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      dateLivraison: e.target.value ? new Date(e.target.value) : undefined
-                    }))}
-                    className="bg-white text-left"
-                  />
-                ) : (
-                  <span className="text-base text-gray-900 block text-left">
-                    {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
-                  </span>
-                )}
+                <span className="text-base text-gray-900 block text-left">
+                  {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
+                </span>
+              </div>
+              <div className="text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
+                  Date de livraison
+                </label>
+                <span className="text-base text-gray-900 block text-left">
+                  {order.dateLivraison ? formatDate(new Date(new Date(order.dateLivraison).getTime() - 24 * 60 * 60 * 1000)) : 'Veille de l\'événement'}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Articles commandés */}
-          <div className="bg-gray-50 rounded-xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3 text-left">
-              <Package className="w-6 h-6 text-amber-600" />
-              Articles commandés ({order.items.length})
+          {/* Articles commandés par client */}
+          <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
+              <Package className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+              Articles commandés ({(isEditing && formData.items ? formData.items : (order.items || [])).length})
             </h2>
-            <div className="space-y-3">
-              {order.items.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg p-4 border border-gray-200">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center gap-2 mb-1 text-left">
-                        <h4 className="font-medium text-gray-900 capitalize text-left">
-                          {item.category === 'stock' ? 'Article de stock' : item.category}
-                        </h4>
-                        <Badge variant="outline" className="text-xs">
-                          x{item.quantity}
+            
+            {/* Groupage des articles par client */}
+            {(() => {
+              // Utiliser les données du formulaire en mode édition, sinon les données de base
+              const currentItems = isEditing && formData.items ? formData.items : (order.items || []);
+              
+              // Séparer les articles de tenue et de stock
+              const tenueItems = currentItems.filter(item => item.category !== 'stock');
+              const stockItems = currentItems.filter(item => item.category === 'stock');
+              
+              
+              // Si aucun article, afficher un message
+              if (currentItems.length === 0) {
+                return (
+                  <div className="text-center py-8">
+                    <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg">Aucun article dans cette commande</p>
+                    <p className="text-gray-400 text-sm">Les articles apparaîtront ici une fois ajoutés</p>
+                  </div>
+                );
+              }
+              
+              return (
+                <div className="space-y-6">
+                  {/* Tenue du client principal */}
+                  {tenueItems.length > 0 && (
+                    <div className="bg-white rounded-lg p-4 border-2 border-amber-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <User className="w-5 h-5 text-amber-600" />
+                        <h3 className="font-semibold text-gray-900 text-left">
+                          {order.client.nom} {order.client.prenom || ''}
+                        </h3>
+                        <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-300">
+                          Client principal
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600 font-medium mb-1 text-left">{item.reference}</p>
                       
-                      {/* Affichage des mesures/tailles */}
-                      {item.measurements && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {Object.entries(item.measurements).map(([key, value]) => (
-                            <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
-                              <strong className="mr-1 capitalize">
-                                {key === 'taille' ? 'Taille' : 
-                                 key === 'pointure' ? 'Pointure' : key}:
-                              </strong>
-                              {value}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      <div className="grid gap-4">
+                        {tenueItems.map((item) => (
+                          <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1 text-left">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-medium text-gray-900 capitalize">
+                                    {item.category}
+                                  </h4>
+                                  {isEditing ? (
+                                    <div className="flex gap-2">
+                                      <button 
+                                        onClick={() => handleEditItem(item.id)}
+                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                                      >
+                                        Modifier
+                                      </button>
+                                      <button 
+                                        onClick={() => handleDeleteItem(item.id)}
+                                        className="text-xs text-red-600 hover:text-red-800 font-medium"
+                                      >
+                                        Supprimer
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </div>
+                                <p className="text-sm text-gray-600 font-medium mb-1">{item.reference}</p>
+                                
+                                {/* Mesures/tailles */}
+                                {item.measurements && (
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {Object.entries(item.measurements).map(([key, value]) => (
+                                      <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
+                                        <strong className="mr-1 capitalize">
+                                          {key === 'taille' ? 'Taille' : 
+                                           key === 'pointure' ? 'Pointure' : key}:
+                                        </strong>
+                                        {value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {item.notes && (
+                              <div className="mt-2 p-2 bg-white rounded text-sm text-gray-700">
+                                <strong>Notes:</strong> {item.notes}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-right ml-4">
-                      {item.unitPrice && (
-                        <div className="text-sm font-semibold text-gray-900">{formatPrice(item.unitPrice)}</div>
-                      )}
-                      {item.unitPrice && item.quantity > 1 && (
-                        <div className="text-xs text-gray-500">
-                          {formatPrice(item.unitPrice * item.quantity)} total
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {item.notes && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
-                      <strong>Notes:</strong> {item.notes}
+                  )}
+                  
+                  {/* Articles de stock */}
+                  {stockItems.length > 0 && (
+                    <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Package className="w-5 h-5 text-blue-600" />
+                        <h3 className="font-semibold text-gray-900">Articles de stock</h3>
+                        {stockItems.length > 0 && (
+                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
+                            {stockItems.length} article{stockItems.length > 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="grid gap-4">
+                        {stockItems.map((item) => (
+                          <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1 text-left">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-medium text-gray-900">
+                                    Article de stock
+                                  </h4>
+                                  <Badge variant="outline" className="text-xs">
+                                    x{item.quantity}
+                                  </Badge>
+                                  {isEditing ? (
+                                    <div className="flex gap-2 ml-auto">
+                                      <button 
+                                        onClick={() => handleEditItem(item.id)}
+                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                                      >
+                                        Modifier
+                                      </button>
+                                      <button 
+                                        onClick={() => handleDeleteItem(item.id)}
+                                        className="text-xs text-red-600 hover:text-red-800 font-medium"
+                                      >
+                                        Supprimer
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </div>
+                                <p className="text-sm text-gray-600 font-medium mb-1">{item.reference}</p>
+                                
+                                {/* Mesures/tailles */}
+                                {item.measurements && (
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {Object.entries(item.measurements).map(([key, value]) => (
+                                      <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                        <strong className="mr-1 capitalize">
+                                          {key === 'taille' ? 'Taille' : 
+                                           key === 'pointure' ? 'Pointure' : key}:
+                                        </strong>
+                                        {value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-right ml-4">
+                                {item.unitPrice && (
+                                  <div className="text-sm font-semibold text-gray-900">{formatPrice(item.unitPrice)}</div>
+                                )}
+                                {item.unitPrice && item.quantity > 1 && (
+                                  <div className="text-xs text-gray-500">
+                                    {formatPrice(item.unitPrice * item.quantity)} total
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {item.notes && (
+                              <div className="mt-2 p-2 bg-white rounded text-sm text-gray-700">
+                                <strong>Notes:</strong> {item.notes}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </div>
 
           {/* Tarification */}
-          {(order.sousTotal || order.tva || order.total) && (
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3 text-left">
-                <Euro className="w-6 h-6 text-amber-600" />
+          {((order.sousTotal && order.sousTotal > 0) || (order.tva && order.tva > 0) || (order.total && order.total > 0)) && (
+            <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
+                <Euro className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
                 Tarification
               </h2>
-              <div className="space-y-2">
-                {order.sousTotal && (
+              <div className="space-y-3">
+                {order.sousTotal && order.sousTotal > 0 && (
                   <div className="flex justify-between text-left">
                     <span className="text-gray-700 text-left">Sous-total:</span>
                     <span className="font-medium text-right">{formatPrice(order.sousTotal)}</span>
                   </div>
                 )}
-                {order.tva && (
+                {order.tva && order.tva > 0 && (
                   <div className="flex justify-between text-left">
                     <span className="text-gray-700 text-left">TVA:</span>
                     <span className="font-medium text-right">{formatPrice(order.tva)}</span>
                   </div>
                 )}
-                {order.total && (
+                {order.total && order.total > 0 && (
                   <div className="flex justify-between border-t border-gray-200 pt-2 text-left">
                     <span className="font-semibold text-gray-900 text-left">Total:</span>
                     <span className="font-bold text-lg text-amber-600 text-right">{formatPrice(order.total)}</span>
@@ -428,9 +579,9 @@ export function OrderViewEditModal({
           )}
 
           {/* Notes */}
-          <div className="bg-gray-50 rounded-xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3 text-left">
-              <FileText className="w-6 h-6 text-amber-600" />
+          <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
+              <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
               Notes
             </h2>
             {isEditing ? (

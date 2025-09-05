@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Edit, Trash2, Calendar, Phone, Package, Search, Filter, Plus, User, Shirt } from 'lucide-react';
+import { Eye, Edit, Calendar, Phone, Package, Search, Filter, Plus, User, Shirt } from 'lucide-react';
 import { Order } from '@/types/order';
 import { Vendeur } from '@/types/measurement-form';
 
@@ -11,7 +11,6 @@ interface OrdersListProps {
   orders: Order[];
   onView: (order: Order) => void;
   onEdit: (order: Order) => void;
-  onDelete: (orderId: string) => void;
   onCreateNew: () => void;
   hideHeader?: boolean;
   activeType?: string;
@@ -39,7 +38,7 @@ const CATEGORIES = [
   { value: 'chaussures', label: 'Chaussures' }
 ];
 
-export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hideHeader, activeType }: OrdersListProps) {
+export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, activeType }: OrdersListProps) {
   const [activeTab, setActiveTab] = useState<'individuel' | 'groupe'>('individuel');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -328,15 +327,6 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
                 >
                   <Edit className="w-3 h-3" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(order.id)}
-                  className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  title="Supprimer"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
               </div>
             </div>
 
@@ -403,14 +393,6 @@ export function OrdersList({ orders, onView, onEdit, onDelete, onCreateNew, hide
                 >
                   <Edit className="w-5 h-5 mr-2" />
                   <span className="text-sm">Modifier</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onDelete(order.id)}
-                  className="bg-white border-red-300 text-red-600 hover:bg-red-50 rounded-xl px-4 py-3 font-medium min-h-[48px]"
-                >
-                  <Trash2 className="w-5 h-5" />
                 </Button>
               </div>
             </div>

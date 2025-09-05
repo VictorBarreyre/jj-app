@@ -4,7 +4,7 @@ import { GroupMeasurementForm } from './GroupMeasurementForm';
 import { RentalContractForm } from './RentalContractForm';
 import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
-import { ChevronLeft, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
 // Clés pour localStorage
 const STORAGE_KEYS = {
@@ -17,7 +17,8 @@ interface ThreeStepRentalFormProps {
   onSubmitComplete: (group: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
   onSaveDraft: (group?: GroupRentalInfo, contract?: Partial<RentalContract>) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
-  onStepChange?: (step: number, title: string, description: string) => void;
+  onStepChange?: (step: number, title: string, description: string, canGoToStep: (step: number) => boolean) => void;
+  onStepNavigate?: (targetStep: number) => void;
   initialGroup?: Partial<GroupRentalInfo>;
   initialContract?: Partial<RentalContract>;
 }
@@ -76,6 +77,7 @@ export const ThreeStepRentalForm = forwardRef<
   onSaveDraft, 
   onPrint, 
   onStepChange,
+  onStepNavigate,
   initialGroup, 
   initialContract 
 }, ref) {
@@ -114,6 +116,33 @@ export const ThreeStepRentalForm = forwardRef<
       saveCurrentData();
     }
   }, [currentStep, groupData, contractData]);
+
+  // Gestion des données initiales (mode édition)
+  useEffect(() => {
+    console.log('ThreeStepRentalForm - useEffect déclenché avec:', { initialContract, initialGroup });
+    if (initialContract || initialGroup) {
+      console.log('Chargement des données initiales:', { initialContract, initialGroup });
+      
+      if (initialGroup) {
+        console.log('Setting group data from initialGroup:', initialGroup);
+        setGroupData(initialGroup as GroupRentalInfo);
+        // En mode édition, commencer à l'étape 1 pour permettre la navigation complète
+        setCurrentStep(1);
+      }
+      
+      if (initialContract) {
+        console.log('Setting contract data:', initialContract);
+        setContractData(initialContract);
+      }
+      
+      // Si on a les deux types de données, on peut naviguer entre toutes les étapes
+      if (initialContract && initialGroup) {
+        console.log('Mode édition complet - toutes les données disponibles');
+      }
+    } else {
+      console.log('Aucune donnée initiale fournie');
+    }
+  }, [initialContract, initialGroup]);
 
   // Étape 1 : Configuration du groupe
   const handleGroupSetupSubmit = (group: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => {
@@ -198,14 +227,6 @@ export const ThreeStepRentalForm = forwardRef<
     setContractData(contractPart); // Mettre à jour les données locales pour localStorage
   };
 
-  // Navigation
-  const goBackToStep1 = () => {
-    setCurrentStep(1);
-  };
-
-  const goBackToStep2 = () => {
-    setCurrentStep(2);
-  };
 
   // Fonction pour obtenir le titre et la description de l'étape actuelle
   const getCurrentStepInfo = () => {
@@ -244,12 +265,36 @@ export const ThreeStepRentalForm = forwardRef<
 
   const stepInfo = getCurrentStepInfo();
 
+  // Fonction pour vérifier si on peut naviguer vers une étape
+  const canGoToStep = (targetStep: number): boolean => {
+    if (targetStep <= currentStep) return true; // On peut toujours revenir en arrière
+    if (targetStep === 1) return true; // Étape 1 toujours accessible
+    if (targetStep === 2) return groupData !== null; // Étape 2 accessible si on a les données de groupe
+    if (targetStep === 3) return groupData !== null && contractData !== null; // Étape 3 accessible si on a les deux
+    return false;
+  };
+
+  // Fonction de navigation entre étapes
+  const navigateToStep = (targetStep: number) => {
+    if (canGoToStep(targetStep)) {
+      setCurrentStep(targetStep as 1 | 2 | 3);
+    }
+  };
+
+  // Gérer la navigation depuis l'extérieur
+  useEffect(() => {
+    if (onStepNavigate) {
+      // Remplacer la fonction de navigation externe
+      (window as any).__threeStepFormNavigate = navigateToStep;
+    }
+  }, [onStepNavigate]);
+
   // Notifier le parent quand l'étape change
   useEffect(() => {
     if (onStepChange) {
-      onStepChange(currentStep, stepInfo.title, stepInfo.description);
+      onStepChange(currentStep, stepInfo.title, stepInfo.description, canGoToStep);
     }
-  }, [currentStep, onStepChange, stepInfo.title, stepInfo.description]);
+  }, [currentStep, stepInfo.title, stepInfo.description]);
 
   // Fonction pour réinitialiser le formulaire
   const resetForm = () => {
@@ -267,6 +312,7 @@ export const ThreeStepRentalForm = forwardRef<
 
   return (
     <div className="mx-auto">
+
       {/* En-tête avec titre et bouton reset */}
       <div className="flex items-start justify-between mb-6 pb-4 border-b border-gray-200 pt-2 pl-2">
         <div className="flex-1 text-left">
@@ -298,57 +344,89 @@ export const ThreeStepRentalForm = forwardRef<
             groupData={groupData}
             onSubmit={handleMeasurementSubmit}
             onSave={handleMeasurementSave}
-            onBack={goBackToStep1}
           />
         )}
 
         {currentStep === 3 && contractData && groupData && (
           <div>
-            <div className="mb-6 flex items-center justify-start">
-              <button
-                onClick={goBackToStep2}
-                className="flex items-center gap-2 px-3 py-3 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50 min-h-[48px]"
-              >
-                <ChevronLeft className="w-3 h-3" />
-                Retour aux tenues
-              </button>
-            </div>
 
             {/* Résumé des étapes précédentes */}
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
-              <h3 className="font-semibold text-gray-900 mb-3">
-                Résumé {groupData.clients.length > 1 ? 'du groupe de location' : 'de la prise de mesure'}
+            <div className="mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-4 text-left text-lg">
+                📋 Résumé {groupData.clients.length > 1 ? 'du groupe de location' : 'de la prise de mesure'}
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-                <div>
-                  <span className="text-gray-600">{groupData.clients.length > 1 ? 'Groupe' : 'Client'}:</span>
-                  <p className="font-medium">{groupData.groupName}</p>
+              
+              {/* Informations principales - alignées à gauche */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {groupData.clients.length > 1 ? 'Groupe' : 'Client'}
+                  </span>
+                  <p className="font-semibold text-gray-900 text-sm">{groupData.groupName}</p>
                 </div>
-                <div>
-                  <span className="text-gray-600">{groupData.clients.length > 1 ? 'Participants' : 'Téléphone'}:</span>
-                  <p className="font-medium">
+                
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {groupData.clients.length > 1 ? 'Participants' : 'Téléphone'}
+                  </span>
+                  <p className="font-semibold text-gray-900 text-sm">
                     {groupData.clients.length > 1 
                       ? `${groupData.clients.length} personne${groupData.clients.length > 1 ? 's' : ''}` 
                       : groupData.telephone
                     }
                   </p>
                 </div>
-                <div>
-                  <span className="text-gray-600">Vendeur:</span>
-                  <p className="font-medium">{groupData.vendeur}</p>
+                
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    Vendeur
+                  </span>
+                  <p className="font-semibold text-gray-900 text-sm">{groupData.vendeur}</p>
                 </div>
-                <div>
-                  <span className="text-gray-600">Date événement:</span>
-                  <p className="font-medium">{groupData.dateEssai.toLocaleDateString()}</p>
+                
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    Date événement
+                  </span>
+                  <p className="font-semibold text-gray-900 text-sm">{groupData.dateEssai.toLocaleDateString('fr-FR')}</p>
                 </div>
               </div>
               
+              {/* Participants détaillés pour les groupes */}
               {groupData.clients.length > 1 && (
-                <div className="pt-2 border-t border-gray-200">
-                  <span className="text-gray-600 text-xs">Participants: </span>
-                  <span className="text-xs">
-                    {groupData.clients.map(client => client.nom).join(', ')}
+                <div className="pt-3 border-t border-gray-300">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                    Liste des participants
                   </span>
+                  <div className="flex flex-wrap gap-2">
+                    {groupData.clients.map((client, index) => (
+                      <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        {client.nom}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Contact supplémentaire pour les groupes */}
+              {groupData.clients.length > 1 && groupData.telephone && (
+                <div className="pt-3 border-t border-gray-300 mt-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="text-left">
+                      <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                        Téléphone du groupe
+                      </span>
+                      <p className="font-semibold text-gray-900 text-sm">{groupData.telephone}</p>
+                    </div>
+                    {groupData.email && (
+                      <div className="text-left">
+                        <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                          Email du groupe
+                        </span>
+                        <p className="font-semibold text-gray-900 text-sm">{groupData.email}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

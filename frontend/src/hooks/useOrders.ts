@@ -84,6 +84,23 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             });
           }
           
+          // Calculer le total à partir des articles si tarifLocation n'existe pas
+          let calculatedTotal = contract.tarifLocation || 0;
+          
+          // Si pas de tarif de location, essayer de calculer depuis les articles de stock
+          if (!calculatedTotal && contract.articlesStock?.length > 0) {
+            calculatedTotal = contract.articlesStock.reduce((sum: number, item: any) => {
+              return sum + (item.prix * item.quantiteReservee);
+            }, 0);
+          }
+          
+          console.log('Contract pricing info:', {
+            numero: contract.numero,
+            tarifLocation: contract.tarifLocation,
+            articlesStock: contract.articlesStock?.length || 0,
+            calculatedTotal
+          });
+          
           return {
             ...contract,
             id: contract._id, // Utiliser _id de MongoDB
@@ -101,8 +118,8 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             dateLivraison: contract.dateEvenement,
             status: contract.rendu ? 'rendue' : (contract.status === 'confirme' ? 'livree' : 'commandee'),
             items: items,
-            sousTotal: contract.tarifLocation,
-            total: contract.tarifLocation,
+            sousTotal: calculatedTotal,
+            total: calculatedTotal,
             notes: contract.notes,
             createdBy: contract.vendeur || 'N/A'
           };

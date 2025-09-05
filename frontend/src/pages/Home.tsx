@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { OrdersList } from '../components/home/OrdersList';
 import { OrderViewEditModal } from '../components/orders/OrderViewEditModal';
 import { Order } from '@/types/order';
-import { useOrders, useDeleteOrder, useUpdateOrder } from '@/hooks/useOrders';
+import { useOrders, useUpdateOrder } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
 import { User, Users, Plus } from 'lucide-react';
 
@@ -23,7 +23,6 @@ interface TypeTab {
 
 export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const { data: ordersData, isLoading, error } = useOrders();
-  const deleteOrderMutation = useDeleteOrder();
   const updateOrderMutation = useUpdateOrder();
   const [activeType, setActiveType] = useState<OrderType>('individuel');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -32,11 +31,6 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
 
   const orders = ordersData?.orders || [];
 
-  const handleDeleteOrder = (orderId: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
-      deleteOrderMutation.mutate(orderId);
-    }
-  };
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
@@ -45,9 +39,8 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   };
 
   const handleEditOrder = (order: Order) => {
-    setSelectedOrder(order);
-    setIsModalOpen(true);
-    setIsEditing(true);
+    // Appeler la fonction fournie par App.tsx pour naviguer vers le formulaire en mode édition
+    onEditOrder(order);
   };
 
   const handleCloseModal = () => {
@@ -174,7 +167,6 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
             orders={filteredOrders}
             onView={handleViewOrder}
             onEdit={handleEditOrder}
-            onDelete={handleDeleteOrder}
             onCreateNew={onCreateNew}
             hideHeader={true}
             activeType={activeType}
@@ -191,6 +183,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
         onEdit={handleStartEdit}
         onSave={handleSaveOrder}
         onCancel={handleCancelEdit}
+        onEditOrder={onEditOrder}
       />
     </div>
   );

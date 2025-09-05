@@ -21,13 +21,12 @@ interface GroupMeasurementFormProps {
   groupData: GroupRentalInfo;
   onSubmit: (updatedGroup: GroupRentalInfo) => void;
   onSave?: (updatedGroup: GroupRentalInfo) => void;
-  onBack: () => void;
 }
 
 const TAILLES_CHAUSSURES: TailleChaussure[] = ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '60', '61', '62'];
 
-export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: GroupMeasurementFormProps) {
+export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasurementFormProps) {
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
   const [vesteReferences, setVesteReferences] = useState<any[]>([]);
@@ -152,19 +151,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
       
       {/* En-tête avec navigation */}
       <div className="border-b border-gray-200 pb-6">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 px-3 py-3 text-sm text-gray-600 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50 min-h-[48px]"
-          >
-            <ChevronLeft className="w-3 h-3" />
-            Retour au groupe
-          </button>
-          
-          <div className="text-sm text-gray-600 bg-amber-50 px-3 py-1 rounded-full">
-            {updatedGroup.groupName}
-          </div>
-        </div>
 
         <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
@@ -197,20 +183,90 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
       {/* Formulaire pour le client actuel */}
       <div className="space-y-6">
         
-        {/* Informations du client actuel */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-gray-500 to-gray-600 p-2 rounded-lg shadow-md">
-              <User className="w-5 h-5 text-white" />
+        {/* Résumé des informations du client actuel */}
+        <div className="mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+          <h3 className="font-bold text-gray-900 mb-4 text-left text-lg flex items-center gap-2">
+            <User className="w-5 h-5 text-amber-600" />
+            Client en cours de mesure
+          </h3>
+          
+          {/* Informations du client - alignées à gauche */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div className="text-left">
+              <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                Nom du client
+              </span>
+              <p className="font-semibold text-gray-900 text-sm">{currentClient.nom}</p>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">{currentClient.nom}</h3>
-              <p className="text-sm text-gray-600">{currentClient.telephone}</p>
-              {currentClient.email && (
-                <p className="text-xs text-gray-500">{currentClient.email}</p>
-              )}
+            
+            {currentClient.telephone && (
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Téléphone
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">{currentClient.telephone}</p>
+              </div>
+            )}
+            
+            {currentClient.email && (
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Email
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">{currentClient.email}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Informations du groupe de base */}
+          <div className="pt-3 border-t border-gray-300">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Groupe
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">{updatedGroup.groupName}</p>
+              </div>
+              
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Vendeur
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">{updatedGroup.vendeur}</p>
+              </div>
+              
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Date événement
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">{updatedGroup.dateEssai.toLocaleDateString('fr-FR')}</p>
+              </div>
             </div>
           </div>
+
+          {/* Progression pour les groupes */}
+          {updatedGroup.clients.length > 1 && (
+            <div className="pt-3 border-t border-gray-300 mt-3">
+              <div className="flex items-center justify-between">
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    Progression
+                  </span>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    Client {currentClientIndex + 1} sur {updatedGroup.clients.length}
+                  </p>
+                </div>
+                <div className="flex-1 max-w-xs ml-4">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${((currentClientIndex + 1) / updatedGroup.clients.length) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sélection des vêtements */}
@@ -417,8 +473,8 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
       </div>
 
       {/* Navigation et actions */}
-      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-gray-200 gap-4">
+        <div className="hidden sm:flex gap-2">
           {currentClientIndex > 0 && (
             <Button
               onClick={() => setCurrentClientIndex(currentClientIndex - 1)}
@@ -440,7 +496,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onBack }: Gr
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           {onSave && (
             <Button
               variant="outline"
