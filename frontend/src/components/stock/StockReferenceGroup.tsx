@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   ChevronDown, 
   ChevronRight, 
+  ChevronUp,
   Edit3, 
   History, 
   Trash2,
@@ -87,41 +88,50 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-start gap-4 sm:gap-3 flex-1">
-          <div className="flex items-center gap-2 mt-2 sm:mt-1">
+          {/* Flèche visible uniquement en desktop */}
+          <div className="hidden sm:flex items-center gap-2 mt-1">
             {isExpanded ? (
-              <ChevronDown className="w-6 h-6 sm:w-5 sm:h-5 text-gray-500" />
+              <ChevronDown className="w-5 h-5 text-gray-500" />
             ) : (
-              <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5 text-gray-500" />
+              <ChevronRight className="w-5 h-5 text-gray-500" />
             )}
           </div>
           
           <div className="text-left flex-1">
-            <div className="flex items-center justify-between sm:block">
+            <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
-              <div className="flex items-center gap-2 text-base sm:text-base text-gray-600 sm:mb-0 sm:mt-1">
-                <span className="font-medium">{group.itemCount} taille{group.itemCount > 1 ? 's' : ''}</span>
+              {/* Flèche mobile à droite */}
+              <div className="flex sm:hidden items-center">
+                {isExpanded ? (
+                  <ChevronUp className="w-6 h-6 text-gray-500" />
+                ) : (
+                  <ChevronDown className="w-6 h-6 text-gray-500" />
+                )}
               </div>
+            </div>
+            <div className="text-base text-gray-600 mt-1">
+              <span className="font-medium">{group.itemCount} taille{group.itemCount > 1 ? 's' : ''}</span>
             </div>
             
             {/* Totaux alignés sous le titre - mobile seulement */}
-            <div className="grid grid-cols-3 gap-5 text-left sm:hidden mt-4">
-              <div className="min-w-0">
+            <div className="flex justify-between w-full sm:hidden mt-4">
+              <div className="text-center">
                 <div className="text-sm text-gray-500 mb-2 font-medium">Stock</div>
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <TrendingUp className="w-4 h-4 text-amber-600 mr-2" />
                   <span className="font-bold text-gray-900 text-lg">{group.totalStock}</span>
                 </div>
               </div>
-              <div className="min-w-0">
+              <div className="text-center">
                 <div className="text-sm text-gray-500 mb-2 font-medium">Réservé</div>
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <TrendingDown className="w-4 h-4 text-orange-500 mr-2" />
                   <span className="font-bold text-gray-900 text-lg">{group.totalReserved}</span>
                 </div>
               </div>
-              <div className="min-w-0">
+              <div className="text-center">
                 <div className="text-sm text-gray-500 mb-2 font-medium">Disponible</div>
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   {group.totalAvailable === 0 ? (
                     <span className="text-lg font-bold text-red-500">Épuisé</span>
                   ) : (
@@ -167,81 +177,96 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
         <div className="bg-gray-50">
           {/* Vue mobile : cartes */}
           <div className="block sm:hidden">
-            <div className="space-y-3 p-4">
+            {/* En-tête contextuel pour mobile - style desktop */}
+            <div className="bg-gray-100 border-b border-gray-200 p-4">
+              <div className="text-center">
+                <h4 className="font-bold text-gray-900 text-base mb-1">Détails par taille</h4>
+                <div className="text-sm text-gray-600">
+                  <span className="font-semibold">{group.reference}</span>
+                  {group.couleur && <span> • {group.couleur}</span>}
+                  {group.subCategory && <span> • {getSubCategoryLabel(group.subCategory)}</span>}
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2 p-3">
               {group.items.map((item) => (
-                <div key={item.id} className="bg-white rounded-2xl border border-gray-200/50 p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-bold text-gray-900 text-lg">Taille {item.taille}</span>
-                    <Badge className={`${getStatusColor(item.quantiteDisponible, item.seuilAlerte)} border text-sm font-bold px-3 py-1`}>
+                <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+                  {/* Header avec taille et statut */}
+                  <div className="flex items-center justify-between bg-gray-50/50 px-4 py-3 border-b border-gray-100">
+                    <span className="font-semibold text-gray-900 text-base">Taille {item.taille}</span>
+                    <Badge className={`${getStatusColor(item.quantiteDisponible, item.seuilAlerte)} border text-xs font-semibold px-2 py-1`}>
                       {getStatusText(item.quantiteDisponible, item.seuilAlerte)}
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-5 mb-5">
-                    <div className="text-left">
-                      <div className="text-sm text-gray-500 mb-2 font-medium">Stock</div>
-                      <div className="flex items-center">
-                        <TrendingUp className="w-4 h-4 text-amber-600 mr-2" />
-                        <span className="font-bold text-gray-900 text-lg">{item.quantiteStock}</span>
+                  {/* Corps de la carte avec métriques */}
+                  <div className="p-4">
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div className="text-center">
+                        <div className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">Stock</div>
+                        <div className="flex flex-col items-center justify-center h-12">
+                          <span className="font-bold text-gray-900 text-lg leading-none">{item.quantiteStock}</span>
+                        </div>
+                      </div>
+                      <div className="text-center border-x border-gray-100">
+                        <div className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">Réservé</div>
+                        <div className="flex flex-col items-center justify-center h-12">
+                          <span className="font-bold text-gray-900 text-lg leading-none">{item.quantiteReservee}</span>
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">Disponible</div>
+                        <div className="flex flex-col items-center justify-center h-12">
+                          {item.quantiteDisponible === 0 ? (
+                            <span className="text-lg font-bold text-red-500 leading-none">Épuisé</span>
+                          ) : (
+                            <span className="text-lg font-bold text-green-600 leading-none">{item.quantiteDisponible}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-left">
-                      <div className="text-sm text-gray-500 mb-2 font-medium">Réservé</div>
-                      <div className="flex items-center">
-                        <TrendingDown className="w-4 h-4 text-orange-500 mr-2" />
-                        <span className="font-bold text-gray-900 text-lg">{item.quantiteReservee}</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm text-gray-500 mb-2 font-medium">Disponible</div>
-                      <div className="flex items-center">
-                        {item.quantiteDisponible === 0 ? (
-                          <span className="text-lg font-bold text-red-500">Épuisé</span>
-                        ) : (
-                          <span className="text-lg font-bold text-green-600">{item.quantiteDisponible}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-3 justify-center">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => onEditItem({
-                        ...item,
-                        reference: group.reference,
-                        category: group.category,
-                        subCategory: group.subCategory,
-                        couleur: group.couleur
-                      })}
-                      className="bg-white border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-xl transition-all shadow-sm flex-1 py-3 font-medium min-h-[56px]"
-                    >
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      <span className="text-sm">Éditer</span>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => onViewMovements(item.id)}
-                      className="bg-white border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 rounded-xl transition-all shadow-sm flex-1 py-3 font-medium min-h-[56px]"
-                    >
-                      <History className="w-4 h-4 mr-2" />
-                      <span className="text-sm">Historique</span>
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => onDeleteItem({
-                        ...item,
-                        reference: group.reference,
-                        category: group.category,
-                        couleur: group.couleur
-                      })}
-                      className="bg-white border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 rounded-xl transition-all shadow-sm w-14 py-3 font-medium min-h-[56px] flex items-center justify-center"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => onEditItem({
+                          ...item,
+                          reference: group.reference,
+                          category: group.category,
+                          subCategory: group.subCategory,
+                          couleur: group.couleur
+                        })}
+                        className="bg-white border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700 rounded-lg transition-all shadow-sm flex-1 py-2 text-sm font-medium"
+                      >
+                        <Edit3 className="w-3 h-3 mr-1.5" />
+                        Éditer
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => onViewMovements(item.id)}
+                        className="bg-white border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 rounded-lg transition-all shadow-sm flex-1 py-2 text-sm font-medium"
+                      >
+                        <History className="w-3 h-3 mr-1.5" />
+                        Historique
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => onDeleteItem({
+                          ...item,
+                          reference: group.reference,
+                          category: group.category,
+                          couleur: group.couleur
+                        })}
+                        className="bg-white border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-700 rounded-lg transition-all shadow-sm w-10 py-2 flex items-center justify-center"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
