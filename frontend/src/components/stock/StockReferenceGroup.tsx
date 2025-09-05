@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   ChevronDown, 
-  ChevronRight, 
   ChevronUp,
   Edit3, 
   History, 
@@ -88,19 +87,10 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-start gap-4 sm:gap-3 flex-1">
-          {/* Flèche visible uniquement en desktop */}
-          <div className="hidden sm:flex items-center gap-2 mt-1">
-            {isExpanded ? (
-              <ChevronDown className="w-5 h-5 text-gray-500" />
-            ) : (
-              <ChevronRight className="w-5 h-5 text-gray-500" />
-            )}
-          </div>
-          
           <div className="text-left flex-1">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
-              {/* Flèche mobile à droite */}
+              {/* Flèche à droite pour mobile seulement */}
               <div className="flex sm:hidden items-center">
                 {isExpanded ? (
                   <ChevronUp className="w-6 h-6 text-gray-500" />
@@ -145,29 +135,37 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
 
         {/* Totaux à droite - desktop seulement */}
         <div className="hidden sm:flex sm:items-center sm:gap-8">
-          <div className="text-left">
+          <div className="text-center">
             <div className="text-xs text-gray-500 mb-1 font-medium">Stock</div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-amber-600 mr-1" />
               <span className="font-bold text-gray-900 text-base">{group.totalStock}</span>
             </div>
           </div>
-          <div className="text-left">
+          <div className="text-center">
             <div className="text-xs text-gray-500 mb-1 font-medium">Réservé</div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <TrendingDown className="w-4 h-4 text-orange-500 mr-1" />
               <span className="font-bold text-gray-900 text-base">{group.totalReserved}</span>
             </div>
           </div>
-          <div className="text-left">
+          <div className="text-center">
             <div className="text-xs text-gray-500 mb-1 font-medium">Disponible</div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               {group.totalAvailable === 0 ? (
                 <span className="text-lg font-bold text-red-500">Épuisé</span>
               ) : (
                 <span className="text-lg font-bold text-green-600">{group.totalAvailable}</span>
               )}
             </div>
+          </div>
+          {/* Flèche desktop à droite des totaux */}
+          <div className="flex items-center ml-4">
+            {isExpanded ? (
+              <ChevronUp className="w-5 h-5 text-gray-500" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-gray-500" />
+            )}
           </div>
         </div>
       </div>
@@ -177,24 +175,18 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
         <div className="bg-gray-50">
           {/* Vue mobile : cartes */}
           <div className="block sm:hidden">
-            {/* En-tête contextuel pour mobile - style desktop */}
-            <div className="bg-gray-100 border-b border-gray-200 p-4">
-              <div className="text-center">
-                <h4 className="font-bold text-gray-900 text-base mb-1">Détails par taille</h4>
-                <div className="text-sm text-gray-600">
-                  <span className="font-semibold">{group.reference}</span>
-                  {group.couleur && <span> • {group.couleur}</span>}
-                  {group.subCategory && <span> • {getSubCategoryLabel(group.subCategory)}</span>}
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-2 p-3">
+            <div className="space-y-3 p-4">
               {group.items.map((item) => (
                 <div key={item.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
                   {/* Header avec taille et statut */}
                   <div className="flex items-center justify-between bg-gray-50/50 px-4 py-3 border-b border-gray-100">
-                    <span className="font-semibold text-gray-900 text-base">Taille {item.taille}</span>
+                    <div className="flex flex-col text-left">
+                      <span className="font-semibold text-gray-900 text-base">Taille {item.taille}</span>
+                      <div className="text-xs text-gray-500 font-medium mt-0.5">
+                        <span>{group.reference}</span>
+                        {group.couleur && <span className="text-gray-400"> • {group.couleur}</span>}
+                      </div>
+                    </div>
                     <Badge className={`${getStatusColor(item.quantiteDisponible, item.seuilAlerte)} border text-xs font-semibold px-2 py-1`}>
                       {getStatusText(item.quantiteDisponible, item.seuilAlerte)}
                     </Badge>
