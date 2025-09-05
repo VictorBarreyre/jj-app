@@ -11,65 +11,10 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
       // Transformer les contrats en format compatible avec l'interface existante
       return {
         orders: response.contracts.map((contract: RentalContract) => {
-          // Transformer la tenue en items
+          // Transformer les données en items
           const items = [];
           
-          if (contract.tenue?.veste) {
-            items.push({
-              id: `veste-${contract._id}`,
-              category: 'veste',
-              reference: contract.tenue.veste.reference,
-              quantity: 1,
-              measurements: { taille: contract.tenue.veste.taille },
-              notes: ''
-            });
-          }
-          
-          if (contract.tenue?.gilet) {
-            items.push({
-              id: `gilet-${contract._id}`,
-              category: 'gilet',
-              reference: contract.tenue.gilet.reference,
-              quantity: 1,
-              measurements: { taille: contract.tenue.gilet.taille },
-              notes: ''
-            });
-          }
-          
-          if (contract.tenue?.pantalon) {
-            items.push({
-              id: `pantalon-${contract._id}`,
-              category: 'pantalon',
-              reference: contract.tenue.pantalon.reference,
-              quantity: 1,
-              measurements: { taille: contract.tenue.pantalon.taille },
-              notes: ''
-            });
-          }
-          
-          if (contract.tenue?.chapeau) {
-            items.push({
-              id: `chapeau-${contract._id}`,
-              category: 'chapeau',
-              reference: contract.tenue.chapeau.reference,
-              quantity: 1,
-              measurements: { taille: contract.tenue.chapeau.taille },
-              notes: ''
-            });
-          }
-          
-          if (contract.tenue?.chaussures) {
-            items.push({
-              id: `chaussures-${contract._id}`,
-              category: 'chaussures',
-              reference: contract.tenue.chaussures.reference,
-              quantity: 1,
-              measurements: { pointure: contract.tenue.chaussures.taille },
-              notes: ''
-            });
-          }
-          
-          // Ajouter les articles de stock s'il y en a
+          // Prioriser articlesStock s'il existe (nouveau format)
           if (contract.articlesStock?.length > 0) {
             contract.articlesStock.forEach((stockItem, index) => {
               items.push({
@@ -82,6 +27,62 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
                 notes: stockItem.couleur ? `Couleur: ${stockItem.couleur}` : ''
               });
             });
+          } else {
+            // Fallback : utiliser contract.tenue pour les anciens contrats
+            if (contract.tenue?.veste) {
+              items.push({
+                id: `veste-${contract._id}`,
+                category: 'veste',
+                reference: contract.tenue.veste.reference,
+                quantity: 1,
+                measurements: { taille: contract.tenue.veste.taille },
+                notes: ''
+              });
+            }
+            
+            if (contract.tenue?.gilet) {
+              items.push({
+                id: `gilet-${contract._id}`,
+                category: 'gilet',
+                reference: contract.tenue.gilet.reference,
+                quantity: 1,
+                measurements: { taille: contract.tenue.gilet.taille },
+                notes: ''
+              });
+            }
+            
+            if (contract.tenue?.pantalon) {
+              items.push({
+                id: `pantalon-${contract._id}`,
+                category: 'pantalon',
+                reference: contract.tenue.pantalon.reference,
+                quantity: 1,
+                measurements: { taille: contract.tenue.pantalon.taille },
+                notes: ''
+              });
+            }
+            
+            if (contract.tenue?.chapeau) {
+              items.push({
+                id: `chapeau-${contract._id}`,
+                category: 'chapeau',
+                reference: contract.tenue.chapeau.reference,
+                quantity: 1,
+                measurements: { taille: contract.tenue.chapeau.taille },
+                notes: ''
+              });
+            }
+            
+            if (contract.tenue?.chaussures) {
+              items.push({
+                id: `chaussures-${contract._id}`,
+                category: 'chaussures',
+                reference: contract.tenue.chaussures.reference,
+                quantity: 1,
+                measurements: { pointure: contract.tenue.chaussures.taille },
+                notes: ''
+              });
+            }
           }
           
           // Calculer le total à partir des articles si tarifLocation n'existe pas
