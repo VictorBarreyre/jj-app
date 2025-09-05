@@ -365,187 +365,144 @@ export function OrderViewEditModal({
             </div>
           </div>
 
-          {/* Articles commandés par client */}
+          {/* Informations du groupe/cérémonie */}
           <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
             <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
-              <Package className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
-              Articles commandés ({(isEditing && formData.items ? formData.items : (order.items || [])).length})
+              {order.type === 'groupe' ? (
+                <>
+                  <Package className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+                  Informations du groupe
+                </>
+              ) : (
+                <>
+                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+                  Détails de la commande
+                </>
+              )}
             </h2>
             
-            {/* Groupage des articles par client */}
-            {(() => {
-              // Utiliser les données du formulaire en mode édition, sinon les données de base
-              const currentItems = isEditing && formData.items ? formData.items : (order.items || []);
-              
-              // Séparer les articles de tenue et de stock
-              const tenueItems = currentItems.filter(item => item.category !== 'stock');
-              const stockItems = currentItems.filter(item => item.category === 'stock');
-              
-              
-              // Si aucun article, afficher un message
-              if (currentItems.length === 0) {
-                return (
-                  <div className="text-center py-8">
-                    <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg">Aucun article dans cette commande</p>
-                    <p className="text-gray-400 text-sm">Les articles apparaîtront ici une fois ajoutés</p>
+            {/* Résumé de la commande */}
+            {order.type === 'groupe' ? (
+              <div className="space-y-4">
+                {/* Statistiques du groupe */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-lg p-4 border border-amber-200">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-sm text-gray-600">Participants</p>
+                        <p className="text-2xl font-bold text-amber-600">
+                          {order.items?.filter(item => item.category !== 'stock').length || 1}
+                        </p>
+                      </div>
+                      <User className="w-8 h-8 text-amber-400" />
+                    </div>
                   </div>
-                );
-              }
-              
-              return (
-                <div className="space-y-6">
-                  {/* Tenue du client principal */}
-                  {tenueItems.length > 0 && (
-                    <div className="bg-white rounded-lg p-4 border-2 border-amber-200">
-                      <div className="flex items-center gap-3 mb-4">
-                        <User className="w-5 h-5 text-amber-600" />
-                        <h3 className="font-semibold text-gray-900 text-left">
-                          {order.client.nom} {order.client.prenom || ''}
-                        </h3>
-                        <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-300">
-                          Client principal
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid gap-4">
-                        {tenueItems.map((item) => (
-                          <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1 text-left">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-medium text-gray-900 capitalize">
-                                    {item.category}
-                                  </h4>
-                                  {isEditing ? (
-                                    <div className="flex gap-2">
-                                      <button 
-                                        onClick={() => handleEditItem(item.id)}
-                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                                      >
-                                        Modifier
-                                      </button>
-                                      <button 
-                                        onClick={() => handleDeleteItem(item.id)}
-                                        className="text-xs text-red-600 hover:text-red-800 font-medium"
-                                      >
-                                        Supprimer
-                                      </button>
-                                    </div>
-                                  ) : null}
-                                </div>
-                                <p className="text-sm text-gray-600 font-medium mb-1">{item.reference}</p>
-                                
-                                {/* Mesures/tailles */}
-                                {item.measurements && (
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {Object.entries(item.measurements).map(([key, value]) => (
-                                      <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
-                                        <strong className="mr-1 capitalize">
-                                          {key === 'taille' ? 'Taille' : 
-                                           key === 'pointure' ? 'Pointure' : key}:
-                                        </strong>
-                                        {value}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            {item.notes && (
-                              <div className="mt-2 p-2 bg-white rounded text-sm text-gray-700">
-                                <strong>Notes:</strong> {item.notes}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   
-                  {/* Articles de stock */}
-                  {stockItems.length > 0 && (
-                    <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Package className="w-5 h-5 text-blue-600" />
-                        <h3 className="font-semibold text-gray-900">Articles de stock</h3>
-                        {stockItems.length > 0 && (
-                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
-                            {stockItems.length} article{stockItems.length > 1 ? 's' : ''}
-                          </Badge>
-                        )}
+                  <div className="bg-white rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-sm text-gray-600">Articles total</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {order.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0}
+                        </p>
                       </div>
-                      
-                      <div className="grid gap-4">
-                        {stockItems.map((item) => (
-                          <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1 text-left">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-medium text-gray-900">
-                                    Article de stock
-                                  </h4>
-                                  <Badge variant="outline" className="text-xs">
-                                    x{item.quantity}
-                                  </Badge>
-                                  {isEditing ? (
-                                    <div className="flex gap-2 ml-auto">
-                                      <button 
-                                        onClick={() => handleEditItem(item.id)}
-                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                                      >
-                                        Modifier
-                                      </button>
-                                      <button 
-                                        onClick={() => handleDeleteItem(item.id)}
-                                        className="text-xs text-red-600 hover:text-red-800 font-medium"
-                                      >
-                                        Supprimer
-                                      </button>
-                                    </div>
-                                  ) : null}
-                                </div>
-                                <p className="text-sm text-gray-600 font-medium mb-1">{item.reference}</p>
-                                
-                                {/* Mesures/tailles */}
-                                {item.measurements && (
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {Object.entries(item.measurements).map(([key, value]) => (
-                                      <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                                        <strong className="mr-1 capitalize">
-                                          {key === 'taille' ? 'Taille' : 
-                                           key === 'pointure' ? 'Pointure' : key}:
-                                        </strong>
-                                        {value}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="text-right ml-4">
-                                {item.unitPrice && (
-                                  <div className="text-sm font-semibold text-gray-900">{formatPrice(item.unitPrice)}</div>
-                                )}
-                                {item.unitPrice && item.quantity > 1 && (
-                                  <div className="text-xs text-gray-500">
-                                    {formatPrice(item.unitPrice * item.quantity)} total
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            {item.notes && (
-                              <div className="mt-2 p-2 bg-white rounded text-sm text-gray-700">
-                                <strong>Notes:</strong> {item.notes}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                      <Package className="w-8 h-8 text-blue-400" />
                     </div>
-                  )}
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-sm text-gray-600">Montant total</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {formatPrice(order.total)}
+                        </p>
+                      </div>
+                      <Euro className="w-8 h-8 text-green-400" />
+                    </div>
+                  </div>
                 </div>
-              );
-            })()}
+
+                {/* Détails de l'événement */}
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <h3 className="font-semibold text-gray-900 mb-3 text-left">Détails de l'événement</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="text-left">
+                      <p className="text-sm text-gray-600 mb-1">Type d'événement</p>
+                      <p className="text-base font-medium text-gray-900">Cérémonie de groupe</p>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm text-gray-600 mb-1">Date de l'événement</p>
+                      <p className="text-base font-medium text-gray-900">
+                        {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
+                      </p>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm text-gray-600 mb-1">Responsable du groupe</p>
+                      <p className="text-base font-medium text-gray-900">{order.client.nom} {order.client.prenom || ''}</p>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm text-gray-600 mb-1">Contact</p>
+                      <p className="text-base font-medium text-gray-900">{order.client.telephone || 'Non renseigné'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Statistiques de la commande individuelle */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg p-4 border border-amber-200">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-sm text-gray-600">Articles de tenue</p>
+                        <p className="text-2xl font-bold text-amber-600">
+                          {order.items?.filter(item => item.category !== 'stock').length || 0}
+                        </p>
+                      </div>
+                      <User className="w-8 h-8 text-amber-400" />
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-sm text-gray-600">Articles de stock</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {order.items?.filter(item => item.category === 'stock').reduce((total, item) => total + (item.quantity || 1), 0) || 0}
+                        </p>
+                      </div>
+                      <Package className="w-8 h-8 text-blue-400" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Résumé de la tenue */}
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <h3 className="font-semibold text-gray-900 mb-3 text-left">Résumé de la tenue</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {['veste', 'gilet', 'pantalon', 'chaussures'].map(category => {
+                      const item = order.items?.find(item => item.category === category);
+                      return (
+                        <div key={category} className="text-center p-3 bg-gray-50 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1 capitalize">{category}</p>
+                          {item ? (
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">{item.reference}</p>
+                              {item.measurements?.taille && (
+                                <p className="text-xs text-gray-500">T.{item.measurements.taille}</p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-400">Non sélectionné</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Tarification */}
