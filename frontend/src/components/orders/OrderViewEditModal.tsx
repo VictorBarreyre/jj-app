@@ -130,7 +130,7 @@ export function OrderViewEditModal({
               <div className="flex items-center justify-between pl-4">
                 {/* Titre avec statut */}
                 <div className="flex items-center gap-3">
-                  <h2 className="text-lg font-bold text-gray-900">Commande #{order.numero}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Commande #{order.numero}</h2>
                   <Badge className={`${getStatusColor(order.status)} border text-sm font-semibold`}>
                     {getStatusLabel(order.status)}
                   </Badge>
