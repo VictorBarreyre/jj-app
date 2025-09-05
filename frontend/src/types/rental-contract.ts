@@ -41,6 +41,18 @@ export interface RentalContract {
   articlesStock?: ContractStockItem[];  // Articles de stock réservés
   notes?: string;
   
+  // Informations de groupe (si applicable)
+  isGroup?: boolean;  // Indique si c'est un contrat de groupe
+  participantCount?: number;  // Nombre de participants dans le groupe
+  groupDetails?: {
+    participants: Array<{
+      nom: string;
+      tenue: TenueMeasurement;
+      pieces: string[]; // Liste des pièces de tenue formatées
+      notes?: string;
+    }>;
+  };
+  
   // Tarification
   tarifLocation: number;        // Tarif de location en euros
   depotGarantie: number;       // Dépôt de garantie en euros

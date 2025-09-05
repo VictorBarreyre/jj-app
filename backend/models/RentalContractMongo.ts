@@ -39,6 +39,18 @@ export interface IRentalContractDocument extends Document {
   // Type d'événement
   type: 'individuel' | 'groupe';
   
+  // Informations de groupe (si applicable)
+  isGroup?: boolean;
+  participantCount?: number;
+  groupDetails?: {
+    participants: Array<{
+      nom: string;
+      tenue: TenueInfo;
+      pieces: string[];
+      notes?: string;
+    }>;
+  };
+  
   // Métadonnées
   createdAt: Date;
   updatedAt: Date;
@@ -59,6 +71,7 @@ const teenuePieceSchema = new Schema({
   taille: { type: String, required: true },
   longueur: { type: String },
   longueurManche: { type: String },
+  couleur: { type: String },
   notes: { type: String }
 });
 
@@ -67,6 +80,7 @@ const tenueSchema = new Schema<TenueInfo>({
   veste: teenuePieceSchema,
   gilet: teenuePieceSchema,
   pantalon: teenuePieceSchema,
+  ceinture: teenuePieceSchema, // Ajout de la ceinture
   tailleChapeau: { type: String },
   tailleChaussures: { type: String }
 });
@@ -140,6 +154,18 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
     type: String,
     enum: ['individuel', 'groupe'],
     default: 'individuel'
+  },
+  
+  // Informations de groupe (si applicable)
+  isGroup: { type: Boolean, default: false },
+  participantCount: { type: Number },
+  groupDetails: {
+    participants: [{
+      nom: { type: String, required: true },
+      tenue: tenueSchema,
+      pieces: [{ type: String }],
+      notes: { type: String }
+    }]
   }
 }, {
   timestamps: true, // Ajoute automatiquement createdAt et updatedAt

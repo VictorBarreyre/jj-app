@@ -50,6 +50,17 @@ export interface CreateRentalContractRequest {
     reference: string;
     quantiteReservee: number;
   }>;
+  // Informations de groupe (si applicable)
+  isGroup?: boolean;
+  participantCount?: number;
+  groupDetails?: {
+    participants: Array<{
+      nom: string;
+      tenue: any;
+      pieces: string[];
+      notes?: string;
+    }>;
+  };
 }
 
 export interface RentalContractResponse {

@@ -11,6 +11,7 @@ interface MeasurementFormPageProps {
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
   initialGroup?: Partial<GroupRentalInfo>;
   initialContract?: Partial<RentalContract>;
+  isEditMode?: boolean;
 }
 
 export function MeasurementFormPage({ 
@@ -18,7 +19,8 @@ export function MeasurementFormPage({
   onSaveDraft, 
   onPrint, 
   initialGroup, 
-  initialContract 
+  initialContract,
+  isEditMode = false 
 }: MeasurementFormPageProps) {
   const [pageTitle, setPageTitle] = useState('Nouveau bon de location');
   const [pageDescription, setPageDescription] = useState('Processus complet : configuration, mesures puis création du bon de location');
@@ -110,6 +112,7 @@ export function MeasurementFormPage({
             onStepNavigate={handleStepClick}
             initialGroup={initialGroup}
             initialContract={initialContract}
+            isEditMode={isEditMode}
           />
         </div>
       </div>

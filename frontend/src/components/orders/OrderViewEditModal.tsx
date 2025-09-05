@@ -365,145 +365,106 @@ export function OrderViewEditModal({
             </div>
           </div>
 
-          {/* Informations du groupe/cérémonie */}
+          {/* Résumé détaillé de la commande */}
           <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
             <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
-              {order.type === 'groupe' ? (
-                <>
-                  <Package className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
-                  Informations du groupe
-                </>
-              ) : (
-                <>
-                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
-                  Détails de la commande
-                </>
-              )}
+              <Package className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+              Résumé de la commande
             </h2>
             
-            {/* Résumé de la commande */}
-            {order.type === 'groupe' ? (
-              <div className="space-y-4">
-                {/* Statistiques du groupe */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-amber-200">
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="text-sm text-gray-600">Participants</p>
-                        <p className="text-2xl font-bold text-amber-600">
-                          {order.items?.filter(item => item.category !== 'stock').length || 1}
-                        </p>
-                      </div>
-                      <User className="w-8 h-8 text-amber-400" />
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="text-sm text-gray-600">Articles total</p>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {order.items?.reduce((total, item) => total + (item.quantity || 1), 0) || 0}
-                        </p>
-                      </div>
-                      <Package className="w-8 h-8 text-blue-400" />
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-green-200">
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="text-sm text-gray-600">Montant total</p>
-                        <p className="text-2xl font-bold text-green-600">
-                          {formatPrice(order.total)}
-                        </p>
-                      </div>
-                      <Euro className="w-8 h-8 text-green-400" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Détails de l'événement */}
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-left">Détails de l'événement</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="text-left">
-                      <p className="text-sm text-gray-600 mb-1">Type d'événement</p>
-                      <p className="text-base font-medium text-gray-900">Cérémonie de groupe</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm text-gray-600 mb-1">Date de l'événement</p>
-                      <p className="text-base font-medium text-gray-900">
-                        {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
-                      </p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm text-gray-600 mb-1">Responsable du groupe</p>
-                      <p className="text-base font-medium text-gray-900">{order.client.nom} {order.client.prenom || ''}</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm text-gray-600 mb-1">Contact</p>
-                      <p className="text-base font-medium text-gray-900">{order.client.telephone || 'Non renseigné'}</p>
-                    </div>
-                  </div>
+            {/* Informations principales */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  {order.type === 'groupe' ? 'Groupe' : 'Client'}
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">
+                  {order.type === 'groupe' ? `Groupe ${order.client.nom}` : `${order.client.nom} ${order.client.prenom || ''}`}
+                </p>
+              </div>
+              
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  {order.type === 'groupe' ? 'Participants' : 'Téléphone'}
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">
+                  {order.type === 'groupe' 
+                    ? `${order.participantCount || 1} personne${(order.participantCount || 1) > 1 ? 's' : ''}` 
+                    : order.client.telephone || 'Non renseigné'
+                  }
+                </p>
+              </div>
+              
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Vendeur
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">{order.createdBy || 'Non renseigné'}</p>
+              </div>
+              
+              <div className="text-left">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Date événement
+                </span>
+                <p className="font-semibold text-gray-900 text-sm">
+                  {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
+                </p>
+              </div>
+            </div>
+            
+            {/* Participants pour les groupes */}
+            {order.type === 'groupe' && order.groupDetails?.participants && order.groupDetails.participants.length > 1 && (
+              <div className="pt-3 border-t border-gray-300">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                  Liste des participants
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {order.groupDetails.participants.map((participant, index) => (
+                    <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      {participant.nom}
+                    </span>
+                  ))}
                 </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {/* Statistiques de la commande individuelle */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-amber-200">
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="text-sm text-gray-600">Articles de tenue</p>
-                        <p className="text-2xl font-bold text-amber-600">
-                          {order.items?.filter(item => item.category !== 'stock').length || 0}
-                        </p>
+            )}
+            
+            {/* Détails des tenues */}
+            {order.groupDetails?.participants && order.groupDetails.participants.length > 0 && (
+              <div className="pt-3 border-t border-gray-300 mt-3">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                  Pièces de tenue réservées
+                </span>
+                <div className="space-y-4">
+                  {order.groupDetails.participants.map((participant, index) => (
+                    <div key={index} className="bg-white rounded-lg p-3 text-left border border-gray-200">
+                      <div className="font-semibold text-gray-800 text-left mb-2">
+                        {order.groupDetails!.participants.length > 1 ? participant.nom : 'Tenue sélectionnée'}
                       </div>
-                      <User className="w-8 h-8 text-amber-400" />
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="text-sm text-gray-600">Articles de stock</p>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {order.items?.filter(item => item.category === 'stock').reduce((total, item) => total + (item.quantity || 1), 0) || 0}
-                        </p>
-                      </div>
-                      <Package className="w-8 h-8 text-blue-400" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Résumé de la tenue */}
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-left">Résumé de la tenue</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {['veste', 'gilet', 'pantalon', 'chaussures'].map(category => {
-                      const item = order.items?.find(item => item.category === category);
-                      return (
-                        <div key={category} className="text-center p-3 bg-gray-50 rounded-lg">
-                          <p className="text-xs text-gray-600 mb-1 capitalize">{category}</p>
-                          {item ? (
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">{item.reference}</p>
-                              {item.measurements?.taille && (
-                                <p className="text-xs text-gray-500">T.{item.measurements.taille}</p>
-                              )}
+                      <div className="space-y-1">
+                        {participant.pieces && participant.pieces.length > 0 ? (
+                          participant.pieces.map((piece, pieceIndex) => (
+                            <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
+                              <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
                             </div>
-                          ) : (
-                            <p className="text-sm text-gray-400">Non sélectionné</p>
-                          )}
+                          ))
+                        ) : (
+                          <div className="text-sm text-gray-400 text-left pl-3">
+                            <span className="text-gray-400">•</span> <span className="ml-2">Aucune pièce spécifiée</span>
+                          </div>
+                        )}
+                      </div>
+                      {participant.notes && (
+                        <div className="mt-2 text-xs text-gray-500 italic text-left pl-3">
+                          Note : {participant.notes}
                         </div>
-                      );
-                    })}
-                  </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
+
 
           {/* Tarification */}
           {((order.sousTotal && order.sousTotal > 0) || (order.tva && order.tva > 0) || (order.total && order.total > 0)) && (
@@ -528,7 +489,7 @@ export function OrderViewEditModal({
                 {order.total && order.total > 0 && (
                   <div className="flex justify-between border-t border-gray-200 pt-2 text-left">
                     <span className="font-semibold text-gray-900 text-left">Total:</span>
-                    <span className="font-bold text-lg text-amber-600 text-right">{formatPrice(order.total)}</span>
+                    <span className="font-bold text-base text-amber-600 text-right">{formatPrice(order.total)}</span>
                   </div>
                 )}
               </div>

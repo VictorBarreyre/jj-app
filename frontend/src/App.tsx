@@ -44,26 +44,41 @@ function App() {
 
   // Fonction pour convertir Order vers GroupRentalInfo (pour les étapes 1 et 2)
   const convertOrderToGroup = (order: Order): Partial<GroupRentalInfo> => {
-    // Convertir les items en tenue combinée
-    const tenue: any = {};
-    order.items?.forEach(item => {
-      const category = item.category;
-      if (category === 'veste' || category === 'gilet' || category === 'pantalon' || category === 'chapeau' || category === 'chaussures') {
-        tenue[category] = {
-          reference: item.reference,
-          measurements: item.measurements,
-          notes: item.notes
-        };
-      }
-    });
+    let clients = [];
 
-    return {
-      groupName: order.type === 'groupe' ? `Groupe ${order.client.nom}` : order.client.nom,
-      telephone: order.client.telephone || '',
-      email: order.client.email || '',
-      dateEssai: typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date(),
-      vendeur: order.createdBy || 'N/A',
-      clients: [{
+    // Si on a des groupDetails sauvegardés, les utiliser pour reconstituer les participants
+    if (order.groupDetails?.participants && order.groupDetails.participants.length > 0) {
+      clients = order.groupDetails.participants.map(participant => ({
+        nom: participant.nom,
+        telephone: order.client.telephone, // Le téléphone principal du groupe
+        email: order.client.email, // L'email principal du groupe
+        tenue: participant.tenue || {}, // Utiliser la tenue sauvegardée
+        notes: participant.notes || '',
+        isExistingClient: true,
+        clientId: `group-${participant.nom.toLowerCase().replace(/\s+/g, '-')}`
+      }));
+    } else {
+      // Fallback : convertir les items en tenue combinée (ancien comportement)
+      const tenue: any = {};
+      order.items?.forEach(item => {
+        const category = item.category;
+        if (category === 'veste' || category === 'gilet' || category === 'pantalon' || category === 'ceinture') {
+          tenue[category] = {
+            reference: item.reference,
+            taille: item.measurements?.taille || item.measurements?.pointure || '50',
+            longueur: item.measurements?.longueur,
+            longueurManche: item.measurements?.longueurManche,
+            couleur: item.measurements?.couleur || '',
+            notes: item.notes || ''
+          };
+        } else if (category === 'chapeau') {
+          tenue.tailleChapeau = item.measurements?.taille || '56';
+        } else if (category === 'chaussures') {
+          tenue.tailleChaussures = item.measurements?.pointure || item.measurements?.taille || '42';
+        }
+      });
+
+      clients = [{
         nom: order.client.nom,
         telephone: order.client.telephone,
         email: order.client.email,
@@ -71,7 +86,16 @@ function App() {
         notes: order.notes || '',
         isExistingClient: true,
         clientId: order.client.id
-      }],
+      }];
+    }
+
+    return {
+      groupName: order.type === 'groupe' ? `Groupe ${order.client.nom}` : order.client.nom,
+      telephone: order.client.telephone || '',
+      email: order.client.email || '',
+      dateEssai: typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date(),
+      vendeur: order.createdBy || 'N/A',
+      clients: clients,
       groupNotes: order.notes || '',
       status: 'brouillon'
     };
@@ -125,17 +149,71 @@ function App() {
         prix: item.unitPrice || 0
       })),
       status: order.status || 'brouillon',
-      rendu: order.rendu || false
+      rendu: order.rendu || false,
+      
+      // Informations de groupe si disponibles
+      isGroup: order.type === 'groupe',
+      participantCount: order.participantCount || (order.type === 'groupe' ? 1 : undefined),
+      groupDetails: order.groupDetails
     };
   };
 
-  const handleRentalSubmitComplete = async (measurement: MeasurementFormType, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
+  const handleRentalSubmitComplete = async (groupData: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
     try {
       if (editParams.editMode && editParams.orderId) {
         // Mode édition : mettre à jour la commande existante
         const contractData = {
           ...contract,
-          status: 'confirme' as const
+          status: 'confirme' as const,
+          isGroup: groupData.clients.length > 1,
+          participantCount: groupData.clients.length,
+          groupDetails: groupData.clients.length > 1 ? {
+            participants: groupData.clients.map(client => {
+              const pieces = [];
+              
+              // Veste
+              if (client.tenue.veste) {
+                const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
+                pieces.push(`Veste ${client.tenue.veste.reference}${taille}`);
+              }
+              
+              // Gilet
+              if (client.tenue.gilet) {
+                const taille = client.tenue.gilet.taille ? ` - Taille ${client.tenue.gilet.taille}` : ' - Taille non spécifiée';
+                pieces.push(`Gilet ${client.tenue.gilet.reference}${taille}`);
+              }
+              
+              // Pantalon
+              if (client.tenue.pantalon) {
+                const taille = client.tenue.pantalon.taille ? ` - Taille ${client.tenue.pantalon.taille}` : ' - Taille non spécifiée';
+                const longueur = client.tenue.pantalon.longueur ? ` - Longueur ${client.tenue.pantalon.longueur}cm` : '';
+                pieces.push(`Pantalon ${client.tenue.pantalon.reference}${taille}${longueur}`);
+              }
+              
+              // Ceinture
+              if (client.tenue.ceinture) {
+                const taille = client.tenue.ceinture.taille ? ` - Taille ${client.tenue.ceinture.taille}` : ' - Taille non spécifiée';
+                pieces.push(`Ceinture ${client.tenue.ceinture.reference}${taille}`);
+              }
+              
+              // Chapeau
+              if (client.tenue.tailleChapeau) {
+                pieces.push(`Chapeau - Taille ${client.tenue.tailleChapeau}`);
+              }
+              
+              // Chaussures
+              if (client.tenue.tailleChaussures) {
+                pieces.push(`Chaussures - Pointure ${client.tenue.tailleChaussures}`);
+              }
+              
+              return {
+                nom: client.nom,
+                tenue: client.tenue,
+                pieces: pieces,
+                notes: client.notes
+              };
+            })
+          } : undefined
         };
         
         const updatedContract = await rentalContractApi.update(editParams.orderId, contractData);
@@ -148,7 +226,56 @@ function App() {
         // Mode création : créer une nouvelle commande
         const contractData = {
           ...contract,
-          status: 'confirme' as const
+          status: 'confirme' as const,
+          isGroup: groupData.clients.length > 1,
+          participantCount: groupData.clients.length,
+          groupDetails: groupData.clients.length > 1 ? {
+            participants: groupData.clients.map(client => {
+              const pieces = [];
+              
+              // Veste
+              if (client.tenue.veste) {
+                const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
+                pieces.push(`Veste ${client.tenue.veste.reference}${taille}`);
+              }
+              
+              // Gilet
+              if (client.tenue.gilet) {
+                const taille = client.tenue.gilet.taille ? ` - Taille ${client.tenue.gilet.taille}` : ' - Taille non spécifiée';
+                pieces.push(`Gilet ${client.tenue.gilet.reference}${taille}`);
+              }
+              
+              // Pantalon
+              if (client.tenue.pantalon) {
+                const taille = client.tenue.pantalon.taille ? ` - Taille ${client.tenue.pantalon.taille}` : ' - Taille non spécifiée';
+                const longueur = client.tenue.pantalon.longueur ? ` - Longueur ${client.tenue.pantalon.longueur}cm` : '';
+                pieces.push(`Pantalon ${client.tenue.pantalon.reference}${taille}${longueur}`);
+              }
+              
+              // Ceinture
+              if (client.tenue.ceinture) {
+                const taille = client.tenue.ceinture.taille ? ` - Taille ${client.tenue.ceinture.taille}` : ' - Taille non spécifiée';
+                pieces.push(`Ceinture ${client.tenue.ceinture.reference}${taille}`);
+              }
+              
+              // Chapeau
+              if (client.tenue.tailleChapeau) {
+                pieces.push(`Chapeau - Taille ${client.tenue.tailleChapeau}`);
+              }
+              
+              // Chaussures
+              if (client.tenue.tailleChaussures) {
+                pieces.push(`Chaussures - Pointure ${client.tenue.tailleChaussures}`);
+              }
+              
+              return {
+                nom: client.nom,
+                tenue: client.tenue,
+                pieces: pieces,
+                notes: client.notes
+              };
+            })
+          } : undefined
         };
         
         const createdContract = await rentalContractApi.create(contractData);
@@ -161,7 +288,7 @@ function App() {
     }
   };
 
-  const handleRentalSaveDraft = (measurement: MeasurementFormType, contract?: Partial<RentalContract>) => {
+  const handleRentalSaveDraft = (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>) => {
     // Sauvegarde silencieuse
   };
 
@@ -235,6 +362,7 @@ function App() {
             onSubmitComplete={handleRentalSubmitComplete}
             onSaveDraft={handleRentalSaveDraft}
             onPrint={handlePrint}
+            isEditMode={editParams.editMode}
             initialGroup={(() => {
               const group = editParams.editMode && selectedOrder ? convertOrderToGroup(selectedOrder) : undefined;
               console.log('Rendu MeasurementFormPage - initialGroup:', group);

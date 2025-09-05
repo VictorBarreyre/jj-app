@@ -21,6 +21,7 @@ interface ThreeStepRentalFormProps {
   onStepNavigate?: (targetStep: number) => void;
   initialGroup?: Partial<GroupRentalInfo>;
   initialContract?: Partial<RentalContract>;
+  isEditMode?: boolean;
 }
 
 // Utilitaires pour localStorage
@@ -79,7 +80,8 @@ export const ThreeStepRentalForm = forwardRef<
   onStepChange,
   onStepNavigate,
   initialGroup, 
-  initialContract 
+  initialContract,
+  isEditMode = false 
 }, ref) {
   // Initialiser les états avec les données du localStorage ou les valeurs par défaut
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(() => {
@@ -408,6 +410,77 @@ export const ThreeStepRentalForm = forwardRef<
                 </div>
               )}
               
+              {/* Pièces de tenue réservées */}
+              <div className="pt-3 border-t border-gray-300 mt-3">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                  Pièces de tenue réservées
+                </span>
+                <div className="space-y-4">
+                  {groupData.clients.map((client, clientIndex) => {
+                    const pieces = [];
+                    
+                    // Veste
+                    if (client.tenue.veste) {
+                      const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
+                      pieces.push(`Veste ${client.tenue.veste.reference}${taille}`);
+                    }
+                    
+                    // Gilet
+                    if (client.tenue.gilet) {
+                      const taille = client.tenue.gilet.taille ? ` - Taille ${client.tenue.gilet.taille}` : ' - Taille non spécifiée';
+                      pieces.push(`Gilet ${client.tenue.gilet.reference}${taille}`);
+                    }
+                    
+                    // Pantalon
+                    if (client.tenue.pantalon) {
+                      const taille = client.tenue.pantalon.taille ? ` - Taille ${client.tenue.pantalon.taille}` : ' - Taille non spécifiée';
+                      const longueur = client.tenue.pantalon.longueur ? ` - Longueur ${client.tenue.pantalon.longueur}cm` : '';
+                      pieces.push(`Pantalon ${client.tenue.pantalon.reference}${taille}${longueur}`);
+                    }
+                    
+                    // Ceinture
+                    if (client.tenue.ceinture) {
+                      const taille = client.tenue.ceinture.taille ? ` - Taille ${client.tenue.ceinture.taille}` : ' - Taille non spécifiée';
+                      pieces.push(`Ceinture ${client.tenue.ceinture.reference}${taille}`);
+                    }
+                    
+                    // Chapeau
+                    if (client.tenue.tailleChapeau) {
+                      pieces.push(`Chapeau - Taille ${client.tenue.tailleChapeau}`);
+                    }
+                    
+                    // Chaussures
+                    if (client.tenue.tailleChaussures) {
+                      pieces.push(`Chaussures - Pointure ${client.tenue.tailleChaussures}`);
+                    }
+                    
+                    if (pieces.length === 0) {
+                      pieces.push('Aucune pièce sélectionnée');
+                    }
+                    
+                    return (
+                      <div key={clientIndex} className="bg-gray-50 rounded-lg p-3 text-left">
+                        <div className="font-semibold text-gray-800 text-left mb-2">
+                          {groupData.clients.length > 1 ? client.nom : 'Tenue sélectionnée'}
+                        </div>
+                        <div className="space-y-1">
+                          {pieces.map((piece, index) => (
+                            <div key={index} className="text-sm text-gray-700 text-left pl-3">
+                              <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                            </div>
+                          ))}
+                        </div>
+                        {client.notes && (
+                          <div className="mt-2 text-xs text-gray-500 italic text-left pl-3">
+                            Note : {client.notes}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
               {/* Contact supplémentaire pour les groupes */}
               {groupData.clients.length > 1 && groupData.telephone && (
                 <div className="pt-3 border-t border-gray-300 mt-3">
@@ -437,6 +510,7 @@ export const ThreeStepRentalForm = forwardRef<
               onAutoSave={handleContractAutoSave}
               onPrint={onPrint}
               initialData={contractData}
+              isEditMode={isEditMode}
             />
           </div>
         )}

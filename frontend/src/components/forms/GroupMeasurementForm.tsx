@@ -13,6 +13,7 @@ import {
   Shirt, 
   User, 
   ChevronLeft, 
+  ChevronRight,
   MessageSquare,
   Package
 } from 'lucide-react';
@@ -138,13 +139,29 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
   };
 
   const currentClient = updatedGroup.clients[currentClientIndex];
-  const isFormValid = updatedGroup.clients.every(client => 
-    // Au moins une pièce de vêtement sélectionnée pour chaque client
-    client.tenue.veste?.reference || 
-    client.tenue.gilet?.reference || 
-    client.tenue.pantalon?.reference ||
-    client.tenue.ceinture?.reference
-  );
+  
+  // Fonction pour vérifier si un item est complet (sans notes)
+  const isItemComplete = (item: any) => {
+    return item && item.reference && item.taille;
+  };
+
+  // Fonction pour vérifier si un client a au moins un item complet
+  const hasCompleteItem = (client: any) => {
+    return (
+      isItemComplete(client.tenue.veste) ||
+      isItemComplete(client.tenue.gilet) ||
+      isItemComplete(client.tenue.pantalon) ||
+      isItemComplete(client.tenue.ceinture) ||
+      client.tenue.tailleChapeau ||
+      client.tenue.tailleChaussures
+    );
+  };
+
+  // Validation complète : tous les clients doivent avoir au moins un item complet  
+  const isFormValid = updatedGroup.clients.every(client => hasCompleteItem(client));
+  
+  // Validation pour le client actuel seulement
+  const isCurrentClientValid = hasCompleteItem(currentClient);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -474,27 +491,27 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
       {/* Navigation et actions */}
       <div className="flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-gray-200 gap-4">
-        <div className="hidden sm:flex gap-2">
-          {currentClientIndex > 0 && (
-            <Button
-              onClick={() => setCurrentClientIndex(currentClientIndex - 1)}
-              variant="outline"
-              className="px-4 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
-            >
-              ← Précédent
-            </Button>
-          )}
-          
-          {currentClientIndex < updatedGroup.clients.length - 1 && (
-            <Button
-              onClick={() => setCurrentClientIndex(currentClientIndex + 1)}
-              variant="outline"
-              className="px-4 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
-            >
-              Suivant →
-            </Button>
-          )}
-        </div>
+        
+        {/* Navigation entre participants pour les groupes */}
+        {updatedGroup.clients.length > 1 && (
+          <div className="hidden sm:flex gap-2">
+            {currentClientIndex > 0 && (
+              <Button
+                onClick={() => setCurrentClientIndex(currentClientIndex - 1)}
+                variant="outline"
+                className="px-4 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Précédent
+              </Button>
+            )}
+          </div>
+        )}
+        
+        {/* Pour les clients individuels, afficher un espace vide à gauche */}
+        {updatedGroup.clients.length === 1 && (
+          <div></div>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           {onSave && (
@@ -506,19 +523,63 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               💾 Sauvegarder brouillon
             </Button>
           )}
-          <Button
-            onClick={handleSubmit}
-            disabled={!isFormValid}
-            className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            ➡️ Continuer vers le bon de location
-          </Button>
+          
+          {/* Bouton principal dynamique */}
+          {currentClientIndex < updatedGroup.clients.length - 1 ? (
+            <Button
+              onClick={() => setCurrentClientIndex(currentClientIndex + 1)}
+              disabled={!isCurrentClientValid}
+              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+            >
+              <User className="w-4 h-4" />
+              Habiller {updatedGroup.clients[currentClientIndex + 1].nom}
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid}
+              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              ➡️ Continuer vers le bon de location
+            </Button>
+          )}
         </div>
       </div>
 
+      {/* Navigation mobile pour les groupes */}
+      {updatedGroup.clients.length > 1 && (
+        <div className="flex sm:hidden justify-between items-center gap-2">
+          {currentClientIndex > 0 ? (
+            <Button
+              onClick={() => setCurrentClientIndex(currentClientIndex - 1)}
+              variant="outline"
+              size="sm"
+              className="flex-1 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Précédent
+            </Button>
+          ) : <div className="flex-1"></div>}
+          
+          {currentClientIndex < updatedGroup.clients.length - 1 && (
+            <Button
+              onClick={() => setCurrentClientIndex(currentClientIndex + 1)}
+              disabled={!isCurrentClientValid}
+              size="sm"
+              className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-1 text-sm"
+            >
+              <User className="w-3 h-3" />
+              Habiller {updatedGroup.clients[currentClientIndex + 1].nom}
+              <ChevronRight className="w-3 h-3" />
+            </Button>
+          )}
+        </div>
+      )}
+
       {!isFormValid && (
         <p className="text-sm text-red-600 text-center">
-          ⚠️ Veuillez sélectionner au moins une pièce de vêtement pour chaque personne
+          ⚠️ Veuillez sélectionner et dimensionner au moins une pièce complète (référence + taille) pour chaque personne
         </p>
       )}
     </div>

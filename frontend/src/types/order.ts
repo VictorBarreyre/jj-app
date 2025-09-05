@@ -102,6 +102,16 @@ export interface Order {
   status: 'commandee' | 'livree' | 'rendue';
   type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
+  
+  // Informations supplémentaires pour les groupes
+  participantCount?: number; // Nombre de participants dans le groupe
+  groupDetails?: {
+    participants: Array<{
+      nom: string;
+      pieces: string[]; // Liste des pièces de tenue pour ce participant
+      notes?: string;
+    }>;
+  };
   createdBy?: string; // ID de l'utilisateur qui a créé la commande
   updatedAt?: Date | string;
 }

@@ -25,20 +25,28 @@ export interface TenueInfo {
   veste?: {
     reference: string;
     taille: string;
-    longueur: string;
+    longueur?: string; // Optionnel comme dans le frontend
     longueurManche?: string;
+    couleur?: string;
     notes?: string;
   };
   gilet?: {
     reference: string;
     taille: string;
+    couleur?: string;
     notes?: string;
   };
   pantalon?: {
     reference: string;
     taille: string;
-    longueur: string;
+    longueur?: string; // Optionnel comme dans le frontend
+    couleur?: string;
     notes?: string;
+  };
+  ceinture?: {
+    reference: string;
+    taille: string;
+    couleur?: string;
   };
   tailleChapeau?: string;
   tailleChaussures?: string;
@@ -89,6 +97,18 @@ export interface RentalContract {
   
   // Type d'événement
   type: 'individuel' | 'groupe';
+  
+  // Informations de groupe (si applicable)
+  isGroup?: boolean;
+  participantCount?: number;
+  groupDetails?: {
+    participants: Array<{
+      nom: string;
+      tenue: TenueInfo;
+      pieces: string[];
+      notes?: string;
+    }>;
+  };
   
   // Métadonnées
   createdAt: string;

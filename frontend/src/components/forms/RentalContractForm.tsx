@@ -14,9 +14,10 @@ interface RentalContractFormProps {
   onAutoSave?: (contract: Partial<RentalContract>) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
   initialData?: Partial<RentalContract>;
+  isEditMode?: boolean;
 }
 
-export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData }: RentalContractFormProps) {
+export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData, isEditMode = false }: RentalContractFormProps) {
   const [form, setForm] = useState<Partial<RentalContract>>({
     dateCreation: new Date(),
     dateEvenement: new Date(),
@@ -240,7 +241,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             disabled={!isFormValid}
             className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
           >
-            📤 Créer le bon de location
+            {isEditMode ? "💾 Sauvegarder les modifications" : "📤 Créer le bon de location"}
           </Button>
           
         </div>

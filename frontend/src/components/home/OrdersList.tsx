@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, Edit, Calendar, Phone, Package, Search, Filter, Plus, User, Shirt } from 'lucide-react';
+import { Eye, Calendar, Phone, Package, Search, Filter, Plus, User, Shirt } from 'lucide-react';
 import { Order } from '@/types/order';
 import { Vendeur } from '@/types/measurement-form';
 
@@ -250,7 +250,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
           <div className="col-span-2">Statut</div>
           <div className="col-span-1">Articles</div>
           <div className="col-span-1">Total</div>
-          <div className="col-span-1">Actions</div>
+          <div className="col-span-1 text-center">Actions</div>
         </div>
 
         <div className="space-y-2">
@@ -303,12 +303,12 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
               </div>
 
               {/* Total */}
-              <div className="col-span-1 font-semibold text-gray-900">
+              <div className="col-span-1 font-medium text-sm text-gray-900">
                 {order.total ? formatPrice(order.total) : '-'}
               </div>
 
               {/* Actions */}
-              <div className="col-span-1 flex gap-1">
+              <div className="col-span-1 flex justify-center">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -317,15 +317,6 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                   title="Voir"
                 >
                   <Eye className="w-3 h-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(order)}
-                  className="h-7 w-7 p-0"
-                  title="Modifier"
-                >
-                  <Edit className="w-3 h-3" />
                 </Button>
               </div>
             </div>
@@ -369,7 +360,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">{order.items.length} article{order.items.length > 1 ? 's' : ''}</span>
                   {order.total && (
-                    <span className="font-semibold text-gray-900">{formatPrice(order.total)}</span>
+                    <span className="font-medium text-sm text-gray-900">{formatPrice(order.total)}</span>
                   )}
                 </div>
               </div>
@@ -384,15 +375,6 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                 >
                   <Eye className="w-5 h-5 mr-2" />
                   <span className="text-sm">Voir</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEdit(order)}
-                  className="flex-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium min-h-[48px]"
-                >
-                  <Edit className="w-5 h-5 mr-2" />
-                  <span className="text-sm">Modifier</span>
                 </Button>
               </div>
             </div>
