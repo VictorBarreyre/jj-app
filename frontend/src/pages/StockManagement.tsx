@@ -419,7 +419,7 @@ export function StockManagement() {
           {/* Onglets par catégories */}
           <div className="border-b border-gray-200">
             <nav className="flex overflow-x-auto px-3 sm:px-6 scrollbar-hide" aria-label="Tabs">
-            <div className="flex space-x-3 sm:space-x-8 min-w-max py-1">
+            <div className="flex space-x-3 sm:space-x-8 min-w-max">
               {categoryTabs.map((tab) => (
                 <button
                   key={tab.id}
