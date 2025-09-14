@@ -64,7 +64,7 @@ export function Modal({
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div 
-          className={`relative w-full ${sizeClasses[size]} transform rounded-2xl bg-white shadow-2xl transition-all`}
+          className={`relative w-full ${sizeClasses[size]} transform rounded-2xl bg-white shadow-lg transition-all`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
