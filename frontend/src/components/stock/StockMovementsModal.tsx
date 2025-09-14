@@ -94,20 +94,20 @@ export function StockMovementsModal({ isOpen, onClose, movements, loading, itemI
       title="Historique des mouvements"
       size="xl"
     >
-      <div className="space-y-6 text-left">
+      <div className="space-y-4 sm:space-y-8 text-left">
         {/* Informations de l'article */}
         {itemInfo && (
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-3 sm:p-5 border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-to-br from-gray-500 to-gray-600 p-2 rounded-lg shadow-md">
                 <History className="w-5 h-5 text-white" />
               </div>
-              <div className="text-left mb-4">
+              <div className="text-left py-2 sm:py-0">
                 <h3 className="font-semibold text-gray-900">
                   {itemInfo.reference} - Taille {itemInfo.taille}
                 </h3>
                 {itemInfo.couleur && (
-                  <p className="text-sm text-gray-700 mt-1">Couleur : {itemInfo.couleur}</p>
+                  <p className="text-sm text-gray-700 mt-0.5 sm:mt-1">Couleur : {itemInfo.couleur}</p>
                 )}
               </div>
             </div>
@@ -127,11 +127,11 @@ export function StockMovementsModal({ isOpen, onClose, movements, loading, itemI
               <p className="text-gray-500">Aucun mouvement enregistré pour cet article</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {movements.map((movement) => (
                 <div
                   key={movement.id}
-                  className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-sm transition-shadow"
+                  className="bg-white border border-gray-200 rounded-lg p-4 sm:p-5 hover:shadow-sm transition-shadow"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3 flex-1">
@@ -148,7 +148,7 @@ export function StockMovementsModal({ isOpen, onClose, movements, loading, itemI
                           </span>
                         </div>
                         
-                        <div className="text-sm text-gray-600 space-y-1">
+                        <div className="text-sm text-gray-600 space-y-2">
                           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                             <span>
                               <strong>Quantité:</strong> {getQuantityDisplay(movement.type, movement.quantite)}
@@ -197,15 +197,6 @@ export function StockMovementsModal({ isOpen, onClose, movements, loading, itemI
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex justify-start sm:justify-end pt-4 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 sm:px-6 sm:py-2 w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
-          >
-            Fermer
-          </button>
-        </div>
       </div>
     </Modal>
   );
