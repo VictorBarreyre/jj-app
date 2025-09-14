@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StockItem, StockAlert, CreateStockItemData, UpdateStockItemData } from '@/types/stock';
+import { StockItem, StockAlert, StockMovement, CreateStockItemData, UpdateStockItemData } from '@/types/stock';
 import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
 import { StockList } from '@/components/stock/StockList';
@@ -7,6 +7,7 @@ import { StockReferenceList } from '@/components/stock/StockReferenceList';
 import { AddStockItemModal } from '@/components/stock/AddStockItemModal';
 import { EditStockItemModal } from '@/components/stock/EditStockItemModal';
 import { DeleteStockItemModal } from '@/components/stock/DeleteStockItemModal';
+import { StockMovementsModal } from '@/components/stock/StockMovementsModal';
 import { Button } from '@/components/ui/button';
 import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight, Grid3X3, List } from 'lucide-react';
 
@@ -62,8 +63,18 @@ export function StockManagement() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMovementsModalOpen, setIsMovementsModalOpen] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<StockItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<StockItem | null>(null);
+  
+  // États pour l'historique des mouvements
+  const [movements, setMovements] = useState<StockMovement[]>([]);
+  const [loadingMovements, setLoadingMovements] = useState(false);
+  const [currentItemInfo, setCurrentItemInfo] = useState<{
+    reference: string;
+    taille: string;
+    couleur?: string;
+  } | null>(null);
   
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when category changes
@@ -166,16 +177,25 @@ export function StockManagement() {
     }
   };
 
-  const loadMovements = async (stockItemId?: string) => {
+  const loadMovements = async (stockItemId: string) => {
+    setLoadingMovements(true);
     try {
       const params = new URLSearchParams();
-      if (stockItemId) params.append('stockItemId', stockItemId);
-      params.append('limit', '20');
+      params.append('stockItemId', stockItemId);
+      params.append('limit', '50');
 
       const response = await fetch(`http://localhost:3001/api/stock/movements?${params}`);
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des mouvements');
+      }
+      
       const data = await response.json();
+      setMovements(data.movements || []);
     } catch (error) {
       console.error('Erreur lors du chargement des mouvements:', error);
+      setMovements([]);
+    } finally {
+      setLoadingMovements(false);
     }
   };
 
@@ -290,6 +310,22 @@ export function StockManagement() {
   };
 
   const handleViewMovements = (itemId: string) => {
+    // Trouver l'item dans les groupes pour obtenir les informations
+    let itemInfo = null;
+    for (const group of stockGroups) {
+      const item = group.items.find(item => item.id === itemId);
+      if (item) {
+        itemInfo = {
+          reference: group.reference,
+          taille: item.taille,
+          couleur: group.couleur
+        };
+        break;
+      }
+    }
+    
+    setCurrentItemInfo(itemInfo);
+    setIsMovementsModalOpen(true);
     loadMovements(itemId);
   };
 
@@ -538,6 +574,18 @@ export function StockManagement() {
         }}
         onConfirm={deleteStockItem}
         item={itemToDelete}
+      />
+
+      <StockMovementsModal
+        isOpen={isMovementsModalOpen}
+        onClose={() => {
+          setIsMovementsModalOpen(false);
+          setCurrentItemInfo(null);
+          setMovements([]);
+        }}
+        movements={movements}
+        loading={loadingMovements}
+        itemInfo={currentItemInfo}
       />
     </div>
   );

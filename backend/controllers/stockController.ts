@@ -638,6 +638,20 @@ export const stockController = {
       
       await newItem.save();
       
+      // Créer automatiquement un mouvement d'entrée si quantité > 0
+      if (itemData.quantiteStock > 0) {
+        const movementData = {
+          stockItemId: (newItem._id as any).toString(),
+          type: 'entree' as MovementType,
+          quantite: itemData.quantiteStock,
+          dateMovement: new Date(),
+          vendeur: 'Système',
+          commentaire: `Création de l'article avec stock initial`
+        };
+        
+        await new StockMovement(movementData).save();
+      }
+      
       res.status(201).json(newItem);
     } catch (error) {
       next(error);
@@ -701,12 +715,31 @@ export const stockController = {
         throw createError('Article non trouvé', 404);
       }
       
+      // Sauvegarder l'ancienne quantité pour créer le mouvement
+      const oldQuantiteStock = stockItem.quantiteStock;
+      
       Object.assign(stockItem, updateData);
       
       // Recalculer la disponibilité
       stockItem.quantiteDisponible = stockItem.quantiteStock - stockItem.quantiteReservee;
       
       await stockItem.save();
+      
+      // Créer automatiquement un mouvement si la quantité stock a changé
+      if (updateData.quantiteStock !== undefined && updateData.quantiteStock !== oldQuantiteStock) {
+        const quantiteDifference = updateData.quantiteStock - oldQuantiteStock;
+        
+        const movementData = {
+          stockItemId: id,
+          type: (quantiteDifference > 0 ? 'entree' : 'sortie') as MovementType,
+          quantite: Math.abs(quantiteDifference),
+          dateMovement: new Date(),
+          vendeur: 'Système',
+          commentaire: `Modification manuelle du stock (${oldQuantiteStock} → ${updateData.quantiteStock})`
+        };
+        
+        await new StockMovement(movementData).save();
+      }
       
       res.json(stockItem);
     } catch (error) {
@@ -730,6 +763,20 @@ export const stockController = {
           `Impossible de supprimer cet article car ${stockItem.quantiteReservee} unité(s) sont actuellement réservées`, 
           400
         );
+      }
+      
+      // Créer un mouvement de sortie pour le stock restant avant suppression
+      if (stockItem.quantiteStock > 0) {
+        const movementData = {
+          stockItemId: id,
+          type: 'sortie' as MovementType,
+          quantite: stockItem.quantiteStock,
+          dateMovement: new Date(),
+          vendeur: 'Système',
+          commentaire: `Suppression de l'article - stock final retiré`
+        };
+        
+        await new StockMovement(movementData).save();
       }
       
       await StockItem.findByIdAndDelete(id);
