@@ -17,13 +17,11 @@ interface OrdersListProps {
 }
 
 const statusColors: Record<Order['status'], string> = {
-  'commandee': 'bg-blue-500',
   'livree': 'bg-green-500',
   'rendue': 'bg-gray-500'
 };
 
 const statusLabels: Record<Order['status'], string> = {
-  'commandee': 'Commandée',
   'livree': 'Livrée',
   'rendue': 'Rendue'
 };

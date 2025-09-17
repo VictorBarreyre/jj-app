@@ -79,6 +79,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const handleUpdateParticipantReturn = async (orderId: string, participantIndex: number, returned: boolean) => {
     try {
       await rentalContractApi.updateParticipantReturn(orderId, participantIndex, returned);
+      
       // Invalider et refetch les données des commandes
       queryClient.invalidateQueries({ queryKey: ['orders'] });
     } catch (error) {
@@ -192,7 +193,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       <OrderViewEditModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        order={selectedOrder}
+        order={selectedOrder ? orders.find(o => o.id === selectedOrder.id) || selectedOrder : null}
         isEditing={isEditing}
         onEdit={handleStartEdit}
         onSave={handleSaveOrder}

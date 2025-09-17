@@ -78,19 +78,17 @@ export function OrderViewEditModal({
 
   const getStatusColor = (status: Order['status']) => {
     switch (status) {
-      case 'commandee': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'livree': return 'bg-green-100 text-green-800 border-green-200';
       case 'rendue': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-green-100 text-green-800 border-green-200';
     }
   };
 
   const getStatusLabel = (status: Order['status']) => {
     switch (status) {
-      case 'commandee': return 'Commandée';
       case 'livree': return 'Livrée';
       case 'rendue': return 'Rendue';
-      default: return status;
+      default: return 'Livrée';
     }
   };
 
@@ -445,7 +443,7 @@ export function OrderViewEditModal({
                         <div className="font-semibold text-gray-800 text-left">
                           {order.groupDetails!.participants.length > 1 ? participant.nom : 'Tenue sélectionnée'}
                         </div>
-                        {order.type === 'groupe' && order.status !== 'brouillon' && order.status !== 'commandee' && onUpdateParticipantReturn && (
+                        {order.type === 'groupe' && onUpdateParticipantReturn && (
                           <button
                             onClick={() => {
                               const currentState = participant.rendu || false;

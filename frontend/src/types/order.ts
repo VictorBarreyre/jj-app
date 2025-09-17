@@ -99,7 +99,7 @@ export interface Order {
   sousTotal?: number;
   tva?: number;
   total?: number;
-  status: 'commandee' | 'livree' | 'rendue';
+  status: 'livree' | 'rendue';
   type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
   
