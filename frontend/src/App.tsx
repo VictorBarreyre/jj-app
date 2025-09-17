@@ -343,7 +343,7 @@ function App() {
   return (
     <AuthProvider>
       <ProtectedRoute>
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
           <Header
             currentView={currentView}
             onNavigateHome={handleNavigateHome}

@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { GroupRentalInfo, GroupClientInfo, createEmptyClient, generateGroupName } from '@/types/group-rental';
 import { Vendeur } from '@/types/measurement-form';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Calendar, 
   User, 
@@ -59,6 +60,8 @@ const loadGroupSetupFromStorage = (): Partial<GroupRentalInfo> | null => {
 };
 
 export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupFormProps) {
+  const { user } = useAuth();
+  
   const [formData, setFormData] = useState<Partial<GroupRentalInfo>>(() => {
     const savedData = loadGroupSetupFromStorage();
     return {
@@ -66,7 +69,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       telephone: '',
       email: '',
       dateEssai: new Date(),
-      vendeur: undefined,
+      vendeur: user?.prenom as Vendeur,
       clients: [createEmptyClient()],
       groupNotes: '',
       ...initialData,

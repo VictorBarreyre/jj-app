@@ -79,27 +79,6 @@ export function Header({
           
           </nav>
 
-          {/* Section utilisateur - Desktop */}
-          <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-3 px-4 py-2 bg-amber-50 rounded-xl border border-amber-200">
-              <div className="flex items-center justify-center w-8 h-8 bg-amber-500 rounded-full">
-                <User className="w-4 h-4 text-white" />
-              </div>
-              <div className="text-sm">
-                <p className="font-medium text-gray-900">{user?.prenom} {user?.nom}</p>
-                <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
-              </div>
-            </div>
-            <Button
-              onClick={logout}
-              variant="outline"
-              size="sm"
-              className="border-gray-300 hover:border-red-300 hover:text-red-600"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Déconnexion
-            </Button>
-          </div>
 
           {/* Bouton menu mobile */}
           <button
@@ -159,31 +138,36 @@ export function Header({
               Gestion du stock
             </button>
 
-            {/* Section utilisateur - Mobile */}
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 rounded-xl border border-amber-200 mb-3">
-                <div className="flex items-center justify-center w-8 h-8 bg-amber-500 rounded-full">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium text-gray-900">{user?.prenom} {user?.nom}</p>
-                  <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
-                </div>
-              </div>
-              <Button
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                variant="outline"
-                className="w-full border-gray-300 hover:border-red-300 hover:text-red-600"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Déconnexion
-              </Button>
-            </div>
           </div>
         )}
+      </div>
+
+      {/* Sous-header utilisateur */}
+      <div className="bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex items-center justify-between py-2">
+            <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center justify-center w-6 h-6 bg-amber-500 rounded-full">
+                <User className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-amber-800 font-medium">
+                Connecté en tant que <span className="font-semibold">{user?.prenom} {user?.nom}</span>
+              </span>
+              <span className="text-amber-700 text-xs bg-amber-100 px-2 py-1 rounded-full capitalize">
+                {user?.role}
+              </span>
+            </div>
+            <Button
+              onClick={logout}
+              variant="ghost"
+              size="sm"
+              className="text-amber-700 hover:text-red-600 hover:bg-red-50 px-3 py-1 h-auto text-xs"
+            >
+              <LogOut className="w-3 h-3 mr-1" />
+              Déconnexion
+            </Button>
+          </div>
+        </div>
       </div>
     </header>
   );

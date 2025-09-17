@@ -8,6 +8,7 @@ import { Calendar, User, Phone, Mail, Shirt, MessageSquare } from 'lucide-react'
 import { MeasurementForm as MeasurementFormType, Vendeur, TailleChaussure, TailleChapeau } from '@/types/measurement-form';
 import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
 import { StockIndicator } from '@/components/stock/StockIndicator';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MeasurementFormProps {
   onSubmit: (form: MeasurementFormType) => void;
@@ -20,9 +21,11 @@ const TAILLES_CHAUSSURES: TailleChaussure[] = ['38', '39', '40', '41', '42', '43
 const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '60', '61', '62'];
 
 export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFormProps) {
+  const { user } = useAuth();
+  
   const [form, setForm] = useState<Partial<MeasurementFormType>>({
     dateEssai: new Date(),
-    vendeur: undefined,
+    vendeur: user?.prenom as Vendeur,
     client: {
       nom: '',
       telephone: '',

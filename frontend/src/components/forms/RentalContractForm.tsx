@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RentalContract, PaymentMethod } from '@/types/rental-contract';
 import { TenueMeasurement, Vendeur } from '@/types/measurement-form';
 import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle, MessageSquare } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface RentalContractFormProps {
   onSubmit: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
@@ -18,6 +19,8 @@ interface RentalContractFormProps {
 }
 
 export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData, isEditMode = false }: RentalContractFormProps) {
+  const { user } = useAuth();
+  
   const [form, setForm] = useState<Partial<RentalContract>>({
     dateCreation: new Date(),
     dateEvenement: new Date(),
@@ -28,7 +31,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       telephone: '',
       email: ''
     },
-    vendeur: 'Sophie' as Vendeur,
+    vendeur: user?.prenom as Vendeur,
     tenue: {},
     tarifLocation: 0,
     depotGarantie: 50,
