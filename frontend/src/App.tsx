@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { Header } from './components/layout/Header'
+import { FloatingLogoutButton } from './components/layout/FloatingLogoutButton'
 import { Home } from './pages/Home'
 import { MeasurementFormPage } from './pages/MeasurementFormPage'
 import { StockManagement } from './pages/StockManagement'
@@ -388,6 +389,7 @@ function App() {
             )}
           </main>
         </div>
+        <FloatingLogoutButton />
       </ProtectedRoute>
       <Toaster position="top-right" />
     </AuthProvider>

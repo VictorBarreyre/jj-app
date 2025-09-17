@@ -4,12 +4,12 @@ import { UserModel, CreateUserRequest, LoginRequest, AuthResponse } from '../mod
 import { createError } from '../middleware/errorHandler';
 
 // Clé secrète JWT (devrait être dans les variables d'environnement)
-const JWT_SECRET = process.env.JWT_SECRET || 'votre-cle-secrete-tres-longue-et-complexe';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET: string = process.env.JWT_SECRET || 'votre-cle-secrete-tres-longue-et-complexe';
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || '7d';
 
 // Fonction pour générer un token JWT
 const generateToken = (userId: string): string => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
 };
 
 export const authController = {

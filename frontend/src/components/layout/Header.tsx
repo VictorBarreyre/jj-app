@@ -42,10 +42,10 @@ export function Header({
           </div>
 
           {/* Navigation desktop */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             <button
               onClick={onNavigateHome}
-              className={`px-4 py-2 font-medium transition-all duration-200 hover:text-amber-600 ${
+              className={`px-3 py-2 text-sm font-medium transition-all duration-200 hover:text-amber-600 ${
                 currentView === 'home' 
                   ? 'text-amber-600' 
                   : 'text-gray-700 hover:text-amber-600'
@@ -56,28 +56,36 @@ export function Header({
 
             <button
               onClick={onNavigateMeasurement}
-              className={`px-4 py-2 font-medium transition-all duration-200 hover:text-amber-600 ${
+              className={`px-3 py-2 text-sm font-medium transition-all duration-200 hover:text-amber-600 ${
                 currentView === 'measurement' 
                   ? 'text-amber-600' 
                   : 'text-gray-700 hover:text-amber-600'
               }`}
             >
-              Nouvelle prise de mesure
+              Nouvelle mesure
             </button>
 
             <button
               onClick={onNavigateStock}
-              className={`px-4 py-2 font-medium transition-all duration-200 hover:text-amber-600 ${
+              className={`px-3 py-2 text-sm font-medium transition-all duration-200 hover:text-amber-600 ${
                 currentView === 'stock' 
                   ? 'text-amber-600' 
                   : 'text-gray-700 hover:text-amber-600'
               }`}
             >
-              Gestion du stock
+              Stock
             </button>
-
-          
           </nav>
+
+          {/* Section utilisateur - Desktop */}
+          <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-6 h-6 bg-amber-500 rounded-full">
+                <User className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-xs font-medium text-gray-700">{user?.prenom}</span>
+            </div>
+          </div>
 
 
           {/* Bouton menu mobile */}
@@ -95,80 +103,80 @@ export function Header({
 
         {/* Menu mobile */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4 space-y-2">
-            <button
-              onClick={() => {
-                onNavigateHome();
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full px-4 py-3 text-left font-medium transition-colors ${
-                currentView === 'home' 
-                  ? 'text-amber-600 bg-amber-50' 
-                  : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
-              }`}
-            >
-              Tableau de bord
-            </button>
+          <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 z-40 border-t border-gray-200" style={{ backgroundColor: '#ffffff' }}>
+            <div className="flex flex-col" style={{ backgroundColor: '#ffffff', height: 'calc(100vh - 80px)' }}>
+              
+              {/* Info utilisateur */}
+              <div className="flex items-center justify-start gap-3 p-6 border-b border-gray-200/50">
+                <div className="flex items-center justify-center w-10 h-10 bg-amber-500 rounded-full">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-lg font-medium text-gray-700">{user?.prenom} {user?.nom}</span>
+              </div>
+              
+              {/* Navigation centrée */}
+              <div className="flex-1 flex flex-col justify-center space-y-6 px-8">
+                <button
+                  onClick={() => {
+                    onNavigateHome();
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`text-center px-6 py-4 text-xl font-semibold rounded-xl transition-all duration-200 ${
+                    currentView === 'home' 
+                      ? 'text-amber-600 bg-amber-50' 
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Tableau de bord
+                </button>
 
-            <button
-              onClick={() => {
-                onNavigateMeasurement();
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full px-4 py-3 text-left font-medium transition-colors ${
-                currentView === 'measurement' 
-                  ? 'text-amber-600 bg-amber-50' 
-                  : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
-              }`}
-            >
-              Nouvelle prise de mesure
-            </button>
+                <button
+                  onClick={() => {
+                    onNavigateMeasurement();
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`text-center px-6 py-4 text-xl font-semibold rounded-xl transition-all duration-200 ${
+                    currentView === 'measurement' 
+                      ? 'text-amber-600 bg-amber-50' 
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Nouvelle mesure
+                </button>
 
-            <button
-              onClick={() => {
-                onNavigateStock();
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full px-4 py-3 text-left font-medium transition-colors ${
-                currentView === 'stock' 
-                  ? 'text-amber-600 bg-amber-50' 
-                  : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
-              }`}
-            >
-              Gestion du stock
-            </button>
+                <button
+                  onClick={() => {
+                    onNavigateStock();
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`text-center px-6 py-4 text-xl font-semibold rounded-xl transition-all duration-200 ${
+                    currentView === 'stock' 
+                      ? 'text-amber-600 bg-amber-50' 
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Stock
+                </button>
+              </div>
 
+              {/* Bouton déconnexion en bas */}
+              <div className="p-8">
+                <Button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <LogOut className="w-5 h-5 mr-3" />
+                  Se déconnecter
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Sous-header utilisateur */}
-      <div className="bg-amber-50/80 backdrop-blur-sm border-b border-amber-200/50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between py-2">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center justify-center w-6 h-6 bg-amber-500 rounded-full">
-                <User className="w-3 h-3 text-white" />
-              </div>
-              <span className="text-amber-800 font-medium">
-                Connecté en tant que <span className="font-semibold">{user?.prenom} {user?.nom}</span>
-              </span>
-              <span className="text-amber-700 text-xs bg-amber-100 px-2 py-1 rounded-full capitalize">
-                {user?.role}
-              </span>
-            </div>
-            <Button
-              onClick={logout}
-              variant="ghost"
-              size="sm"
-              className="text-amber-700 hover:text-red-600 hover:bg-red-50 px-3 py-1 h-auto text-xs"
-            >
-              <LogOut className="w-3 h-3 mr-1" />
-              Déconnexion
-            </Button>
-          </div>
-        </div>
-      </div>
     </header>
   );
 }

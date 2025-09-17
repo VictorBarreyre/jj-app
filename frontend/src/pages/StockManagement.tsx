@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StockItem, StockAlert, StockMovement, CreateStockItemData, UpdateStockItemData } from '@/types/stock';
+import { stockService } from '@/services/stock.api';
 import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
 import { StockList } from '@/components/stock/StockList';
@@ -149,12 +150,7 @@ export function StockManagement() {
     setLoading(true);
     try {
       // Charger toutes les données pour la catégorie active, sans limite
-      const params = new URLSearchParams();
-      params.append('category', activeCategory);
-      params.append('limit', '1000'); // Charger beaucoup de données d'un coup
-      
-      const response = await fetch(`http://localhost:3001/api/stock/items/grouped?${params}`);
-      const data = await response.json();
+      const data = await stockService.getGroupedItems(activeCategory, 1000);
       
       const allData = data.references || [];
       setAllStockGroups(allData); // Stocker toutes les données
@@ -169,8 +165,7 @@ export function StockManagement() {
 
   const loadAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/stock/alerts');
-      const data = await response.json();
+      const data = await stockService.getAlerts();
       setStockAlerts(data.alerts || []);
     } catch (error) {
       console.error('Erreur lors du chargement des alertes:', error);
@@ -180,16 +175,7 @@ export function StockManagement() {
   const loadMovements = async (stockItemId: string) => {
     setLoadingMovements(true);
     try {
-      const params = new URLSearchParams();
-      params.append('stockItemId', stockItemId);
-      params.append('limit', '50');
-
-      const response = await fetch(`http://localhost:3001/api/stock/movements?${params}`);
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement des mouvements');
-      }
-      
-      const data = await response.json();
+      const data = await stockService.getMovements(stockItemId, 50);
       setMovements(data.movements || []);
     } catch (error) {
       console.error('Erreur lors du chargement des mouvements:', error);
@@ -223,8 +209,7 @@ export function StockManagement() {
 
   const loadCategoryCounts = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/stock/items/counts`);
-      const data = await response.json();
+      const data = await stockService.getCategoryCounts();
       setCategoryCounts(data.counts || {
         veste: 0,
         gilet: 0,
@@ -361,18 +346,7 @@ export function StockManagement() {
 
   const createStockItem = async (data: CreateStockItemData) => {
     try {
-      const response = await fetch('http://localhost:3001/api/stock/items', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la création');
-      }
+      await stockService.createItem(data);
 
       // Recharger les données et compteurs
       await loadStockData();
@@ -386,18 +360,7 @@ export function StockManagement() {
 
   const updateStockItem = async (itemId: string, data: UpdateStockItemData) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/stock/items/${itemId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la modification');
-      }
+      await stockService.updateItem(itemId, data);
 
       // Recharger les données et compteurs
       await loadStockData();
@@ -411,14 +374,7 @@ export function StockManagement() {
 
   const deleteStockItem = async (itemId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/stock/items/${itemId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la suppression');
-      }
+      await stockService.deleteItem(itemId);
 
       // Recharger les données et compteurs
       await loadStockData();
