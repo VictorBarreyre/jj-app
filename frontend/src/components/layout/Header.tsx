@@ -106,13 +106,6 @@ export function Header({
           <div className="md:hidden fixed top-20 left-0 right-0 bottom-0 z-40 border-t border-gray-200" style={{ backgroundColor: '#ffffff' }}>
             <div className="flex flex-col" style={{ backgroundColor: '#ffffff', height: 'calc(100vh - 80px)' }}>
               
-              {/* Info utilisateur */}
-              <div className="flex items-center justify-start gap-3 p-6 border-b border-gray-200/50">
-                <div className="flex items-center justify-center w-10 h-10 bg-amber-500 rounded-full">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-lg font-medium text-gray-700">{user?.prenom} {user?.nom}</span>
-              </div>
               
               {/* Navigation centrée */}
               <div className="flex-1 flex flex-col justify-center space-y-6 px-8">
