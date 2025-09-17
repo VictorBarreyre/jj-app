@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { rentalContractsController } from '../controllers/rentalContractsController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 export const contractsRouter = Router();
+
+// Appliquer l'authentification à toutes les routes des contrats
+contractsRouter.use(authenticateToken);
 
 // GET /api/contracts
 contractsRouter.get('/', rentalContractsController.getAllContracts);

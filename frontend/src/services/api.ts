@@ -11,11 +11,28 @@ const api = axios.create({
   },
 });
 
+// Intercepteur pour ajouter le token automatiquement
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('jj_auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Intercepteur pour la gestion d'erreurs
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
+    
+    // Gestion de l'expiration du token
+    if (error.response?.status === 401) {
+      localStorage.removeItem('jj_auth_token');
+      localStorage.removeItem('jj_user');
+      window.location.href = '/';
+    }
+    
     return Promise.reject(error);
   }
 );

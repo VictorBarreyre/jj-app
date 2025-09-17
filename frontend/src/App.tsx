@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
+import { AuthProvider } from './contexts/AuthContext'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { Header } from './components/layout/Header'
 import { Home } from './pages/Home'
 import { MeasurementFormPage } from './pages/MeasurementFormPage'
@@ -338,51 +341,56 @@ function App() {
   // handleDeleteOrder est maintenant géré dans le composant Home
 
   return (
-    <div className="min-h-screen">
-      <Header
-        currentView={currentView}
-        onNavigateHome={handleNavigateHome}
-        onNavigateMeasurement={handleNavigateMeasurement}
-        onNavigateStock={handleNavigateStock}
-        ordersCount={0}
-        pendingOrdersCount={0}
-      />
-      
-      <main>
-        {currentView === 'home' && (
-          <Home
-            onCreateNew={handleCreateNew}
-            onViewOrder={handleViewOrder}
-            onEditOrder={handleEditOrder}
+    <AuthProvider>
+      <ProtectedRoute>
+        <div className="min-h-screen">
+          <Header
+            currentView={currentView}
+            onNavigateHome={handleNavigateHome}
+            onNavigateMeasurement={handleNavigateMeasurement}
+            onNavigateStock={handleNavigateStock}
+            ordersCount={0}
+            pendingOrdersCount={0}
           />
-        )}
-        
-        {currentView === 'measurement' && (
-          <MeasurementFormPage 
-            onSubmitComplete={handleRentalSubmitComplete}
-            onSaveDraft={handleRentalSaveDraft}
-            onPrint={handlePrint}
-            isEditMode={editParams.editMode}
-            initialGroup={(() => {
-              const group = editParams.editMode && selectedOrder ? convertOrderToGroup(selectedOrder) : undefined;
-              console.log('Rendu MeasurementFormPage - initialGroup:', group);
-              return group;
-            })()}
-            initialContract={(() => {
-              const contract = editParams.editMode && selectedOrder ? convertOrderToContract(selectedOrder) : undefined;
-              console.log('Rendu MeasurementFormPage - selectedOrder:', selectedOrder);
-              console.log('Rendu MeasurementFormPage - editParams:', editParams);
-              console.log('Rendu MeasurementFormPage - initialContract:', contract);
-              return contract;
-            })()}
-          />
-        )}
-        
-        {currentView === 'stock' && (
-          <StockManagement />
-        )}
-      </main>
-    </div>
+          
+          <main>
+            {currentView === 'home' && (
+              <Home
+                onCreateNew={handleCreateNew}
+                onViewOrder={handleViewOrder}
+                onEditOrder={handleEditOrder}
+              />
+            )}
+            
+            {currentView === 'measurement' && (
+              <MeasurementFormPage 
+                onSubmitComplete={handleRentalSubmitComplete}
+                onSaveDraft={handleRentalSaveDraft}
+                onPrint={handlePrint}
+                isEditMode={editParams.editMode}
+                initialGroup={(() => {
+                  const group = editParams.editMode && selectedOrder ? convertOrderToGroup(selectedOrder) : undefined;
+                  console.log('Rendu MeasurementFormPage - initialGroup:', group);
+                  return group;
+                })()}
+                initialContract={(() => {
+                  const contract = editParams.editMode && selectedOrder ? convertOrderToContract(selectedOrder) : undefined;
+                  console.log('Rendu MeasurementFormPage - selectedOrder:', selectedOrder);
+                  console.log('Rendu MeasurementFormPage - editParams:', editParams);
+                  console.log('Rendu MeasurementFormPage - initialContract:', contract);
+                  return contract;
+                })()}
+              />
+            )}
+            
+            {currentView === 'stock' && (
+              <StockManagement />
+            )}
+          </main>
+        </div>
+      </ProtectedRoute>
+      <Toaster position="top-right" />
+    </AuthProvider>
   )
 }
 

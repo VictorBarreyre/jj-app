@@ -7,6 +7,7 @@ import { connectDB } from './config/database';
 import { measurementsRouter } from './routes/measurements';
 import { contractsRouter } from './routes/contracts';
 import { stockRouter } from './routes/stock';
+import authRouter from './routes/auth';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+app.use('/api/auth', authRouter);
 app.use('/api/measurements', measurementsRouter);
 app.use('/api/contracts', contractsRouter);
 app.use('/api/stock', stockRouter);

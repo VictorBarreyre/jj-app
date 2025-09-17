@@ -1,7 +1,11 @@
 import express from 'express';
 import { stockController } from '../controllers/stockController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = express.Router();
+
+// Appliquer l'authentification à toutes les routes du stock
+router.use(authenticateToken);
 
 // Routes pour la gestion du stock
 router.get('/catalog', stockController.getCatalog);

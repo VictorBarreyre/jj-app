@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { measurementsController } from '../controllers/measurementsController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 export const measurementsRouter = Router();
+
+// Appliquer l'authentification à toutes les routes des mesures
+measurementsRouter.use(authenticateToken);
 
 // GET /api/measurements
 measurementsRouter.get('/', measurementsController.getAllMeasurements);

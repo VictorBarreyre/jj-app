@@ -112,8 +112,34 @@ export const rentalContractsController = {
         ContractNumberingModel.findOne({ year: new Date().getFullYear() })
       ]);
       
+      // Reclassifier les contrats existants selon la nouvelle logique
+      const reclassifiedContracts = contracts.map(contract => {
+        const hasMultipleParticipants = contract.participantCount && contract.participantCount > 1;
+        const hasGroupDetails = contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants.length > 1;
+        const hasMultipleStockItems = contract.articlesStock && contract.articlesStock.length > 3; // Plus de 3 articles = probablement plusieurs personnes
+        const hasGroupKeywords = contract.client.nom.toLowerCase().includes('groupe') || 
+                                contract.client.nom.toLowerCase().includes('mariage') ||
+                                contract.client.nom.toLowerCase().includes('ceremonie') ||
+                                contract.client.nom.toLowerCase().includes('personnes');
+        
+        const shouldBeGroupe = hasMultipleParticipants || hasGroupDetails || hasMultipleStockItems || hasGroupKeywords;
+        
+        // Si la classification a changé, mettre à jour le type
+        // Gérer les cas où contract.type est undefined (défaut = 'individuel')
+        const currentType = contract.type || 'individuel';
+        
+        if (shouldBeGroupe && currentType === 'individuel') {
+          return { ...contract, type: 'groupe' };
+        } else if (!shouldBeGroupe && currentType === 'groupe') {
+          return { ...contract, type: 'individuel' };
+        }
+        
+        // Assurer qu'il y a toujours un type défini
+        return { ...contract, type: shouldBeGroupe ? 'groupe' : 'individuel' };
+      });
+      
       res.json({
-        contracts,
+        contracts: reclassifiedContracts,
         total,
         page: pageNum,
         totalPages: Math.ceil(total / limitNum),
@@ -128,13 +154,38 @@ export const rentalContractsController = {
   getContractById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const contract = await RentalContractModel.findById(id);
+      const contract = await RentalContractModel.findById(id).lean();
       
       if (!contract) {
         throw createError('Bon de location non trouvé', 404);
       }
       
-      res.json(contract);
+      // Reclassifier le contrat selon la nouvelle logique
+      const hasMultipleParticipants = contract.participantCount && contract.participantCount > 1;
+      const hasGroupDetails = contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants.length > 1;
+      const hasMultipleStockItems = contract.articlesStock && contract.articlesStock.length > 3; // Plus de 3 articles = probablement plusieurs personnes
+      const hasGroupKeywords = contract.client.nom.toLowerCase().includes('groupe') || 
+                              contract.client.nom.toLowerCase().includes('mariage') ||
+                              contract.client.nom.toLowerCase().includes('ceremonie') ||
+                              contract.client.nom.toLowerCase().includes('personnes');
+      
+      const shouldBeGroupe = hasMultipleParticipants || hasGroupDetails || hasMultipleStockItems || hasGroupKeywords;
+      
+      // Si la classification a changé, mettre à jour le type
+      // Gérer les cas où contract.type est undefined (défaut = 'individuel')
+      const currentType = contract.type || 'individuel';
+      const reclassifiedContract = { ...contract };
+      
+      if (shouldBeGroupe && currentType === 'individuel') {
+        reclassifiedContract.type = 'groupe';
+      } else if (!shouldBeGroupe && currentType === 'groupe') {
+        reclassifiedContract.type = 'individuel';
+      } else {
+        // Assurer qu'il y a toujours un type défini
+        reclassifiedContract.type = shouldBeGroupe ? 'groupe' : 'individuel';
+      }
+      
+      res.json(reclassifiedContract);
     } catch (error) {
       next(error);
     }
@@ -200,11 +251,16 @@ export const rentalContractsController = {
         cleanedData.tenue = Object.keys(tenue).length > 0 ? tenue : undefined;
       }
       
-      // Détecter le type d'événement basé sur le nom du client
-      const isGroupe = cleanedData.client.nom.toLowerCase().includes('groupe') || 
-                      cleanedData.client.nom.toLowerCase().includes('mariage') ||
-                      cleanedData.client.nom.toLowerCase().includes('ceremonie') ||
-                      cleanedData.client.nom.toLowerCase().includes('personnes');
+      // Détecter le type d'événement basé sur plusieurs critères
+      const hasMultipleParticipants = cleanedData.participantCount && cleanedData.participantCount > 1;
+      const hasGroupDetails = cleanedData.groupDetails && cleanedData.groupDetails.participants && cleanedData.groupDetails.participants.length > 1;
+      const hasMultipleStockItems = cleanedData.articlesStock && cleanedData.articlesStock.length > 3; // Plus de 3 articles = probablement plusieurs personnes
+      const hasGroupKeywords = cleanedData.client.nom.toLowerCase().includes('groupe') || 
+                              cleanedData.client.nom.toLowerCase().includes('mariage') ||
+                              cleanedData.client.nom.toLowerCase().includes('ceremonie') ||
+                              cleanedData.client.nom.toLowerCase().includes('personnes');
+      
+      const isGroupe = hasMultipleParticipants || hasGroupDetails || hasMultipleStockItems || hasGroupKeywords;
       
       // Créer le nouveau contrat
       const contractToSave = {

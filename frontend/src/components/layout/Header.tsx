@@ -1,7 +1,9 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Menu, X, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
   currentView: 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
@@ -21,6 +23,7 @@ export function Header({
   pendingOrdersCount = 0
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm sticky top-0 z-50 w-full">
@@ -75,6 +78,28 @@ export function Header({
 
           
           </nav>
+
+          {/* Section utilisateur - Desktop */}
+          <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4 py-2 bg-amber-50 rounded-xl border border-amber-200">
+              <div className="flex items-center justify-center w-8 h-8 bg-amber-500 rounded-full">
+                <User className="w-4 h-4 text-white" />
+              </div>
+              <div className="text-sm">
+                <p className="font-medium text-gray-900">{user?.prenom} {user?.nom}</p>
+                <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
+              </div>
+            </div>
+            <Button
+              onClick={logout}
+              variant="outline"
+              size="sm"
+              className="border-gray-300 hover:border-red-300 hover:text-red-600"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Déconnexion
+            </Button>
+          </div>
 
           {/* Bouton menu mobile */}
           <button
@@ -134,7 +159,29 @@ export function Header({
               Gestion du stock
             </button>
 
-        
+            {/* Section utilisateur - Mobile */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 rounded-xl border border-amber-200 mb-3">
+                <div className="flex items-center justify-center w-8 h-8 bg-amber-500 rounded-full">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium text-gray-900">{user?.prenom} {user?.nom}</p>
+                  <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+                variant="outline"
+                className="w-full border-gray-300 hover:border-red-300 hover:text-red-600"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Déconnexion
+              </Button>
+            </div>
           </div>
         )}
       </div>
