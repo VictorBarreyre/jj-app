@@ -110,6 +110,7 @@ export interface Order {
       nom: string;
       pieces: string[]; // Liste des pièces de tenue pour ce participant
       notes?: string;
+      rendu?: boolean; // Statut de rendu pour ce participant
     }>;
   };
   createdBy?: string; // ID de l'utilisateur qui a créé la commande

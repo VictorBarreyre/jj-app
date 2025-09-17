@@ -15,7 +15,9 @@ import {
   Package,
   Euro,
   FileText,
-  X
+  X,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import { Order, OrderItem } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
@@ -29,6 +31,7 @@ interface OrderViewEditModalProps {
   onSave: (updatedOrder: Partial<Order>) => Promise<void>;
   onCancel: () => void;
   onEditOrder?: (order: Order) => void; // Nouvelle prop pour rediriger vers le formulaire
+  onUpdateParticipantReturn?: (orderId: string, participantIndex: number, returned: boolean) => Promise<void>;
 }
 
 export function OrderViewEditModal({ 
@@ -39,7 +42,8 @@ export function OrderViewEditModal({
   onEdit, 
   onSave, 
   onCancel,
-  onEditOrder 
+  onEditOrder,
+  onUpdateParticipantReturn
 }: OrderViewEditModalProps) {
   const [formData, setFormData] = useState<Partial<Order>>({});
 
@@ -428,17 +432,43 @@ export function OrderViewEditModal({
               </div>
             )}
             
-            {/* Détails des tenues */}
+            {/* Détails des tenues avec statut de rendu */}
             {order.groupDetails?.participants && order.groupDetails.participants.length > 0 && (
               <div className="pt-3 border-t border-gray-300 mt-3">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
-                  Pièces de tenue réservées
+                  Pièces de tenue réservées {order.type === 'groupe' && '& Statut de rendu'}
                 </span>
                 <div className="space-y-4">
                   {order.groupDetails.participants.map((participant, index) => (
                     <div key={index} className="bg-white rounded-lg p-3 text-left border border-gray-200">
-                      <div className="font-semibold text-gray-800 text-left mb-2">
-                        {order.groupDetails!.participants.length > 1 ? participant.nom : 'Tenue sélectionnée'}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="font-semibold text-gray-800 text-left">
+                          {order.groupDetails!.participants.length > 1 ? participant.nom : 'Tenue sélectionnée'}
+                        </div>
+                        {order.type === 'groupe' && order.status !== 'brouillon' && order.status !== 'commandee' && onUpdateParticipantReturn && (
+                          <button
+                            onClick={() => {
+                              const currentState = participant.rendu || false;
+                              const newState = !currentState;
+                              console.log('🔄 Frontend toggle:', { 
+                                participantName: participant.nom, 
+                                currentState, 
+                                newState 
+                              });
+                              onUpdateParticipantReturn(order.id, index, newState);
+                            }}
+                            className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
+                          >
+                            <span className={(participant.rendu || false) ? "text-green-700" : "text-gray-600"}>
+                              Article(s) rendu(s)
+                            </span>
+                            {(participant.rendu || false) ? (
+                              <CheckSquare className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <Square className="w-4 h-4 text-gray-400" />
+                            )}
+                          </button>
+                        )}
                       </div>
                       <div className="space-y-1">
                         {participant.pieces && participant.pieces.length > 0 ? (

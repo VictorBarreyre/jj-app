@@ -25,6 +25,9 @@ contractsRouter.post('/:id/payment', rentalContractsController.recordPayment);
 // POST /api/contracts/:id/return
 contractsRouter.post('/:id/return', rentalContractsController.markAsReturned);
 
+// PUT /api/contracts/:id/participant/:participantIndex/return
+contractsRouter.put('/:id/participant/:participantIndex/return', rentalContractsController.updateParticipantReturn);
+
 // GET /api/contracts/:id/print/:type
 contractsRouter.get('/:id/print/:type', rentalContractsController.getPrintData);
 

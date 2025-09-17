@@ -378,6 +378,85 @@ export const rentalContractsController = {
     }
   },
 
+  // PUT /api/contracts/:id/participant/:participantIndex/return
+  updateParticipantReturn: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, participantIndex } = req.params;
+      const { returned } = req.body;
+      
+      console.log('🔍 Debug updateParticipantReturn:', {
+        id,
+        participantIndex,
+        returned,
+        body: req.body
+      });
+      
+      const contract = await RentalContractModel.findById(id);
+      if (!contract) {
+        console.log('❌ Contract not found with ID:', id);
+        throw createError('Bon de location non trouvé', 404);
+      }
+      
+      console.log('📄 Contract found:', {
+        contractId: contract._id,
+        type: contract.type,
+        hasGroupDetails: !!contract.groupDetails,
+        participantsCount: contract.groupDetails?.participants?.length
+      });
+      
+      if (!contract.groupDetails?.participants) {
+        console.log('❌ No group details or participants found');
+        throw createError('Ce contrat n\'a pas de détails de groupe', 400);
+      }
+      
+      // Si le contrat a des groupDetails mais n'est pas marqué comme groupe, le corriger automatiquement
+      if (contract.type !== 'groupe') {
+        console.log('🔄 Auto-updating contract type from', contract.type, 'to groupe');
+        contract.type = 'groupe';
+      }
+      
+      const index = parseInt(participantIndex);
+      if (index < 0 || index >= contract.groupDetails.participants.length) {
+        throw createError('Index de participant invalide', 400);
+      }
+      
+      console.log('👤 Participant before update:', {
+        index,
+        currentRenduState: contract.groupDetails.participants[index].rendu,
+        receivedRenduValue: returned
+      });
+      
+      // Mettre à jour le statut de rendu du participant
+      contract.groupDetails.participants[index].rendu = returned;
+      
+      // Vérifier si tous les participants ont rendu leur tenue
+      const allReturned = contract.groupDetails.participants.every(p => p.rendu === true);
+      
+      // Mettre à jour le statut global si tous ont rendu
+      if (allReturned && contract.status !== 'rendu') {
+        contract.status = 'rendu';
+        contract.rendu = true;
+        contract.dateRendu = new Date();
+        
+        // Créer automatiquement les mouvements de retour
+        await createStockMovements(contract, 'retour');
+      } else if (!allReturned && contract.status === 'rendu') {
+        // Si ce n'est plus le cas que tous ont rendu, revenir au statut précédent
+        contract.status = 'retire';
+        contract.rendu = false;
+        contract.dateRendu = undefined;
+      }
+      
+      contract.updatedAt = new Date();
+      
+      const updatedContract = await contract.save();
+      
+      res.json(updatedContract);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   // GET /api/contracts/:id/print/:type
   getPrintData: async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -9,6 +9,15 @@ const apiClient = axios.create({
   },
 });
 
+// Intercepteur pour ajouter automatiquement le token d'authentification
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('jj_auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -112,6 +121,11 @@ class RentalContractApi {
 
   async markAsReturned(id: string, dateRetour?: string): Promise<RentalContract> {
     const response = await apiClient.post(`${this.baseUrl}/${id}/return`, { dateRetour });
+    return response.data;
+  }
+
+  async updateParticipantReturn(id: string, participantIndex: number, returned: boolean): Promise<RentalContract> {
+    const response = await apiClient.put(`${this.baseUrl}/${id}/participant/${participantIndex}/return`, { returned });
     return response.data;
   }
 

@@ -122,7 +122,10 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             sousTotal: calculatedTotal,
             total: calculatedTotal,
             notes: contract.notes,
-            createdBy: contract.vendeur || 'N/A'
+            createdBy: contract.vendeur || 'N/A',
+            // Ajouter les détails de groupe pour la gestion du rendu par personne
+            participantCount: contract.participantCount,
+            groupDetails: contract.groupDetails
           };
         }),
         total: response.total

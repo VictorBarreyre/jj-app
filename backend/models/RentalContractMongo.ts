@@ -48,6 +48,7 @@ export interface IRentalContractDocument extends Document {
       tenue: TenueInfo;
       pieces: string[];
       notes?: string;
+      rendu?: boolean;
     }>;
   };
   
@@ -164,7 +165,8 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
       nom: { type: String, required: true },
       tenue: tenueSchema,
       pieces: [{ type: String }],
-      notes: { type: String }
+      notes: { type: String },
+      rendu: { type: Boolean, default: false }
     }]
   }
 }, {

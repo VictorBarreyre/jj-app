@@ -5,6 +5,8 @@ import { Order } from '@/types/order';
 import { useOrders, useUpdateOrder } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
 import { User, Users, Plus } from 'lucide-react';
+import { rentalContractApi } from '@/services/rental-contract.api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface HomeProps {
   onCreateNew: () => void;
@@ -24,6 +26,7 @@ interface TypeTab {
 export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const { data: ordersData, isLoading, error } = useOrders();
   const updateOrderMutation = useUpdateOrder();
+  const queryClient = useQueryClient();
   const [activeType, setActiveType] = useState<OrderType>('individuel');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,6 +72,17 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       // La commande sera automatiquement mise à jour grâce à la réactualisation de la query
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
+      throw error;
+    }
+  };
+
+  const handleUpdateParticipantReturn = async (orderId: string, participantIndex: number, returned: boolean) => {
+    try {
+      await rentalContractApi.updateParticipantReturn(orderId, participantIndex, returned);
+      // Invalider et refetch les données des commandes
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut de rendu:', error);
       throw error;
     }
   };
@@ -184,6 +198,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
         onSave={handleSaveOrder}
         onCancel={handleCancelEdit}
         onEditOrder={onEditOrder}
+        onUpdateParticipantReturn={handleUpdateParticipantReturn}
       />
     </div>
   );
