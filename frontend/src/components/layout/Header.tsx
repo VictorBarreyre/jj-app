@@ -80,10 +80,10 @@ export function Header({
           {/* Section utilisateur - Desktop */}
           <div className="hidden md:flex items-center gap-3">
             <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-gray-700">{user?.prenom}</span>
               <div className="flex items-center justify-center w-6 h-6 bg-amber-500 rounded-full">
                 <User className="w-3 h-3 text-white" />
               </div>
-              <span className="text-xs font-medium text-gray-700">{user?.prenom}</span>
             </div>
           </div>
 

@@ -64,7 +64,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
   
   const [formData, setFormData] = useState<Partial<GroupRentalInfo>>(() => {
     const savedData = loadGroupSetupFromStorage();
-    return {
+    const baseData = {
       groupName: '',
       telephone: '',
       email: '',
@@ -75,9 +75,26 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       ...initialData,
       ...savedData, // Les données sauvegardées prennent priorité
     };
+    
+    // Le vendeur connecté prend toujours la priorité sur les données sauvegardées
+    if (user?.prenom) {
+      baseData.vendeur = user.prenom as Vendeur;
+    }
+    
+    return baseData;
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Mettre à jour le vendeur quand l'utilisateur se connecte
+  useEffect(() => {
+    if (user?.prenom && user.prenom !== formData.vendeur) {
+      setFormData(prev => ({
+        ...prev,
+        vendeur: user.prenom as Vendeur
+      }));
+    }
+  }, [user, formData.vendeur]);
 
   // Auto-sauvegarde des données du formulaire
   useEffect(() => {

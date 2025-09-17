@@ -54,6 +54,16 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     fetchVesteReferences();
   }, []);
 
+  // Mettre à jour le vendeur quand l'utilisateur se connecte
+  useEffect(() => {
+    if (user?.prenom && !form.vendeur) {
+      setForm(prev => ({
+        ...prev,
+        vendeur: user.prenom as Vendeur
+      }));
+    }
+  }, [user, form.vendeur]);
+
   // Fonction pour vérifier si la veste sélectionnée est un smoking
   const isSmokingSelected = () => {
     const vesteRef = form.tenue?.veste?.reference;

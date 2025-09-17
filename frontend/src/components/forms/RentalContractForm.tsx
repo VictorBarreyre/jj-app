@@ -52,6 +52,16 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     { value: 'autre', label: 'Autre' }
   ];
 
+  // Mettre à jour le vendeur quand l'utilisateur se connecte
+  useEffect(() => {
+    if (user?.prenom && !form.vendeur) {
+      setForm(prev => ({
+        ...prev,
+        vendeur: user.prenom as Vendeur
+      }));
+    }
+  }, [user, form.vendeur]);
+
   // Auto-sauvegarde des données quand elles changent
   useEffect(() => {
     if (onAutoSave && form !== initialData) {
