@@ -50,34 +50,41 @@ export class PDFService {
   private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number): number {
     let currentY = startY;
 
-    // Numéro de réservation et nombre d'articles
-    doc.setFontSize(12);
+    // Numéro de réservation
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 20, currentY);
 
-    // Compter le nombre total d'articles
-    let totalArticles = 0;
+    // Compter les vêtements et accessoires séparément
+    let totalVetements = 0;
+    let totalAccessoires = 0;
+
     if (contract.groupDetails?.participants) {
       contract.groupDetails.participants.forEach(participant => {
-        if (participant.tenue?.veste) totalArticles++;
-        if (participant.tenue?.gilet) totalArticles++;
-        if (participant.tenue?.pantalon) totalArticles++;
-        if (participant.tenue?.tailleChapeau) totalArticles++;
-        if (participant.tenue?.tailleChaussures) totalArticles++;
+        // Vêtements
+        if (participant.tenue?.veste) totalVetements++;
+        if (participant.tenue?.gilet) totalVetements++;
+        if (participant.tenue?.pantalon) totalVetements++;
+        // Accessoires
+        if (participant.tenue?.tailleChapeau) totalAccessoires++;
+        if (participant.tenue?.tailleChaussures) totalAccessoires++;
       });
     } else if (contract.tenue) {
-      if (contract.tenue.veste) totalArticles++;
-      if (contract.tenue.gilet) totalArticles++;
-      if (contract.tenue.pantalon) totalArticles++;
-      if (contract.tenue.tailleChapeau) totalArticles++;
-      if (contract.tenue.tailleChaussures) totalArticles++;
-    }
-    // Ajouter les articles stock
-    if (contract.articlesStock) {
-      totalArticles += contract.articlesStock.length;
+      // Vêtements
+      if (contract.tenue.veste) totalVetements++;
+      if (contract.tenue.gilet) totalVetements++;
+      if (contract.tenue.pantalon) totalVetements++;
+      // Accessoires
+      if (contract.tenue.tailleChapeau) totalAccessoires++;
+      if (contract.tenue.tailleChaussures) totalAccessoires++;
     }
 
-    doc.text(`${totalArticles} vêtements et accessoires`, 120, currentY);
+    // Ajouter les articles stock (considérés comme vêtements)
+    if (contract.articlesStock) {
+      totalVetements += contract.articlesStock.length;
+    }
+
+    doc.text(`${totalVetements} vêtements, ${totalAccessoires} accessoires`, 120, currentY);
     currentY += 12;
 
     // Nom du client ou groupe
@@ -90,12 +97,12 @@ export class PDFService {
     currentY += 8;
 
     // Téléphone
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY);
     currentY += 12;
 
     // À prendre le / À rendre le
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 20, currentY);
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
@@ -104,6 +111,7 @@ export class PDFService {
     // Prix
     const total = contract.tarifLocation + contract.depotGarantie;
     doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
     doc.text(`Prix: ${this.formatPrice(total)}`, 20, currentY);
     currentY += 8;
 
