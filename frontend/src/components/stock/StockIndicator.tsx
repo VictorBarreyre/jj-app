@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+import { stockAPI } from '@/services/api';
 
 interface StockIndicatorProps {
   selectedReference?: string;
@@ -23,8 +22,7 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
       try {
         
         // Récupérer d'abord le nom de la référence depuis le catalog
-        const refResponse = await fetch(`${API_BASE_URL}/stock/sizes-for-reference/${selectedReference}`);
-        const refData = await refResponse.json();
+        const refData = await stockAPI.getSizesForReference(selectedReference);
         
         
         if (!refData.name) {
@@ -32,11 +30,7 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
         }
 
         // Récupérer le stock pour cette référence et taille
-        const params = new URLSearchParams();
-        params.append('reference', refData.name);
-        
-        const stockResponse = await fetch(`${API_BASE_URL}/stock/items?${params}`);
-        const stockData = await stockResponse.json();
+        const stockData = await stockAPI.getItems({ reference: refData.name });
         
         
         if (stockData.items && stockData.items.length > 0) {

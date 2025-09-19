@@ -9,6 +9,7 @@ import { MeasurementForm as MeasurementFormType, Vendeur, TailleChaussure, Taill
 import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
 import { StockIndicator } from '@/components/stock/StockIndicator';
 import { useAuth } from '@/contexts/AuthContext';
+import { stockAPI } from '@/services/api';
 
 interface MeasurementFormProps {
   onSubmit: (form: MeasurementFormType) => void;
@@ -42,11 +43,8 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
   useEffect(() => {
     const fetchVesteReferences = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/stock/references/veste');
-        if (response.ok) {
-          const data = await response.json();
-          setVesteReferences(data.references || []);
-        }
+        const data = await stockAPI.getReferences('veste');
+        setVesteReferences(data.references || []);
       } catch (error) {
         console.warn('Erreur lors du chargement des références veste:', error);
       }

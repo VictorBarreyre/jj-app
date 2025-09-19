@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StockItem, StockAlert, StockMovement, CreateStockItemData, UpdateStockItemData } from '@/types/stock';
 import { stockService } from '@/services/stock.api';
+import { stockAPI } from '@/services/api';
 import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
 import { StockList } from '@/components/stock/StockList';
@@ -187,12 +188,10 @@ export function StockManagement() {
 
   const checkAvailabilityAtDate = async () => {
     try {
-      const params = new URLSearchParams();
-      params.append('category', activeCategory);
-      if (searchTerm) params.append('reference', searchTerm);
+      const params: Record<string, string> = { category: activeCategory };
+      if (searchTerm) params.reference = searchTerm;
 
-      const response = await fetch(`http://localhost:3001/api/stock/availability/${checkDate}?${params}`);
-      const data = await response.json();
+      const data = await stockAPI.getAvailability(checkDate, params);
       
     } catch (error) {
       console.error('Erreur lors de la vérification de disponibilité:', error);
@@ -223,8 +222,7 @@ export function StockManagement() {
       const counts: Record<StockCategory, number> = { veste: 0, gilet: 0, pantalon: 0, accessoire: 0 };
       
       for (const category of categories) {
-        const response = await fetch(`http://localhost:3001/api/stock/items?category=${category}&count_only=true`);
-        const data = await response.json();
+        const data = await stockAPI.getItems({ category, count_only: 'true' });
         counts[category] = data.total || 0;
       }
       setCategoryCounts(counts);

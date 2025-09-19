@@ -136,6 +136,29 @@ export const contractsAPI = {
   }
 };
 
+// Stock API
+export const stockAPI = {
+  getReferences: async (category: string): Promise<{ references: any[] }> => {
+    const response = await api.get(`/stock/references/${category}`);
+    return response.data;
+  },
+
+  getSizesForReference: async (referenceId: string): Promise<any> => {
+    const response = await api.get(`/stock/sizes-for-reference/${referenceId}`);
+    return response.data;
+  },
+
+  getItems: async (params?: Record<string, string>): Promise<{ items: any[]; total?: number }> => {
+    const response = await api.get('/stock/items', { params });
+    return response.data;
+  },
+
+  getAvailability: async (date: string, params?: Record<string, string>): Promise<any> => {
+    const response = await api.get(`/stock/availability/${date}`, { params });
+    return response.data;
+  }
+};
+
 // Health check
 export const healthCheck = async (): Promise<{ status: string; timestamp: string }> => {
   const response = await api.get('/health');

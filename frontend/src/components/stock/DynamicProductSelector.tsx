@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArticleCategory } from '@/types/stock';
 import { Loader2 } from 'lucide-react';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+import { stockAPI } from '@/services/api';
 
 interface ProductReference {
   id: string;
@@ -53,15 +52,10 @@ export function DynamicProductSelector({
     const fetchReferences = async () => {
       setLoadingReferences(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/stock/references/${category}`);
-        if (response.ok) {
-          const data = await response.json();
-          setReferences(data.references || []);
-        } else {
-          console.error('Erreur lors du chargement des références - Status:', response.status);
-        }
+        const data = await stockAPI.getReferences(category);
+        setReferences(data.references || []);
       } catch (error) {
-        console.error('Erreur lors du fetch:', error);
+        console.error('Erreur lors du chargement des références:', error);
       } finally {
         setLoadingReferences(false);
       }
@@ -82,15 +76,10 @@ export function DynamicProductSelector({
 
       setLoadingSizes(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/stock/sizes-for-reference/${selectedReference}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSizeInfo(data);
-        } else {
-          console.error('Erreur lors du chargement des tailles');
-        }
+        const data = await stockAPI.getSizesForReference(selectedReference);
+        setSizeInfo(data);
       } catch (error) {
-        console.error('Erreur:', error);
+        console.error('Erreur lors du chargement des tailles:', error);
       } finally {
         setLoadingSizes(false);
       }

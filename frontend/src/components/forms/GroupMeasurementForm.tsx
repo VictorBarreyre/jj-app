@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
 import { StockIndicator } from '@/components/stock/StockIndicator';
 import { GroupRentalInfo, GroupClientInfo } from '@/types/group-rental';
+import { stockAPI } from '@/services/api';
 import { ArticleCategory } from '@/types/stock';
 import { TailleChaussure, TailleChapeau } from '@/types/measurement-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -36,11 +37,8 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
   useEffect(() => {
     const fetchVesteReferences = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/stock/references/veste');
-        if (response.ok) {
-          const data = await response.json();
-          setVesteReferences(data.references || []);
-        }
+        const data = await stockAPI.getReferences('veste');
+        setVesteReferences(data.references || []);
       } catch (error) {
         console.warn('Erreur lors du chargement des références veste:', error);
       }

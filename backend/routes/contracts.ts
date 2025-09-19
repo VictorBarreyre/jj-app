@@ -31,5 +31,8 @@ contractsRouter.put('/:id/participant/:participantIndex/return', rentalContracts
 // GET /api/contracts/:id/print/:type
 contractsRouter.get('/:id/print/:type', rentalContractsController.getPrintData);
 
+// GET /api/contracts/:id/pdf/:type
+contractsRouter.get('/:id/pdf/:type', rentalContractsController.generatePDF);
+
 // DELETE /api/contracts/:id
 contractsRouter.delete('/:id', rentalContractsController.deleteContract);

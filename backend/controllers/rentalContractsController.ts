@@ -461,19 +461,46 @@ export const rentalContractsController = {
   getPrintData: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id, type } = req.params; // type: 'jj' | 'client'
-      
+
       const contract = await RentalContractModel.findById(id);
       if (!contract) {
         throw createError('Bon de location non trouvé', 404);
       }
-      
+
       const printData = {
         contract,
         printType: type,
         printedAt: new Date().toISOString()
       };
-      
+
       res.json(printData);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // GET /api/contracts/:id/pdf/:type
+  generatePDF: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, type } = req.params; // type: 'vendeur' | 'client'
+
+      if (!['vendeur', 'client'].includes(type)) {
+        throw createError('Type de PDF invalide. Utilisez "vendeur" ou "client"', 400);
+      }
+
+      const contract = await RentalContractModel.findById(id);
+      if (!contract) {
+        throw createError('Bon de location non trouvé', 404);
+      }
+
+      // Retourner les données du contrat pour génération PDF côté frontend
+      const pdfData = {
+        contract,
+        type,
+        generatedAt: new Date().toISOString()
+      };
+
+      res.json(pdfData);
     } catch (error) {
       next(error);
     }
