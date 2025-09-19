@@ -54,7 +54,7 @@ export class PDFService {
     let currentY = startY;
 
     // Numéro de réservation et nombre d'articles (sur une ligne)
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 20, currentY);
 
@@ -87,52 +87,42 @@ export class PDFService {
       totalVetements += contract.articlesStock.length;
     }
 
-    doc.text(`${totalVetements} vêtements, ${totalAccessoires} accessoires`, 120, currentY);
+    doc.text(`${totalVetements} vêtements, ${totalAccessoires} accessoires`, 190, currentY, { align: 'right' });
     currentY += 12;
 
     // Nom du client ou groupe
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
     const clientName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
       ? `Groupe: ${contract.client.nom}`
       : contract.client.nom;
     doc.text(clientName, 20, currentY);
-    currentY += 10;
+    currentY += 12;
 
     // Téléphone
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY);
     currentY += 12;
 
+    // Email
+    doc.text(`Email: ${contract.client.email || 'Non renseigné'}`, 20, currentY);
+    currentY += 12;
+
     // À prendre le / À rendre le (sur une ligne)
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 20, currentY);
-    doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
+    doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 190, currentY, { align: 'right' });
     currentY += 12;
 
-    // Prix
+    // Prix, dépôt, arrhes et payé le sur une ligne
     const total = contract.tarifLocation + contract.depotGarantie;
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
     doc.text(`Prix: ${this.formatPrice(total)}`, 20, currentY);
-    currentY += 8;
-
-    // Dépôt de garantie
-    doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY);
-    currentY += 8;
-
-    // Arrhes
-    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY);
-    currentY += 12;
-
-    // Rendu le / Payé le (sur une ligne)
-    doc.setFont('helvetica', 'normal');
-    const dateRendu = contract.dateRendu ? this.formatDate(contract.dateRendu) : '___________';
-    doc.text(`Rendu le: ${dateRendu}`, 20, currentY);
+    doc.text(`Dépôt: ${this.formatPrice(contract.depotGarantie)}`, 65, currentY);
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 110, currentY);
 
     const datePaiement = contract.paiementSolde?.date ? this.formatDate(contract.paiementSolde.date) : '___________';
-    doc.text(`Payé le: ${datePaiement}`, 120, currentY);
+    doc.text(`Payé le: ${datePaiement}`, 155, currentY);
     currentY += 12;
 
     return currentY;
