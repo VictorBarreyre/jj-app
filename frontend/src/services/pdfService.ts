@@ -14,165 +14,289 @@ export class PDFService {
   }
 
   private static addHeader(doc: jsPDF, contract: RentalContract, type: PDFType) {
-    // Logo/Titre de l'entreprise
+    // Titre principal
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text('JEAN JACQUES CÉRÉMONIE', 105, 20, { align: 'center' });
+    doc.text('JEAN JACQUES CÉRÉMONIES', 105, 15, { align: 'center' });
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Location de costumes et accessoires', 105, 28, { align: 'center' });
-
-    // Informations de contact
+    // Fondé en 1867
     doc.setFontSize(10);
-    doc.text('Tél: 01 23 45 67 89 - Email: contact@jjceremonie.fr', 105, 35, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.text('Fondé en 1867', 105, 22, { align: 'center' });
+
+    // Site web
+    doc.setFontSize(10);
+    doc.text('www.jjloc.fr', 105, 28, { align: 'center' });
+
+    // Adresse
+    doc.setFontSize(9);
+    doc.text('2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)', 105, 34, { align: 'center' });
+
+    // Téléphone
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('01 43 54 25 56', 105, 40, { align: 'center' });
+
+    // Horaires
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Ouvert du mardi au samedi de 9h à 18h sans interruption', 105, 46, { align: 'center' });
+    doc.text('Fermé dimanche et lundi', 105, 50, { align: 'center' });
 
     // Ligne de séparation
-    doc.line(20, 42, 190, 42);
-
-    // Type de document
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    const title = type === 'vendeur' ? 'BON DE LOCATION - VENDEUR' : 'BON DE LOCATION - CLIENT';
-    doc.text(title, 105, 52, { align: 'center' });
-
-    // Numéro de contrat
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`N° ${contract.numero}`, 20, 65);
-    doc.text(`Date: ${this.formatDate(contract.dateCreation)}`, 140, 65);
+    doc.line(20, 55, 190, 55);
   }
 
-  private static addClientInfo(doc: jsPDF, contract: RentalContract, startY: number): number {
+  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number): number {
     let currentY = startY;
 
+    // Numéro de réservation et nombre d'articles
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('INFORMATIONS CLIENT', 20, currentY);
-    currentY += 8;
+    doc.text(`N° Réservation: ${contract.numero}`, 20, currentY);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Nom: ${contract.client.nom}`, 20, currentY);
-    doc.text(`Téléphone: ${contract.client.telephone}`, 120, currentY);
-    currentY += 6;
-
-    if (contract.client.email) {
-      doc.text(`Email: ${contract.client.email}`, 20, currentY);
-      currentY += 6;
+    // Compter le nombre total d'articles
+    let totalArticles = 0;
+    if (contract.groupDetails?.participants) {
+      contract.groupDetails.participants.forEach(participant => {
+        if (participant.tenue?.veste) totalArticles++;
+        if (participant.tenue?.gilet) totalArticles++;
+        if (participant.tenue?.pantalon) totalArticles++;
+        if (participant.tenue?.tailleChapeau) totalArticles++;
+        if (participant.tenue?.tailleChaussures) totalArticles++;
+      });
+    } else if (contract.tenue) {
+      if (contract.tenue.veste) totalArticles++;
+      if (contract.tenue.gilet) totalArticles++;
+      if (contract.tenue.pantalon) totalArticles++;
+      if (contract.tenue.tailleChapeau) totalArticles++;
+      if (contract.tenue.tailleChaussures) totalArticles++;
+    }
+    // Ajouter les articles stock
+    if (contract.articlesStock) {
+      totalArticles += contract.articlesStock.length;
     }
 
-    currentY += 5;
-    return currentY;
-  }
-
-  private static addEventInfo(doc: jsPDF, contract: RentalContract, startY: number): number {
-    let currentY = startY;
-
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('INFORMATIONS ÉVÉNEMENT', 20, currentY);
+    doc.text(`${totalArticles} vêtements et accessoires`, 120, currentY);
     currentY += 8;
 
+    // Nom du client ou groupe
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Date événement: ${this.formatDate(contract.dateEvenement)}`, 20, currentY);
-    doc.text(`Date retrait: ${this.formatDate(contract.dateRetrait)}`, 20, currentY + 6);
-    doc.text(`Date retour: ${this.formatDate(contract.dateRetour)}`, 20, currentY + 12);
-    doc.text(`Vendeur: ${contract.vendeur}`, 120, currentY);
+    const clientName = contract.type === 'groupe' && contract.groupDetails?.participants
+      ? `Groupe: ${contract.client.nom}`
+      : contract.client.nom;
+    doc.text(clientName, 20, currentY);
+    currentY += 6;
 
-    currentY += 25;
+    // Téléphone
+    doc.setFontSize(10);
+    doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY);
+    currentY += 8;
+
+    // À prendre le / À rendre le
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 20, currentY);
+    doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
+    currentY += 10;
+
+    // Prix
+    const total = contract.tarifLocation + contract.depotGarantie;
+    doc.setFontSize(11);
+    doc.text(`Prix: ${this.formatPrice(total)}`, 20, currentY);
+    currentY += 6;
+
+    // Dépôt de garantie
+    doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY);
+    currentY += 6;
+
+    // Arrhes
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY);
+    currentY += 8;
+
+    // Rendu le / Payé le
+    doc.setFont('helvetica', 'normal');
+    const dateRendu = contract.dateRendu ? this.formatDate(contract.dateRendu) : '___________';
+    doc.text(`Rendu le: ${dateRendu}`, 20, currentY);
+
+    const datePaiement = contract.paiementSolde?.date ? this.formatDate(contract.paiementSolde.date) : '___________';
+    doc.text(`Payé le: ${datePaiement}`, 120, currentY);
+    currentY += 10;
+
     return currentY;
   }
 
   private static addTenueInfo(doc: jsPDF, contract: RentalContract, startY: number, type: PDFType): number {
     let currentY = startY;
 
-    if (!contract.tenue || Object.keys(contract.tenue).length === 0) {
-      return currentY;
+    // Créer un tableau unifié pour tous les types de contrats
+    const allParticipants = [];
+
+    // Pour contrats de groupe : utiliser les participants
+    if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0) {
+      contract.groupDetails.participants.forEach((participant, index) => {
+        allParticipants.push({
+          nom: participant.nom,
+          tenue: participant.tenue,
+          notes: participant.notes
+        });
+      });
+    }
+    // Pour contrats individuels : créer un "participant" avec la tenue principale
+    else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
+      allParticipants.push({
+        nom: contract.client.nom,
+        tenue: contract.tenue,
+        notes: contract.notes
+      });
     }
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('TENUE', 20, currentY);
-    currentY += 8;
+    if (allParticipants.length > 0) {
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PARTICIPANTS ET TENUES', 20, currentY);
+      currentY += 8;
 
-    const tableData: string[][] = [];
+      // Créer le tableau avec tous les participants
+      const tableData: string[][] = [];
 
-    if (contract.tenue.veste) {
-      const row = [
-        'Veste',
-        contract.tenue.veste.reference || '',
-        contract.tenue.veste.taille || '',
-        contract.tenue.veste.couleur || ''
-      ];
-      if (type === 'vendeur' && contract.tenue.veste.notes) {
-        row.push(contract.tenue.veste.notes);
-      }
-      tableData.push(row);
-    }
+      allParticipants.forEach((participant) => {
+        // Ligne de séparation pour chaque participant (sauf le premier)
+        if (tableData.length > 0) {
+          tableData.push(['', '', '', '', type === 'vendeur' ? '' : '']); // Ligne vide
+        }
 
-    if (contract.tenue.gilet) {
-      const row = [
-        'Gilet',
-        contract.tenue.gilet.reference || '',
-        contract.tenue.gilet.taille || '',
-        contract.tenue.gilet.couleur || ''
-      ];
-      if (type === 'vendeur' && contract.tenue.gilet.notes) {
-        row.push(contract.tenue.gilet.notes);
-      }
-      tableData.push(row);
-    }
+        // Nom du participant en gras (première ligne)
+        tableData.push([
+          `👤 ${participant.nom}`,
+          '',
+          '',
+          '',
+          type === 'vendeur' ? '' : ''
+        ]);
 
-    if (contract.tenue.pantalon) {
-      const row = [
-        'Pantalon',
-        contract.tenue.pantalon.reference || '',
-        contract.tenue.pantalon.taille || '',
-        contract.tenue.pantalon.couleur || ''
-      ];
-      if (type === 'vendeur' && contract.tenue.pantalon.notes) {
-        row.push(contract.tenue.pantalon.notes);
-      }
-      tableData.push(row);
-    }
+        // Articles de la tenue
+        if (participant.tenue?.veste) {
+          const row = [
+            '  • Veste',
+            participant.tenue.veste.reference || '',
+            participant.tenue.veste.taille || '',
+            participant.tenue.veste.couleur || ''
+          ];
+          if (type === 'vendeur') {
+            row.push(participant.tenue.veste.notes || '');
+          }
+          tableData.push(row);
+        }
 
-    if (contract.tenue.tailleChapeau) {
-      tableData.push(['Chapeau', '', contract.tenue.tailleChapeau, '', type === 'vendeur' ? '' : '']);
-    }
+        if (participant.tenue?.gilet) {
+          const row = [
+            '  • Gilet',
+            participant.tenue.gilet.reference || '',
+            participant.tenue.gilet.taille || '',
+            participant.tenue.gilet.couleur || ''
+          ];
+          if (type === 'vendeur') {
+            row.push(participant.tenue.gilet.notes || '');
+          }
+          tableData.push(row);
+        }
 
-    if (contract.tenue.tailleChaussures) {
-      tableData.push(['Chaussures', '', contract.tenue.tailleChaussures, '', type === 'vendeur' ? '' : '']);
-    }
+        if (participant.tenue?.pantalon) {
+          const row = [
+            '  • Pantalon',
+            participant.tenue.pantalon.reference || '',
+            participant.tenue.pantalon.taille || '',
+            participant.tenue.pantalon.couleur || ''
+          ];
+          if (type === 'vendeur') {
+            row.push(participant.tenue.pantalon.notes || '');
+          }
+          tableData.push(row);
+        }
 
-    if (tableData.length > 0) {
-      const headers = type === 'vendeur'
-        ? ['Article', 'Référence', 'Taille', 'Couleur', 'Notes']
-        : ['Article', 'Référence', 'Taille', 'Couleur'];
+        if (participant.tenue?.tailleChapeau) {
+          const row = [
+            '  • Chapeau',
+            '',
+            participant.tenue.tailleChapeau,
+            ''
+          ];
+          if (type === 'vendeur') {
+            row.push('');
+          }
+          tableData.push(row);
+        }
 
-      autoTable(doc, {
-        head: [headers],
-        body: tableData,
-        startY: currentY,
-        theme: 'grid',
-        headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0] },
-        styles: { fontSize: 9 },
-        columnStyles: type === 'vendeur' ? {
-          0: { cellWidth: 25 },
-          1: { cellWidth: 35 },
-          2: { cellWidth: 20 },
-          3: { cellWidth: 25 },
-          4: { cellWidth: 80 }
-        } : {
-          0: { cellWidth: 30 },
-          1: { cellWidth: 50 },
-          2: { cellWidth: 25 },
-          3: { cellWidth: 30 }
+        if (participant.tenue?.tailleChaussures) {
+          const row = [
+            '  • Chaussures',
+            '',
+            participant.tenue.tailleChaussures,
+            ''
+          ];
+          if (type === 'vendeur') {
+            row.push('');
+          }
+          tableData.push(row);
+        }
+
+        // Notes du participant si présentes
+        if (type === 'vendeur' && participant.notes) {
+          tableData.push([
+            '  📝 Notes:',
+            participant.notes,
+            '',
+            '',
+            ''
+          ]);
         }
       });
 
-      currentY = (doc as any).lastAutoTable.finalY + 10;
+      if (tableData.length > 0) {
+        const headers = type === 'vendeur'
+          ? ['Participant/Article', 'Référence', 'Taille', 'Couleur', 'Notes']
+          : ['Participant/Article', 'Référence', 'Taille', 'Couleur'];
+
+        autoTable(doc, {
+          head: [headers],
+          body: tableData,
+          startY: currentY,
+          theme: 'grid',
+          headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0] },
+          styles: {
+            fontSize: 9,
+            cellPadding: 2
+          },
+          columnStyles: type === 'vendeur' ? {
+            0: { cellWidth: 35 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 20 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 70 }
+          } : {
+            0: { cellWidth: 40 },
+            1: { cellWidth: 50 },
+            2: { cellWidth: 25 },
+            3: { cellWidth: 30 }
+          },
+          didParseCell: function(data) {
+            // Mettre en gras les noms de participants
+            if (data.cell.text[0] && data.cell.text[0].startsWith('👤')) {
+              data.cell.styles.fontStyle = 'bold';
+              data.cell.styles.fillColor = [240, 240, 240];
+            }
+            // Style pour les lignes vides (séparation)
+            if (data.cell.text[0] === '' && data.row.index > 0) {
+              data.cell.styles.fillColor = [250, 250, 250];
+              data.cell.styles.minCellHeight = 3;
+            }
+          }
+        });
+
+        currentY = (doc as any).lastAutoTable.finalY + 10;
+      }
     }
 
     return currentY;
@@ -250,91 +374,112 @@ export class PDFService {
     return currentY + 25;
   }
 
-  private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract, startY: number): number {
-    // Ligne pointillée de séparation
-    const y = Math.max(startY, 200); // S'assurer qu'il y a assez d'espace
+  private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract): number {
+    // Position fixe pour la ligne de découpe (160mm = environ 160px)
+    const y = 160;
 
     // Créer une ligne pointillée
     doc.setLineDashPattern([2, 2], 0);
     doc.line(20, y, 190, y);
     doc.setLineDashPattern([], 0); // Reset dash pattern
 
-    // Texte "PARTIE DÉTACHABLE"
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'italic');
-    doc.text('PARTIE DÉTACHABLE - À CONSERVER', 105, y - 3, { align: 'center' });
-
-    let currentY = y + 10;
+    let currentY = y + 8;
 
     // Titre de la section détachable
-    doc.setFontSize(14);
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.text('RÉCÉPISSÉ DE DÉPÔT', 105, currentY, { align: 'center' });
-    currentY += 10;
+    currentY += 8;
 
-    // Informations essentielles
-    doc.setFontSize(10);
+    // Informations essentielles en 2 colonnes compactes
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Contrat N° ${contract.numero}`, 20, currentY);
-    doc.text(`Client: ${contract.client.nom}`, 20, currentY + 6);
-    doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY + 12);
-    doc.text(`Date événement: ${this.formatDate(contract.dateEvenement)}`, 120, currentY);
-    doc.text(`Date retour: ${this.formatDate(contract.dateRetour)}`, 120, currentY + 6);
+    doc.text(`N° ${contract.numero}`, 20, currentY);
+    doc.text(`Tel: ${contract.client.telephone}`, 120, currentY);
+    currentY += 5;
 
-    currentY += 20;
+    const clientName = contract.type === 'groupe' && contract.groupDetails?.participants
+      ? `Groupe: ${contract.client.nom}`
+      : contract.client.nom;
+    doc.text(clientName, 20, currentY);
+    doc.text(`Retour: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
+    currentY += 8;
 
-    // Total et dépôt
+    // Compter les articles
+    let totalArticles = 0;
+    if (contract.groupDetails?.participants) {
+      contract.groupDetails.participants.forEach(participant => {
+        if (participant.tenue?.veste) totalArticles++;
+        if (participant.tenue?.gilet) totalArticles++;
+        if (participant.tenue?.pantalon) totalArticles++;
+        if (participant.tenue?.tailleChapeau) totalArticles++;
+        if (participant.tenue?.tailleChaussures) totalArticles++;
+      });
+    } else if (contract.tenue) {
+      if (contract.tenue.veste) totalArticles++;
+      if (contract.tenue.gilet) totalArticles++;
+      if (contract.tenue.pantalon) totalArticles++;
+      if (contract.tenue.tailleChapeau) totalArticles++;
+      if (contract.tenue.tailleChaussures) totalArticles++;
+    }
+    if (contract.articlesStock) {
+      totalArticles += contract.articlesStock.length;
+    }
+
+    doc.text(`${totalArticles} articles`, 20, currentY);
+    currentY += 8;
+
+    // Total et dépôt - compacte
     const total = contract.tarifLocation + contract.depotGarantie;
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text(`Total: ${this.formatPrice(total)}`, 20, currentY);
-    doc.text(`Dépôt versé: ${this.formatPrice(contract.arrhes)}`, 20, currentY + 6);
-    doc.text(`Reste à payer: ${this.formatPrice(total - contract.arrhes)}`, 20, currentY + 12);
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 75, currentY);
+    doc.text(`Solde: ${this.formatPrice(total - contract.arrhes)}`, 130, currentY);
+    currentY += 10;
 
-    // Signature
-    currentY += 25;
+    // Signature compacte
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Signature client:', 20, currentY);
     doc.text('Signature vendeur:', 120, currentY);
 
-    return currentY + 20;
+    return currentY + 15;
   }
 
   public static generatePDF(contract: RentalContract, type: PDFType): void {
     const doc = new jsPDF();
 
-    // Header
+    // Header simplifié
     this.addHeader(doc, contract, type);
 
-    let currentY = 75;
+    // Informations simplifiées - hauteur fixe (plus d'espace après l'en-tête)
+    let currentY = 65;
+    currentY = this.addSimplifiedInfo(doc, contract, currentY);
 
-    // Client info
-    currentY = this.addClientInfo(doc, contract, currentY);
-
-    // Event info
-    currentY = this.addEventInfo(doc, contract, currentY);
-
-    // Tenue
-    currentY = this.addTenueInfo(doc, contract, currentY, type);
-
-    // Stock items
-    currentY = this.addStockItems(doc, contract, currentY);
-
-    // Financial info
-    currentY = this.addFinancialInfo(doc, contract, currentY, type);
-
-    // Section détachable pour vendeur uniquement
+    // Section détachable pour vendeur uniquement à position fixe
     if (type === 'vendeur') {
-      this.addVendeurDetachableSection(doc, contract, currentY);
+      this.addVendeurDetachableSection(doc, contract);
     } else {
-      // Pour le client, ajouter les conditions
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Conditions: Location soumise aux conditions générales disponibles en magasin.', 20, currentY);
-      doc.text('Tout retard de retour fera l\'objet d\'une facturation supplémentaire.', 20, currentY + 5);
+      // Pour le client, afficher le tableau des tenues et les conditions
+      currentY = this.addTenueInfo(doc, contract, currentY, type);
+
+      // Stock items pour le client
+      if (contract.articlesStock && contract.articlesStock.length > 0) {
+        currentY = this.addStockItems(doc, contract, currentY);
+      }
+
+      // Conditions pour le client
+      if (currentY < 240) { // S'assurer qu'on a la place
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Conditions: Location soumise aux conditions générales disponibles en magasin.', 20, 250);
+        doc.text('Tout retard de retour fera l\'objet d\'une facturation supplémentaire.', 20, 255);
+      }
     }
 
     // Sauvegarder le PDF
-    const filename = `bon-commande-${contract.numero}-${type}.pdf`;
+    const filename = `bon-location-${contract.numero}-${type}.pdf`;
     doc.save(filename);
   }
 }
