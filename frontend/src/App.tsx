@@ -221,8 +221,21 @@ function App() {
         };
         
         const updatedContract = await rentalContractApi.update(editParams.orderId, contractData);
-        alert(`Bon de location #${updatedContract.numero} mis à jour avec succès !`);
-        
+
+        // Proposer de générer le PDF immédiatement
+        const shouldGeneratePDF = confirm(`Bon de location #${updatedContract.numero} mis à jour avec succès !\n\nVoulez-vous générer le PDF maintenant ?`);
+
+        if (shouldGeneratePDF) {
+          // Importer dynamiquement le service PDF
+          const { PDFService } = await import('./services/pdfService');
+          try {
+            PDFService.generatePDF(updatedContract as any, 'vendeur');
+          } catch (error) {
+            console.error('Erreur lors de la génération du PDF:', error);
+            alert('Erreur lors de la génération du PDF.');
+          }
+        }
+
         // Réinitialiser les paramètres d'édition et retourner à l'accueil
         setEditParams({ editMode: false });
         setCurrentView('home');
@@ -283,7 +296,21 @@ function App() {
         };
         
         const createdContract = await rentalContractApi.create(contractData);
-        alert(`Bon de location #${createdContract.numero} créé avec succès ! Transmis au PC caisse.`);
+
+        // Proposer de générer le PDF immédiatement
+        const shouldGeneratePDF = confirm(`Bon de location #${createdContract.numero} créé avec succès !\n\nVoulez-vous générer le PDF maintenant ?`);
+
+        if (shouldGeneratePDF) {
+          // Importer dynamiquement le service PDF
+          const { PDFService } = await import('./services/pdfService');
+          try {
+            PDFService.generatePDF(createdContract as any, 'vendeur');
+          } catch (error) {
+            console.error('Erreur lors de la génération du PDF:', error);
+            alert('Erreur lors de la génération du PDF.');
+          }
+        }
+
         setCurrentView('home');
       }
     } catch (error) {
