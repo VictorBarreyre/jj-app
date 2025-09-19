@@ -78,7 +78,7 @@ export class PDFService {
     }
 
     doc.text(`${totalArticles} vêtements et accessoires`, 120, currentY);
-    currentY += 8;
+    currentY += 12;
 
     // Nom du client ou groupe
     doc.setFontSize(11);
@@ -87,33 +87,33 @@ export class PDFService {
       ? `Groupe: ${contract.client.nom}`
       : contract.client.nom;
     doc.text(clientName, 20, currentY);
-    currentY += 6;
+    currentY += 8;
 
     // Téléphone
     doc.setFontSize(10);
     doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY);
-    currentY += 8;
+    currentY += 12;
 
     // À prendre le / À rendre le
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 20, currentY);
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
-    currentY += 10;
+    currentY += 15;
 
     // Prix
     const total = contract.tarifLocation + contract.depotGarantie;
     doc.setFontSize(11);
     doc.text(`Prix: ${this.formatPrice(total)}`, 20, currentY);
-    currentY += 6;
+    currentY += 8;
 
     // Dépôt de garantie
     doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY);
-    currentY += 6;
+    currentY += 8;
 
     // Arrhes
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY);
-    currentY += 8;
+    currentY += 12;
 
     // Rendu le / Payé le
     doc.setFont('helvetica', 'normal');
@@ -122,7 +122,7 @@ export class PDFService {
 
     const datePaiement = contract.paiementSolde?.date ? this.formatDate(contract.paiementSolde.date) : '___________';
     doc.text(`Payé le: ${datePaiement}`, 120, currentY);
-    currentY += 10;
+    currentY += 15;
 
     return currentY;
   }
