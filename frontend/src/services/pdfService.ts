@@ -5,8 +5,11 @@ import { RentalContract } from '../types/rental-contract';
 export type PDFType = 'vendeur' | 'client';
 
 export class PDFService {
-  private static formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('fr-FR');
+  private static formatDate(dateString: string | Date): string {
+    if (typeof dateString === 'string') {
+      return new Date(dateString).toLocaleDateString('fr-FR');
+    }
+    return dateString.toLocaleDateString('fr-FR');
   }
 
   private static formatPrice(price: number): string {
@@ -43,15 +46,15 @@ export class PDFService {
     doc.text('Ouvert du mardi au samedi de 9h à 18h sans interruption', 105, 46, { align: 'center' });
     doc.text('Fermé dimanche et lundi', 105, 50, { align: 'center' });
 
-    // Ligne de séparation
-    doc.line(20, 55, 190, 55);
+    // Ligne de séparation (plus d'espace)
+    doc.line(20, 60, 190, 60);
   }
 
   private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number): number {
     let currentY = startY;
 
-    // Numéro de réservation
-    doc.setFontSize(11);
+    // Numéro de réservation et nombre d'articles (sur une ligne)
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 20, currentY);
 
@@ -88,29 +91,29 @@ export class PDFService {
     currentY += 12;
 
     // Nom du client ou groupe
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    const clientName = contract.type === 'groupe' && contract.groupDetails?.participants
+    const clientName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
       ? `Groupe: ${contract.client.nom}`
       : contract.client.nom;
     doc.text(clientName, 20, currentY);
-    currentY += 8;
+    currentY += 10;
 
     // Téléphone
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY);
     currentY += 12;
 
-    // À prendre le / À rendre le
-    doc.setFontSize(11);
+    // À prendre le / À rendre le (sur une ligne)
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 20, currentY);
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
-    currentY += 15;
+    currentY += 12;
 
     // Prix
     const total = contract.tarifLocation + contract.depotGarantie;
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text(`Prix: ${this.formatPrice(total)}`, 20, currentY);
     currentY += 8;
@@ -123,14 +126,14 @@ export class PDFService {
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY);
     currentY += 12;
 
-    // Rendu le / Payé le
+    // Rendu le / Payé le (sur une ligne)
     doc.setFont('helvetica', 'normal');
     const dateRendu = contract.dateRendu ? this.formatDate(contract.dateRendu) : '___________';
     doc.text(`Rendu le: ${dateRendu}`, 20, currentY);
 
     const datePaiement = contract.paiementSolde?.date ? this.formatDate(contract.paiementSolde.date) : '___________';
     doc.text(`Payé le: ${datePaiement}`, 120, currentY);
-    currentY += 15;
+    currentY += 12;
 
     return currentY;
   }
@@ -383,8 +386,8 @@ export class PDFService {
   }
 
   private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract): number {
-    // Position fixe pour la ligne de découpe (160mm = environ 160px)
-    const y = 160;
+    // Position fixe pour la ligne de découpe (170mm pour laisser plus de place)
+    const y = 170;
 
     // Créer une ligne pointillée
     doc.setLineDashPattern([2, 2], 0);
@@ -393,66 +396,60 @@ export class PDFService {
 
     let currentY = y + 8;
 
-    // Titre de la section détachable
-    doc.setFontSize(12);
+    // Titre de la section détachable (plus compact)
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('RÉCÉPISSÉ DE DÉPÔT', 105, currentY, { align: 'center' });
-    currentY += 8;
+    currentY += 10;
 
-    // Informations essentielles en 2 colonnes compactes
+    // Informations compactes sur 2 colonnes
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text(`N° ${contract.numero}`, 20, currentY);
     doc.text(`Tel: ${contract.client.telephone}`, 120, currentY);
-    currentY += 5;
+    currentY += 6;
 
-    const clientName = contract.type === 'groupe' && contract.groupDetails?.participants
+    const clientName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
       ? `Groupe: ${contract.client.nom}`
       : contract.client.nom;
     doc.text(clientName, 20, currentY);
     doc.text(`Retour: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
     currentY += 8;
 
-    // Compter les articles
-    let totalArticles = 0;
+    // Compter les vêtements et accessoires
+    let totalVetements = 0;
+    let totalAccessoires = 0;
     if (contract.groupDetails?.participants) {
       contract.groupDetails.participants.forEach(participant => {
-        if (participant.tenue?.veste) totalArticles++;
-        if (participant.tenue?.gilet) totalArticles++;
-        if (participant.tenue?.pantalon) totalArticles++;
-        if (participant.tenue?.tailleChapeau) totalArticles++;
-        if (participant.tenue?.tailleChaussures) totalArticles++;
+        if (participant.tenue?.veste) totalVetements++;
+        if (participant.tenue?.gilet) totalVetements++;
+        if (participant.tenue?.pantalon) totalVetements++;
+        if (participant.tenue?.tailleChapeau) totalAccessoires++;
+        if (participant.tenue?.tailleChaussures) totalAccessoires++;
       });
     } else if (contract.tenue) {
-      if (contract.tenue.veste) totalArticles++;
-      if (contract.tenue.gilet) totalArticles++;
-      if (contract.tenue.pantalon) totalArticles++;
-      if (contract.tenue.tailleChapeau) totalArticles++;
-      if (contract.tenue.tailleChaussures) totalArticles++;
+      if (contract.tenue.veste) totalVetements++;
+      if (contract.tenue.gilet) totalVetements++;
+      if (contract.tenue.pantalon) totalVetements++;
+      if (contract.tenue.tailleChapeau) totalAccessoires++;
+      if (contract.tenue.tailleChaussures) totalAccessoires++;
     }
     if (contract.articlesStock) {
-      totalArticles += contract.articlesStock.length;
+      totalVetements += contract.articlesStock.length;
     }
 
-    doc.text(`${totalArticles} articles`, 20, currentY);
+    doc.text(`${totalVetements} vêtements, ${totalAccessoires} accessoires`, 20, currentY);
     currentY += 8;
 
-    // Total et dépôt - compacte
+    // Total et dépôt en ligne compacte
     const total = contract.tarifLocation + contract.depotGarantie;
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text(`Total: ${this.formatPrice(total)}`, 20, currentY);
-    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 75, currentY);
-    doc.text(`Solde: ${this.formatPrice(total - contract.arrhes)}`, 130, currentY);
-    currentY += 10;
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 80, currentY);
+    doc.text(`Solde: ${this.formatPrice(total - contract.arrhes)}`, 140, currentY);
 
-    // Signature compacte
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Signature client:', 20, currentY);
-    doc.text('Signature vendeur:', 120, currentY);
-
-    return currentY + 15;
+    return currentY + 10;
   }
 
   public static generatePDF(contract: RentalContract, type: PDFType): void {
@@ -461,8 +458,8 @@ export class PDFService {
     // Header simplifié
     this.addHeader(doc, contract, type);
 
-    // Informations simplifiées - hauteur fixe (plus d'espace après l'en-tête)
-    let currentY = 65;
+    // Informations simplifiées - espace harmonisé après l'en-tête
+    let currentY = 75;
     currentY = this.addSimplifiedInfo(doc, contract, currentY);
 
     // Section détachable pour vendeur uniquement à position fixe
