@@ -11,6 +11,7 @@ interface PDFButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
+  participantIndex?: number;
 }
 
 export const PDFButton: React.FC<PDFButtonProps> = ({
@@ -19,11 +20,26 @@ export const PDFButton: React.FC<PDFButtonProps> = ({
   className,
   variant = 'ghost',
   size = 'sm',
-  showText = false
+  showText = false,
+  participantIndex
 }) => {
   const handleExportPDF = () => {
     try {
-      PDFService.generatePDF(contract, type);
+      // Si c'est un groupe, générer un PDF par participant
+      if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0) {
+        if (participantIndex !== undefined) {
+          // PDF pour un participant spécifique
+          PDFService.generatePDF(contract, type, participantIndex);
+        } else {
+          // PDF pour tous les participants
+          contract.groupDetails.participants.forEach((_, index) => {
+            PDFService.generatePDF(contract, type, index);
+          });
+        }
+      } else {
+        // PDF pour un contrat individuel
+        PDFService.generatePDF(contract, type);
+      }
     } catch (error) {
       console.error('Erreur lors de la génération du PDF:', error);
     }

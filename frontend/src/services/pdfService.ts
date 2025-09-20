@@ -74,13 +74,13 @@ export class PDFService {
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
       participant = contract.groupDetails.participants[participantIndex];
       participantName = participant?.nom || '';
-      showParticipantName = true; // Afficher le nom pour les groupes
+      showParticipantName = true; // Toujours afficher le nom pour les groupes
     }
     // Pour un contrat individuel, utiliser la tenue principale
     else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
       participant = { tenue: contract.tenue };
       participantName = contract.client.nom;
-      showParticipantName = false; // Ne pas afficher le nom pour les clients seuls
+      showParticipantName = false; // Ne pas afficher le nom pour les clients individuels (pas de groupe)
     }
 
     if (participant) {
