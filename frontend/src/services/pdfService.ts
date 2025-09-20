@@ -57,7 +57,7 @@ export class PDFService {
     let currentY = startY;
 
     // Numéro de réservation et nom du groupe à droite - A5
-    doc.setFontSize(9);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 10, currentY);
 
@@ -66,7 +66,7 @@ export class PDFService {
       ? contract.client.nom
       : contract.client.nom;
     doc.text(groupName, 138, currentY, { align: 'right' });
-    currentY += 10;
+    currentY += 13;
 
     // Afficher le participant et ses vêtements
     let participant = null;
@@ -89,14 +89,14 @@ export class PDFService {
     if (participant) {
       // Nom du participant (seulement pour les groupes) - A5
       if (showParticipantName && participantName) {
-        doc.setFontSize(9);
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
         doc.text(participantName, 10, currentY);
-        currentY += 8;
+        currentY += 11;
       }
 
       // Descriptif de ce qu'il a loué - A5
-      doc.setFontSize(8);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       const items = [];
 
@@ -119,43 +119,40 @@ export class PDFService {
       if (items.length > 0) {
         items.forEach(item => {
           doc.text(`• ${item}`, 10, currentY);
-          currentY += 6;
+          currentY += 7;
         });
       } else {
         doc.text(`• Aucun article`, 10, currentY);
-        currentY += 6;
+        currentY += 7;
       }
 
-      currentY += 6;
+      currentY += 8;
     }
 
     // Téléphone - A5
-    doc.setFontSize(9);
+    doc.setFontSize(11);
     doc.text(`Téléphone: ${contract.client.telephone}`, 10, currentY);
-    currentY += 8;
+    currentY += 11;
 
     // Email - A5
     doc.text(`Email: ${contract.client.email || 'Non renseigné'}`, 10, currentY);
-    currentY += 10;
+    currentY += 13;
 
     // À prendre le / À rendre le (sur une ligne) - A5
-    doc.setFontSize(9);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
-    currentY += 10;
+    currentY += 13;
 
-    // Prix, dépôt, arrhes et payé le - A5 compact
+    // Dépôt, arrhes et prix - A5 compact (en gras) - bien espacé sur toute la largeur
     const total = contract.tarifLocation + contract.depotGarantie;
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Prix: ${this.formatPrice(total)}`, 10, currentY);
-    doc.text(`Dépôt: ${this.formatPrice(contract.depotGarantie)}`, 45, currentY);
-    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 75, currentY);
-
-    const datePaiement = contract.paiementSolde?.date ? this.formatDate(contract.paiementSolde.date) : '___________';
-    doc.text(`Payé le: ${datePaiement}`, 105, currentY);
-    currentY += 10;
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Dépôt: ${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 74, currentY, { align: 'center' });
+    doc.text(`Prix: ${this.formatPrice(total)}`, 138, currentY, { align: 'right' });
+    currentY += 11;
 
     return currentY;
   }
@@ -429,58 +426,13 @@ export class PDFService {
 
     let currentY = y + 8;
 
-    // Titre de la section détachable (plus compact)
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('RÉCÉPISSÉ DE DÉPÔT', 105, currentY, { align: 'center' });
-    currentY += 10;
-
-    // Informations compactes sur 2 colonnes
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`N° ${contract.numero}`, 20, currentY);
-    doc.text(`Tel: ${contract.client.telephone}`, 120, currentY);
-    currentY += 6;
-
-    const clientName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
-      ? `Groupe: ${contract.client.nom}`
-      : contract.client.nom;
-    doc.text(clientName, 20, currentY);
-    doc.text(`Retour: ${this.formatDate(contract.dateRetour)}`, 120, currentY);
-    currentY += 8;
-
-    // Compter les vêtements et accessoires
-    let totalVetements = 0;
-    let totalAccessoires = 0;
-    if (contract.groupDetails?.participants) {
-      contract.groupDetails.participants.forEach(participant => {
-        if (participant.tenue?.veste) totalVetements++;
-        if (participant.tenue?.gilet) totalVetements++;
-        if (participant.tenue?.pantalon) totalVetements++;
-        if (participant.tenue?.tailleChapeau) totalAccessoires++;
-        if (participant.tenue?.tailleChaussures) totalAccessoires++;
-      });
-    } else if (contract.tenue) {
-      if (contract.tenue.veste) totalVetements++;
-      if (contract.tenue.gilet) totalVetements++;
-      if (contract.tenue.pantalon) totalVetements++;
-      if (contract.tenue.tailleChapeau) totalAccessoires++;
-      if (contract.tenue.tailleChaussures) totalAccessoires++;
-    }
-    if (contract.articlesStock) {
-      totalVetements += contract.articlesStock.length;
-    }
-
-    doc.text(`${totalVetements} vêtements, ${totalAccessoires} accessoires`, 20, currentY);
-    currentY += 8;
-
-    // Total et dépôt en ligne compacte
+    // Section détachable - seulement les montants, bien espacés et plus gros
     const total = contract.tarifLocation + contract.depotGarantie;
-    doc.setFontSize(9);
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Total: ${this.formatPrice(total)}`, 20, currentY);
-    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 80, currentY);
-    doc.text(`Solde: ${this.formatPrice(total - contract.arrhes)}`, 140, currentY);
+    doc.text(`${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
+    doc.text(`${this.formatPrice(contract.arrhes)}`, 74, currentY, { align: 'center' });
+    doc.text(`${this.formatPrice(total)}`, 138, currentY, { align: 'right' });
 
     return currentY + 10;
   }
@@ -495,8 +447,8 @@ export class PDFService {
     // Header simplifié
     this.addHeader(doc, contract, type);
 
-    // Informations simplifiées - espace harmonisé après l'en-tête A5
-    let currentY = 55;
+    // Informations simplifiées - plus d'espace après l'en-tête A5
+    let currentY = 60;
     currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
 
     // Section détachable pour vendeur uniquement à position dynamique
