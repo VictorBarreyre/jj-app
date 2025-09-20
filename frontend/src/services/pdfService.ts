@@ -50,54 +50,81 @@ export class PDFService {
     doc.line(20, 60, 190, 60);
   }
 
-  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number): number {
+  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number): number {
     let currentY = startY;
 
-    // Numéro de réservation et nombre d'articles (sur une ligne)
+    // Numéro de réservation et nom du groupe à droite
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 20, currentY);
 
-    // Compter les vêtements et accessoires séparément
-    let totalVetements = 0;
-    let totalAccessoires = 0;
-
-    if (contract.groupDetails?.participants) {
-      contract.groupDetails.participants.forEach(participant => {
-        // Vêtements
-        if (participant.tenue?.veste) totalVetements++;
-        if (participant.tenue?.gilet) totalVetements++;
-        if (participant.tenue?.pantalon) totalVetements++;
-        // Accessoires
-        if (participant.tenue?.tailleChapeau) totalAccessoires++;
-        if (participant.tenue?.tailleChaussures) totalAccessoires++;
-      });
-    } else if (contract.tenue) {
-      // Vêtements
-      if (contract.tenue.veste) totalVetements++;
-      if (contract.tenue.gilet) totalVetements++;
-      if (contract.tenue.pantalon) totalVetements++;
-      // Accessoires
-      if (contract.tenue.tailleChapeau) totalAccessoires++;
-      if (contract.tenue.tailleChaussures) totalAccessoires++;
-    }
-
-    // Ajouter les articles stock (considérés comme vêtements)
-    if (contract.articlesStock) {
-      totalVetements += contract.articlesStock.length;
-    }
-
-    doc.text(`${totalVetements} vêtements, ${totalAccessoires} accessoires`, 190, currentY, { align: 'right' });
-    currentY += 12;
-
-    // Nom du client ou groupe
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    const clientName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
-      ? `Groupe: ${contract.client.nom}`
+    // Nom du groupe à droite (ou nom du client si individuel)
+    const groupName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
+      ? contract.client.nom
       : contract.client.nom;
-    doc.text(clientName, 20, currentY);
+    doc.text(groupName, 190, currentY, { align: 'right' });
     currentY += 12;
+
+    // Afficher le participant et ses vêtements
+    let participant = null;
+    let participantName = '';
+    let showParticipantName = false;
+
+    // Pour un groupe avec un participant spécifique
+    if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
+      participant = contract.groupDetails.participants[participantIndex];
+      participantName = participant?.nom || '';
+      showParticipantName = true; // Afficher le nom pour les groupes
+    }
+    // Pour un contrat individuel, utiliser la tenue principale
+    else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
+      participant = { tenue: contract.tenue };
+      participantName = contract.client.nom;
+      showParticipantName = false; // Ne pas afficher le nom pour les clients seuls
+    }
+
+    if (participant) {
+      // Nom du participant (seulement pour les groupes)
+      if (showParticipantName && participantName) {
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text(participantName, 20, currentY);
+        currentY += 10;
+      }
+
+      // Descriptif de ce qu'il a loué
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const items = [];
+
+      if (participant.tenue?.veste) {
+        items.push(`Veste ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`.trim());
+      }
+      if (participant.tenue?.gilet) {
+        items.push(`Gilet ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+      }
+      if (participant.tenue?.pantalon) {
+        items.push(`Pantalon ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`.trim());
+      }
+      if (participant.tenue?.tailleChapeau) {
+        items.push(`Chapeau taille ${participant.tenue.tailleChapeau}`);
+      }
+      if (participant.tenue?.tailleChaussures) {
+        items.push(`Chaussures taille ${participant.tenue.tailleChaussures}`);
+      }
+
+      if (items.length > 0) {
+        items.forEach(item => {
+          doc.text(`• ${item}`, 20, currentY);
+          currentY += 8;
+        });
+      } else {
+        doc.text(`• Aucun article`, 20, currentY);
+        currentY += 8;
+      }
+
+      currentY += 8;
+    }
 
     // Téléphone
     doc.setFontSize(11);
@@ -442,7 +469,7 @@ export class PDFService {
     return currentY + 10;
   }
 
-  public static generatePDF(contract: RentalContract, type: PDFType): void {
+  public static generatePDF(contract: RentalContract, type: PDFType, participantIndex?: number): void {
     const doc = new jsPDF();
 
     // Header simplifié
@@ -450,7 +477,7 @@ export class PDFService {
 
     // Informations simplifiées - espace harmonisé après l'en-tête
     let currentY = 75;
-    currentY = this.addSimplifiedInfo(doc, contract, currentY);
+    currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
 
     // Section détachable pour vendeur uniquement à position fixe
     if (type === 'vendeur') {
@@ -474,7 +501,8 @@ export class PDFService {
     }
 
     // Sauvegarder le PDF
-    const filename = `bon-location-${contract.numero}-${type}.pdf`;
+    const participantSuffix = participantIndex !== undefined ? `-participant-${participantIndex + 1}` : '';
+    const filename = `bon-location-${contract.numero}${participantSuffix}-${type}.pdf`;
     doc.save(filename);
   }
 }
