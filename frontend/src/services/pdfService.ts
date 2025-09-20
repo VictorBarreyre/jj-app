@@ -439,6 +439,15 @@ export class PDFService {
 
     // Section détachable - maintenant vide (montants supprimés)
 
+    // Ajouter une séparation verticale avec tirets au 2/3 de la zone détachable
+    const sectionWidth = 138 - 10; // Largeur utilisable (bords exclus)
+    const separationX = 10 + (sectionWidth * 2 / 3); // Position à 2/3 de la largeur
+
+    // Ligne verticale en tirets - de haut en bas de la section détachable
+    doc.setLineDashPattern([1, 1], 0);
+    doc.line(separationX, y + 3, separationX, pageHeight - 5);
+    doc.setLineDashPattern([], 0); // Reset dash pattern
+
     return currentY + 10;
   }
 
