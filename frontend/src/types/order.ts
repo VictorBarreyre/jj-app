@@ -96,6 +96,7 @@ export interface Order {
   dateCreation: Date | string;
   dateLivraison?: Date | string;
   items: OrderItem[];
+  articleCount: number; // Nombre total d'articles (calculé correctement)
   sousTotal?: number;
   tva?: number;
   total?: number;

@@ -299,7 +299,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
 
               {/* Nombre d'articles */}
               <div className="col-span-1 text-sm text-gray-600">
-                {order.items.length}
+                {order.articleCount || order.items.length}
               </div>
 
               {/* Total */}
@@ -365,7 +365,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                 )}
 
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">{order.items.length} article{order.items.length > 1 ? 's' : ''}</span>
+                  <span className="text-gray-600">{order.articleCount || order.items.length} article{(order.articleCount || order.items.length) > 1 ? 's' : ''}</span>
                   {order.total && (
                     <span className="font-medium text-sm text-gray-900">{formatPrice(order.total)}</span>
                   )}

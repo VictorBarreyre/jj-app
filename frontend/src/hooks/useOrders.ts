@@ -85,6 +85,41 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             }
           }
           
+          // Fonction pour calculer correctement le nombre total d'articles
+          const getTotalArticleCount = (contract: any): number => {
+            let total = 0;
+
+            // Priorité 1: utiliser articlesStock (source la plus fiable)
+            if (contract.articlesStock?.length > 0) {
+              total = contract.articlesStock.reduce((sum: number, item: any) =>
+                sum + (item.quantiteReservee || 1), 0);
+            }
+            // Priorité 2: pour les commandes individuelles, compter depuis tenue
+            else if (contract.type === 'individuel' && contract.tenue) {
+              if (contract.tenue.veste) total++;
+              if (contract.tenue.gilet) total++;
+              if (contract.tenue.pantalon) total++;
+              if (contract.tenue.tailleChapeau) total++;
+              if (contract.tenue.tailleChaussures) total++;
+            }
+            // Priorité 3: pour les groupes, compter depuis les participants
+            else if (contract.groupDetails?.participants?.length > 0) {
+              contract.groupDetails.participants.forEach((participant: any) => {
+                if (participant.tenue?.veste) total++;
+                if (participant.tenue?.gilet) total++;
+                if (participant.tenue?.pantalon) total++;
+                if (participant.tenue?.tailleChapeau) total++;
+                if (participant.tenue?.tailleChaussures) total++;
+              });
+            }
+            // Fallback: compter les items générés
+            else {
+              total = items.length;
+            }
+
+            return total;
+          };
+
           // Calculer le total à partir des articles si tarifLocation n'existe pas
           let calculatedTotal = contract.tarifLocation || 0;
           
@@ -107,6 +142,8 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             id: contract._id, // Utiliser _id de MongoDB
             numero: contract.numero,
             type: contract.type || 'individuel',
+            // Ajouter le nombre correct d'articles
+            articleCount: getTotalArticleCount(contract),
             // Mapper les champs nécessaires
             client: {
               nom: contract.client.nom,

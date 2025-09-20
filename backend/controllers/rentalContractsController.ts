@@ -290,8 +290,8 @@ export const rentalContractsController = {
       if (savedContract.client.email) {
         try {
           console.log(`📧 Envoi automatique du bon de location à ${savedContract.client.email}`);
-          const pdfBuffer = await backendPDFService.generatePDF(savedContract, 'client');
-          await emailService.sendContractEmail(savedContract, pdfBuffer);
+          const pdfBuffer = await backendPDFService.generatePDF(savedContract as any, 'client');
+          await emailService.sendContractEmail(savedContract as any, pdfBuffer);
           console.log('✅ Email automatique envoyé avec succès');
         } catch (emailError) {
           console.error('⚠️ Erreur lors de l\'envoi automatique de l\'email (n\'affecte pas la création du contrat):', emailError);
@@ -570,10 +570,10 @@ export const rentalContractsController = {
       console.log(`📧 Génération et envoi du PDF ${type} pour le contrat ${contract.numero} à ${recipientEmail}`);
 
       // Générer le PDF
-      const pdfBuffer = await backendPDFService.generatePDF(contract, type as 'vendeur' | 'client', participantIndex);
+      const pdfBuffer = await backendPDFService.generatePDF(contract as any, type as 'vendeur' | 'client', participantIndex);
 
       // Envoyer l'email avec le PDF en pièce jointe
-      const emailSent = await emailService.sendContractEmail(contract, pdfBuffer, recipientEmail);
+      const emailSent = await emailService.sendContractEmail(contract as any, pdfBuffer, recipientEmail);
 
       if (!emailSent) {
         throw createError('Échec de l\'envoi de l\'email', 500);
