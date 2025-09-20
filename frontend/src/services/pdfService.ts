@@ -415,7 +415,7 @@ export class PDFService {
     return currentY + 25;
   }
 
-  private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract, contentEndY: number): number {
+  private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract, contentEndY: number, participantIndex?: number): number {
     // Utiliser des valeurs pour A5 (148mm x 210mm)
     const pageHeight = 200; // Hauteur A5 effective
     const sectionHeight = 35; // Hauteur de la section détachable
@@ -448,6 +448,59 @@ export class PDFService {
     doc.line(separationX, y + 3, separationX, pageHeight - 5);
     doc.setLineDashPattern([], 0); // Reset dash pattern
 
+    // Partie gauche - texte vertical
+    const leftSectionX = 15; // Position dans la partie gauche
+
+    // Récupérer les informations pour la partie gauche
+    let personName = '';
+    let participant = null;
+
+    if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
+      // Pour un groupe avec participant spécifique
+      participant = contract.groupDetails.participants[participantIndex];
+      personName = participant?.nom || '';
+    } else {
+      // Pour un client individuel
+      personName = contract.client.nom;
+      participant = { tenue: contract.tenue };
+    }
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+
+    // Ajouter le numéro de réservation et le nom dans la partie droite
+    const rightSectionX = separationX + 5; // Position dans la partie droite
+
+    // Numéro de réservation
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`N° ${contract.numero}`, rightSectionX, currentY);
+
+    doc.setFont('helvetica', 'normal');
+    // Largeur disponible dans la partie droite
+    const rightSectionWidth = 138 - rightSectionX;
+    const nameLines = doc.splitTextToSize(personName, rightSectionWidth);
+
+    nameLines.forEach((line: string, index: number) => {
+      doc.text(line, rightSectionX, currentY + 8 + (index * 6));
+    });
+
+    // Nom et prénom (texte vertical de haut en bas) - aligné avec le texte de droite
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(personName, leftSectionX, currentY - 2, { angle: -90 });
+
+    // Date de prise (texte vertical de haut en bas) - aligné avec le nom de droite
+    doc.setFont('helvetica', 'normal');
+    const dateRetrait = this.formatDate(contract.dateRetrait);
+    doc.text(`Prise: ${dateRetrait}`, leftSectionX + 8, currentY - 2, { angle: -90 });
+
+    // Taille du chapeau si présente (texte vertical au niveau de la jointure)
+    const tailleChapeau = participant?.tenue?.tailleChapeau;
+    if (tailleChapeau) {
+      doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 2, { angle: -90 });
+    }
+
     return currentY + 10;
   }
 
@@ -467,7 +520,7 @@ export class PDFService {
 
     // Section détachable pour vendeur uniquement à position dynamique
     if (type === 'vendeur') {
-      this.addVendeurDetachableSection(doc, contract, currentY);
+      this.addVendeurDetachableSection(doc, contract, currentY, participantIndex);
     } else {
       // Pour le client, afficher le tableau des tenues et les conditions
       currentY = this.addTenueInfo(doc, contract, currentY, type);
