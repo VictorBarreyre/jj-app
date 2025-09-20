@@ -21,30 +21,30 @@ export class PDFService {
     const centerX = 74;
 
     // Titre principal
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
     doc.text('JEAN JACQUES CÉRÉMONIES', centerX, 12, { align: 'center' });
 
     // Fondé en 1867
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Fondé en 1867', centerX, 18, { align: 'center' });
 
     // Site web
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.text('www.jjloc.fr', centerX, 23, { align: 'center' });
 
     // Adresse
-    doc.setFontSize(7);
+    doc.setFontSize(8);
     doc.text('2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)', centerX, 28, { align: 'center' });
 
     // Téléphone
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text('01 43 54 25 56', centerX, 33, { align: 'center' });
 
     // Horaires
-    doc.setFontSize(6);
+    doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
     doc.text('Ouvert du mardi au samedi de 9h à 18h sans interruption', centerX, 38, { align: 'center' });
     doc.text('Fermé dimanche et lundi', centerX, 42, { align: 'center' });
@@ -86,17 +86,32 @@ export class PDFService {
       showParticipantName = false; // Ne pas afficher le nom pour les clients individuels (pas de groupe)
     }
 
+    // Téléphone - A5 (label en gras, valeur normale)
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Téléphone: `, 10, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${contract.client.telephone}`, 35, currentY);
+    currentY += 11;
+
+    // Email - A5 (label en gras, valeur normale)
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Email: `, 10, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${contract.client.email || 'Non renseigné'}`, 25, currentY);
+    currentY += 13;
+
     if (participant) {
-      // Nom du participant (seulement pour les groupes) - A5
+      // "Tenue de" + nom du participant (seulement pour les groupes) - A5
       if (showParticipantName && participantName) {
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.text(participantName, 10, currentY);
+        doc.text(`Tenue de ${participantName}:`, 10, currentY);
         currentY += 11;
       }
 
-      // Descriptif de ce qu'il a loué - A5
-      doc.setFontSize(10);
+      // Descriptif de ce qu'il a loué - A5 (même taille que téléphone/email)
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
       const items = [];
 
@@ -117,26 +132,22 @@ export class PDFService {
       }
 
       if (items.length > 0) {
-        items.forEach(item => {
-          doc.text(`• ${item}`, 10, currentY);
-          currentY += 7;
+        const itemsText = items.join(' / ');
+        // Largeur maximum pour A5 (128mm utilisables)
+        const maxWidth = 128;
+        const textLines = doc.splitTextToSize(itemsText, maxWidth);
+
+        textLines.forEach((line: string) => {
+          doc.text(line, 10, currentY);
+          currentY += 8;
         });
       } else {
-        doc.text(`• Aucun article`, 10, currentY);
-        currentY += 7;
+        doc.text(`Aucun article`, 10, currentY);
+        currentY += 8;
       }
 
       currentY += 8;
     }
-
-    // Téléphone - A5
-    doc.setFontSize(11);
-    doc.text(`Téléphone: ${contract.client.telephone}`, 10, currentY);
-    currentY += 11;
-
-    // Email - A5
-    doc.text(`Email: ${contract.client.email || 'Non renseigné'}`, 10, currentY);
-    currentY += 13;
 
     // À prendre le / À rendre le (sur une ligne) - A5
     doc.setFontSize(11);
@@ -426,13 +437,7 @@ export class PDFService {
 
     let currentY = y + 8;
 
-    // Section détachable - seulement les montants, bien espacés et plus gros
-    const total = contract.tarifLocation + contract.depotGarantie;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
-    doc.text(`${this.formatPrice(contract.arrhes)}`, 74, currentY, { align: 'center' });
-    doc.text(`${this.formatPrice(total)}`, 138, currentY, { align: 'right' });
+    // Section détachable - maintenant vide (montants supprimés)
 
     return currentY + 10;
   }
