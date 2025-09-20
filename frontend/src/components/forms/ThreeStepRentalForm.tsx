@@ -461,7 +461,7 @@ export const ThreeStepRentalForm = forwardRef<
                     return (
                       <div key={clientIndex} className="bg-gray-50 rounded-lg p-3 text-left">
                         <div className="font-semibold text-gray-800 text-left mb-2">
-                          {groupData.clients.length > 1 ? client.nom : 'Tenue sélectionnée'}
+                          {client.nom}
                         </div>
                         <div className="space-y-1">
                           {pieces.map((piece, index) => (

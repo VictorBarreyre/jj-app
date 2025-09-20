@@ -431,19 +431,22 @@ export function OrderViewEditModal({
             )}
             
             {/* Détails des tenues avec statut de rendu */}
-            {order.groupDetails?.participants && order.groupDetails.participants.length > 0 && (
-              <div className="pt-3 border-t border-gray-300 mt-3">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
-                  Pièces de tenue réservées {order.type === 'groupe' && '& Statut de rendu'}
-                </span>
-                <div className="space-y-4">
-                  {order.groupDetails.participants.map((participant, index) => (
+            {(() => {
+              // Pour les groupes, utiliser les participants existants
+              if (order.groupDetails?.participants && order.groupDetails.participants.length > 0) {
+                return (
+                  <div className="pt-3 border-t border-gray-300 mt-3">
+                    <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                      Pièces de tenue réservées & Statut de rendu
+                    </span>
+                    <div className="space-y-4">
+                      {order.groupDetails.participants.map((participant, index) => (
                     <div key={index} className="bg-white rounded-lg p-3 text-left border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-semibold text-gray-800 text-left">
-                          {order.groupDetails!.participants.length > 1 ? participant.nom : 'Tenue sélectionnée'}
+                          {participant.nom}
                         </div>
-                        {order.type === 'groupe' && onUpdateParticipantReturn && (
+                        {onUpdateParticipantReturn && (
                           <button
                             onClick={() => {
                               const currentState = participant.rendu || false;
@@ -469,17 +472,38 @@ export function OrderViewEditModal({
                         )}
                       </div>
                       <div className="space-y-1">
-                        {participant.pieces && participant.pieces.length > 0 ? (
-                          participant.pieces.map((piece, pieceIndex) => (
-                            <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
-                              <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                        {(() => {
+                          const pieces = [];
+
+                          // Générer les pièces à partir de participant.tenue
+                          if (participant.tenue?.veste) {
+                            pieces.push(`Veste ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`.trim());
+                          }
+                          if (participant.tenue?.gilet) {
+                            pieces.push(`Gilet ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+                          }
+                          if (participant.tenue?.pantalon) {
+                            pieces.push(`Pantalon ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`.trim());
+                          }
+                          if (participant.tenue?.tailleChapeau) {
+                            pieces.push(`Chapeau taille ${participant.tenue.tailleChapeau}`);
+                          }
+                          if (participant.tenue?.tailleChaussures) {
+                            pieces.push(`Chaussures taille ${participant.tenue.tailleChaussures}`);
+                          }
+
+                          return pieces.length > 0 ? (
+                            pieces.map((piece, pieceIndex) => (
+                              <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
+                                <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-sm text-gray-400 text-left pl-3">
+                              <span className="text-gray-400">•</span> <span className="ml-2">Aucune pièce spécifiée</span>
                             </div>
-                          ))
-                        ) : (
-                          <div className="text-sm text-gray-400 text-left pl-3">
-                            <span className="text-gray-400">•</span> <span className="ml-2">Aucune pièce spécifiée</span>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
                       {participant.notes && (
                         <div className="mt-2 text-xs text-gray-500 italic text-left pl-3">
@@ -487,10 +511,158 @@ export function OrderViewEditModal({
                         </div>
                       )}
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+
+              // Pour les commandes individuelles, créer un participant virtuel
+              else if (order.type === 'individuel' && (order.items?.length > 0 || order.articlesStock?.length > 0 || order.tenue)) {
+                const virtualParticipant = {
+                  nom: order.client.nom,
+                  tenue: {},
+                  rendu: order.rendu || false
+                };
+
+                // Construire la tenue à partir de order.tenue ou order.items ou order.articlesStock
+                if (order.tenue) {
+                  // Utiliser directement order.tenue s'il existe
+                  virtualParticipant.tenue = { ...order.tenue };
+                } else if (order.items && order.items.length > 0) {
+                  // Construire à partir de order.items
+                  order.items.forEach(item => {
+                    if (item.category === 'veste') {
+                      virtualParticipant.tenue.veste = {
+                        reference: item.reference,
+                        taille: item.measurements?.taille || '',
+                        couleur: item.measurements?.couleur || ''
+                      };
+                    } else if (item.category === 'gilet') {
+                      virtualParticipant.tenue.gilet = {
+                        reference: item.reference,
+                        taille: item.measurements?.taille || '',
+                        couleur: item.measurements?.couleur || ''
+                      };
+                    } else if (item.category === 'pantalon') {
+                      virtualParticipant.tenue.pantalon = {
+                        reference: item.reference,
+                        taille: item.measurements?.taille || '',
+                        couleur: item.measurements?.couleur || ''
+                      };
+                    } else if (item.category === 'chapeau') {
+                      virtualParticipant.tenue.tailleChapeau = item.measurements?.taille || '';
+                    } else if (item.category === 'chaussures') {
+                      virtualParticipant.tenue.tailleChaussures = item.measurements?.pointure || item.measurements?.taille || '';
+                    }
+                  });
+                } else if (order.articlesStock && order.articlesStock.length > 0) {
+                  // Construire à partir de order.articlesStock
+                  order.articlesStock.forEach(item => {
+                    if (item.reference && item.reference.includes('jaquette') || item.reference && item.reference.includes('veste')) {
+                      virtualParticipant.tenue.veste = {
+                        reference: item.reference,
+                        taille: item.taille || '',
+                        couleur: item.couleur || ''
+                      };
+                    } else if (item.reference && item.reference.includes('gilet')) {
+                      virtualParticipant.tenue.gilet = {
+                        reference: item.reference,
+                        taille: item.taille || '',
+                        couleur: item.couleur || ''
+                      };
+                    } else if (item.reference && item.reference.includes('pantalon')) {
+                      virtualParticipant.tenue.pantalon = {
+                        reference: item.reference,
+                        taille: item.taille || '',
+                        couleur: item.couleur || ''
+                      };
+                    } else if (item.reference && item.reference.includes('chapeau')) {
+                      virtualParticipant.tenue.tailleChapeau = item.taille || '';
+                    } else if (item.reference && item.reference.includes('chaussures')) {
+                      virtualParticipant.tenue.tailleChaussures = item.taille || '';
+                    }
+                  });
+                }
+
+                return (
+                  <div className="pt-3 border-t border-gray-300 mt-3">
+                    <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                      Pièces de tenue réservées & Statut de rendu
+                    </span>
+                    <div className="space-y-4">
+                      <div className="bg-white rounded-lg p-3 text-left border border-gray-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-semibold text-gray-800 text-left">
+                            {virtualParticipant.nom}
+                          </div>
+                          {onUpdateParticipantReturn && (
+                            <button
+                              onClick={() => {
+                                const currentState = virtualParticipant.rendu || false;
+                                const newState = !currentState;
+                                console.log('🔄 Frontend toggle:', {
+                                  participantName: virtualParticipant.nom,
+                                  currentState,
+                                  newState
+                                });
+                                onUpdateParticipantReturn(order.id, 0, newState);
+                              }}
+                              className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
+                            >
+                              <span className={virtualParticipant.rendu ? "text-green-700" : "text-gray-600"}>
+                                Article(s) rendu(s)
+                              </span>
+                              {virtualParticipant.rendu ? (
+                                <CheckSquare className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <Square className="w-4 h-4 text-gray-400" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                        <div className="space-y-1">
+                          {(() => {
+                            const pieces = [];
+
+                            // Générer les pièces à partir de virtualParticipant.tenue
+                            if (virtualParticipant.tenue?.veste) {
+                              pieces.push(`Veste ${virtualParticipant.tenue.veste.reference || ''} ${virtualParticipant.tenue.veste.taille || ''} ${virtualParticipant.tenue.veste.couleur || ''}`.trim());
+                            }
+                            if (virtualParticipant.tenue?.gilet) {
+                              pieces.push(`Gilet ${virtualParticipant.tenue.gilet.reference || ''} ${virtualParticipant.tenue.gilet.taille || ''} ${virtualParticipant.tenue.gilet.couleur || ''}`.trim());
+                            }
+                            if (virtualParticipant.tenue?.pantalon) {
+                              pieces.push(`Pantalon ${virtualParticipant.tenue.pantalon.reference || ''} ${virtualParticipant.tenue.pantalon.taille || ''} ${virtualParticipant.tenue.pantalon.couleur || ''}`.trim());
+                            }
+                            if (virtualParticipant.tenue?.tailleChapeau) {
+                              pieces.push(`Chapeau taille ${virtualParticipant.tenue.tailleChapeau}`);
+                            }
+                            if (virtualParticipant.tenue?.tailleChaussures) {
+                              pieces.push(`Chaussures taille ${virtualParticipant.tenue.tailleChaussures}`);
+                            }
+
+                            return pieces.length > 0 ? (
+                              pieces.map((piece, pieceIndex) => (
+                                <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
+                                  <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-sm text-gray-400 text-left pl-3">
+                                <span className="text-gray-400">•</span> <span className="ml-2">Aucune pièce spécifiée</span>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return null;
+            })()}
           </div>
 
 

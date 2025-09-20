@@ -56,34 +56,26 @@ export class PDFService {
   private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number): number {
     let currentY = startY;
 
-    // Numéro de réservation et nom du groupe à droite - A5
+    // Numéro de réservation - A5
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 10, currentY);
-
-    // Nom du groupe à droite (ou nom du client si individuel) - ajusté pour A5
-    const groupName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
-      ? contract.client.nom
-      : contract.client.nom;
-    doc.text(groupName, 138, currentY, { align: 'right' });
     currentY += 13;
 
     // Afficher le participant et ses vêtements
     let participant = null;
     let participantName = '';
-    let showParticipantName = false;
+    let showParticipantName = true; // Toujours afficher le nom maintenant
 
     // Pour un groupe avec un participant spécifique
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
       participant = contract.groupDetails.participants[participantIndex];
       participantName = participant?.nom || '';
-      showParticipantName = true; // Toujours afficher le nom pour les groupes
     }
     // Pour un contrat individuel, utiliser la tenue principale
     else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
       participant = { tenue: contract.tenue };
       participantName = contract.client.nom;
-      showParticipantName = false; // Ne pas afficher le nom pour les clients individuels (pas de groupe)
     }
 
     // Téléphone - A5 (label en gras, valeur normale)
@@ -468,7 +460,7 @@ export class PDFService {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
 
-    // Ajouter le numéro de réservation et le nom dans la partie droite
+    // Ajouter le numéro de réservation et le texte dans la partie droite
     const rightSectionX = separationX + 5; // Position dans la partie droite
 
     // Numéro de réservation
@@ -476,21 +468,14 @@ export class PDFService {
     doc.setFont('helvetica', 'bold');
     doc.text(`N° ${contract.numero}`, rightSectionX, currentY);
 
-    doc.setFont('helvetica', 'normal');
-    // Largeur disponible dans la partie droite
-    const rightSectionWidth = 138 - rightSectionX;
-    const nameLines = doc.splitTextToSize(personName, rightSectionWidth);
+    // Section détachable droite maintenant vide (texte supprimé)
 
-    nameLines.forEach((line: string, index: number) => {
-      doc.text(line, rightSectionX, currentY + 8 + (index * 6));
-    });
-
-    // Nom et prénom (texte vertical de haut en bas) - aligné avec le texte de droite
-    doc.setFontSize(9);
+    // Nom et prénom (texte vertical de haut en bas) - même taille que la partie droite
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(personName, leftSectionX, currentY - 2, { angle: -90 });
 
-    // Date de prise (texte vertical de haut en bas) - aligné avec le nom de droite
+    // Date de prise (texte vertical de haut en bas) - même taille que la partie droite
     doc.setFont('helvetica', 'normal');
     const dateRetrait = this.formatDate(contract.dateRetrait);
     doc.text(`Prise: ${dateRetrait}`, leftSectionX + 8, currentY - 2, { angle: -90 });

@@ -62,24 +62,24 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
               });
             }
             
-            if (contract.tenue?.chapeau) {
+            if (contract.tenue?.tailleChapeau) {
               items.push({
                 id: `chapeau-${contract._id}`,
                 category: 'chapeau',
-                reference: contract.tenue.chapeau.reference,
+                reference: '',
                 quantity: 1,
-                measurements: { taille: contract.tenue.chapeau.taille },
+                measurements: { taille: contract.tenue.tailleChapeau },
                 notes: ''
               });
             }
             
-            if (contract.tenue?.chaussures) {
+            if (contract.tenue?.tailleChaussures) {
               items.push({
                 id: `chaussures-${contract._id}`,
                 category: 'chaussures',
-                reference: contract.tenue.chaussures.reference,
+                reference: '',
                 quantity: 1,
-                measurements: { pointure: contract.tenue.chaussures.taille },
+                measurements: { pointure: contract.tenue.tailleChaussures },
                 notes: ''
               });
             }
