@@ -34,5 +34,8 @@ contractsRouter.get('/:id/print/:type', rentalContractsController.getPrintData);
 // GET /api/contracts/:id/pdf/:type
 contractsRouter.get('/:id/pdf/:type', rentalContractsController.generatePDF);
 
+// POST /api/contracts/:id/send-email
+contractsRouter.post('/:id/send-email', rentalContractsController.sendContractEmail);
+
 // DELETE /api/contracts/:id
 contractsRouter.delete('/:id', rentalContractsController.deleteContract);

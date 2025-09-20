@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { RentalContract, CreateRentalContractData, UpdateRentalContractData } from '../models/RentalContract';
 import { RentalContractModel, ContractNumberingModel } from '../models/RentalContractMongo';
 import { createError } from '../middleware/errorHandler';
+import { emailService } from '../services/emailService';
+import { backendPDFService } from '../services/pdfService';
 
 // Fonction pour générer un numéro de contrat
 const generateContractNumber = async (): Promise<string> => {
@@ -283,7 +285,20 @@ export const rentalContractsController = {
         console.log('📦 Création des mouvements de stock...');
         await createStockMovements(savedContract, 'reservation');
       }
-      
+
+      // Envoyer automatiquement le bon de location par email au client
+      if (savedContract.client.email) {
+        try {
+          console.log(`📧 Envoi automatique du bon de location à ${savedContract.client.email}`);
+          const pdfBuffer = await backendPDFService.generatePDF(savedContract, 'client');
+          await emailService.sendContractEmail(savedContract, pdfBuffer);
+          console.log('✅ Email automatique envoyé avec succès');
+        } catch (emailError) {
+          console.error('⚠️ Erreur lors de l\'envoi automatique de l\'email (n\'affecte pas la création du contrat):', emailError);
+          // Ne pas faire échouer la création du contrat si l'email ne peut pas être envoyé
+        }
+      }
+
       res.status(201).json(savedContract);
     } catch (error) {
       console.error('❌ Erreur lors de la création du contrat:', error);
@@ -525,6 +540,54 @@ export const rentalContractsController = {
       
       res.status(204).send();
     } catch (error) {
+      next(error);
+    }
+  },
+
+  // POST /api/contracts/:id/send-email
+  sendContractEmail: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { email, type = 'client', participantIndex } = req.body;
+
+      // Validation du type
+      if (!['vendeur', 'client'].includes(type)) {
+        throw createError('Type de PDF invalide. Utilisez "vendeur" ou "client"', 400);
+      }
+
+      // Récupérer le contrat
+      const contract = await RentalContractModel.findById(id);
+      if (!contract) {
+        throw createError('Bon de location non trouvé', 404);
+      }
+
+      // Déterminer l'email de destination
+      const recipientEmail = email || contract.client.email;
+      if (!recipientEmail) {
+        throw createError('Aucune adresse email spécifiée pour l\'envoi', 400);
+      }
+
+      console.log(`📧 Génération et envoi du PDF ${type} pour le contrat ${contract.numero} à ${recipientEmail}`);
+
+      // Générer le PDF
+      const pdfBuffer = await backendPDFService.generatePDF(contract, type as 'vendeur' | 'client', participantIndex);
+
+      // Envoyer l'email avec le PDF en pièce jointe
+      const emailSent = await emailService.sendContractEmail(contract, pdfBuffer, recipientEmail);
+
+      if (!emailSent) {
+        throw createError('Échec de l\'envoi de l\'email', 500);
+      }
+
+      console.log(`✅ Email envoyé avec succès pour le contrat ${contract.numero}`);
+
+      res.json({
+        success: true,
+        message: `Email envoyé avec succès à ${recipientEmail}`,
+        contractNumber: contract.numero
+      });
+    } catch (error) {
+      console.error('❌ Erreur lors de l\'envoi de l\'email:', error);
       next(error);
     }
   }
