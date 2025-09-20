@@ -17,53 +17,56 @@ export class PDFService {
   }
 
   private static addHeader(doc: jsPDF, contract: RentalContract, type: PDFType) {
+    // Centre pour A5 : 148mm / 2 = 74mm
+    const centerX = 74;
+
     // Titre principal
-    doc.setFontSize(22);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('JEAN JACQUES CÉRÉMONIES', 105, 15, { align: 'center' });
+    doc.text('JEAN JACQUES CÉRÉMONIES', centerX, 12, { align: 'center' });
 
     // Fondé en 1867
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Fondé en 1867', 105, 22, { align: 'center' });
-
-    // Site web
-    doc.setFontSize(10);
-    doc.text('www.jjloc.fr', 105, 28, { align: 'center' });
-
-    // Adresse
-    doc.setFontSize(9);
-    doc.text('2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)', 105, 34, { align: 'center' });
-
-    // Téléphone
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('01 43 54 25 56', 105, 40, { align: 'center' });
-
-    // Horaires
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Ouvert du mardi au samedi de 9h à 18h sans interruption', 105, 46, { align: 'center' });
-    doc.text('Fermé dimanche et lundi', 105, 50, { align: 'center' });
+    doc.text('Fondé en 1867', centerX, 18, { align: 'center' });
 
-    // Ligne de séparation (plus d'espace)
-    doc.line(20, 60, 190, 60);
+    // Site web
+    doc.setFontSize(8);
+    doc.text('www.jjloc.fr', centerX, 23, { align: 'center' });
+
+    // Adresse
+    doc.setFontSize(7);
+    doc.text('2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)', centerX, 28, { align: 'center' });
+
+    // Téléphone
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('01 43 54 25 56', centerX, 33, { align: 'center' });
+
+    // Horaires
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Ouvert du mardi au samedi de 9h à 18h sans interruption', centerX, 38, { align: 'center' });
+    doc.text('Fermé dimanche et lundi', centerX, 42, { align: 'center' });
+
+    // Ligne de séparation - ajusté pour A5
+    doc.line(10, 48, 138, 48);
   }
 
   private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number): number {
     let currentY = startY;
 
-    // Numéro de réservation et nom du groupe à droite
-    doc.setFontSize(11);
+    // Numéro de réservation et nom du groupe à droite - A5
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text(`N° Réservation: ${contract.numero}`, 20, currentY);
+    doc.text(`N° Réservation: ${contract.numero}`, 10, currentY);
 
-    // Nom du groupe à droite (ou nom du client si individuel)
+    // Nom du groupe à droite (ou nom du client si individuel) - ajusté pour A5
     const groupName = contract.groupDetails?.participants && contract.groupDetails.participants.length > 0
       ? contract.client.nom
       : contract.client.nom;
-    doc.text(groupName, 190, currentY, { align: 'right' });
-    currentY += 12;
+    doc.text(groupName, 138, currentY, { align: 'right' });
+    currentY += 10;
 
     // Afficher le participant et ses vêtements
     let participant = null;
@@ -84,16 +87,16 @@ export class PDFService {
     }
 
     if (participant) {
-      // Nom du participant (seulement pour les groupes)
+      // Nom du participant (seulement pour les groupes) - A5
       if (showParticipantName && participantName) {
-        doc.setFontSize(11);
+        doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
-        doc.text(participantName, 20, currentY);
-        currentY += 10;
+        doc.text(participantName, 10, currentY);
+        currentY += 8;
       }
 
-      // Descriptif de ce qu'il a loué
-      doc.setFontSize(10);
+      // Descriptif de ce qu'il a loué - A5
+      doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
       const items = [];
 
@@ -115,42 +118,44 @@ export class PDFService {
 
       if (items.length > 0) {
         items.forEach(item => {
-          doc.text(`• ${item}`, 20, currentY);
-          currentY += 8;
+          doc.text(`• ${item}`, 10, currentY);
+          currentY += 6;
         });
       } else {
-        doc.text(`• Aucun article`, 20, currentY);
-        currentY += 8;
+        doc.text(`• Aucun article`, 10, currentY);
+        currentY += 6;
       }
 
-      currentY += 8;
+      currentY += 6;
     }
 
-    // Téléphone
-    doc.setFontSize(11);
-    doc.text(`Téléphone: ${contract.client.telephone}`, 20, currentY);
-    currentY += 12;
+    // Téléphone - A5
+    doc.setFontSize(9);
+    doc.text(`Téléphone: ${contract.client.telephone}`, 10, currentY);
+    currentY += 8;
 
-    // Email
-    doc.text(`Email: ${contract.client.email || 'Non renseigné'}`, 20, currentY);
-    currentY += 12;
+    // Email - A5
+    doc.text(`Email: ${contract.client.email || 'Non renseigné'}`, 10, currentY);
+    currentY += 10;
 
-    // À prendre le / À rendre le (sur une ligne)
-    doc.setFontSize(11);
-    doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 20, currentY);
-    doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 190, currentY, { align: 'right' });
-    currentY += 12;
+    // À prendre le / À rendre le (sur une ligne) - A5
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
+    doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
+    currentY += 10;
 
-    // Prix, dépôt, arrhes et payé le sur une ligne
+    // Prix, dépôt, arrhes et payé le - A5 compact
     const total = contract.tarifLocation + contract.depotGarantie;
-    doc.setFontSize(11);
-    doc.text(`Prix: ${this.formatPrice(total)}`, 20, currentY);
-    doc.text(`Dépôt: ${this.formatPrice(contract.depotGarantie)}`, 65, currentY);
-    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 110, currentY);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Prix: ${this.formatPrice(total)}`, 10, currentY);
+    doc.text(`Dépôt: ${this.formatPrice(contract.depotGarantie)}`, 45, currentY);
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 75, currentY);
 
     const datePaiement = contract.paiementSolde?.date ? this.formatDate(contract.paiementSolde.date) : '___________';
-    doc.text(`Payé le: ${datePaiement}`, 155, currentY);
-    currentY += 12;
+    doc.text(`Payé le: ${datePaiement}`, 105, currentY);
+    currentY += 10;
 
     return currentY;
   }
@@ -402,13 +407,24 @@ export class PDFService {
     return currentY + 25;
   }
 
-  private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract): number {
-    // Position fixe pour la ligne de découpe (170mm pour laisser plus de place)
-    const y = 170;
+  private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract, contentEndY: number): number {
+    // Utiliser des valeurs pour A5 (148mm x 210mm)
+    const pageHeight = 200; // Hauteur A5 effective
+    const sectionHeight = 35; // Hauteur de la section détachable
+    const minSpacing = 10; // Espacement minimum après le contenu
 
-    // Créer une ligne pointillée
+    // Position idéale en bas de page
+    const idealY = pageHeight - sectionHeight;
+
+    // Position minimum après le contenu
+    const minY = contentEndY + minSpacing;
+
+    // Utiliser la position qui garde la section dans la page
+    const y = Math.min(minY, idealY);
+
+    // Créer une ligne pointillée avec marges A5 (10mm des bords)
     doc.setLineDashPattern([2, 2], 0);
-    doc.line(20, y, 190, y);
+    doc.line(10, y, 138, y);
     doc.setLineDashPattern([], 0); // Reset dash pattern
 
     let currentY = y + 8;
@@ -470,18 +486,22 @@ export class PDFService {
   }
 
   public static generatePDF(contract: RentalContract, type: PDFType, participantIndex?: number): void {
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a5'
+    });
 
     // Header simplifié
     this.addHeader(doc, contract, type);
 
-    // Informations simplifiées - espace harmonisé après l'en-tête
-    let currentY = 75;
+    // Informations simplifiées - espace harmonisé après l'en-tête A5
+    let currentY = 55;
     currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
 
-    // Section détachable pour vendeur uniquement à position fixe
+    // Section détachable pour vendeur uniquement à position dynamique
     if (type === 'vendeur') {
-      this.addVendeurDetachableSection(doc, contract);
+      this.addVendeurDetachableSection(doc, contract, currentY);
     } else {
       // Pour le client, afficher le tableau des tenues et les conditions
       currentY = this.addTenueInfo(doc, contract, currentY, type);
