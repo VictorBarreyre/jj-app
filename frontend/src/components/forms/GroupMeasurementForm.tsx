@@ -211,7 +211,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                 Nom du client
               </span>
-              <p className="font-semibold text-gray-900 text-xs sm:text-sm">{currentClient.nom}</p>
+              <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentClient.nom}</p>
             </div>
             
             {currentClient.telephone && (
@@ -219,7 +219,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Téléphone
                 </span>
-                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{currentClient.telephone}</p>
+                <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentClient.telephone}</p>
               </div>
             )}
             
@@ -228,7 +228,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Email
                 </span>
-                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{currentClient.email}</p>
+                <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentClient.email}</p>
               </div>
             )}
           </div>
@@ -240,21 +240,21 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Groupe
                 </span>
-                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{updatedGroup.groupName}</p>
+                <p className="font-medium text-gray-900 text-xs sm:text-sm">{updatedGroup.groupName}</p>
               </div>
               
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Vendeur
                 </span>
-                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{updatedGroup.vendeur}</p>
+                <p className="font-medium text-gray-900 text-xs sm:text-sm">{updatedGroup.vendeur}</p>
               </div>
               
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Date événement
                 </span>
-                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{updatedGroup.dateEssai.toLocaleDateString('fr-FR')}</p>
+                <p className="font-medium text-gray-900 text-xs sm:text-sm">{updatedGroup.dateEssai.toLocaleDateString('fr-FR')}</p>
               </div>
             </div>
           </div>
@@ -267,7 +267,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Progression
                   </span>
-                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">
                     Client {currentClientIndex + 1} sur {updatedGroup.clients.length}
                   </p>
                 </div>
@@ -289,7 +289,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
           
           {/* Veste */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">A</div>
               Veste
               <StockIndicator 
@@ -340,7 +340,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
           {/* Gilet - Masqué si smoking sélectionné */}
           {!isSmokingSelected(currentClientIndex) && (
             <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
               <StockIndicator 
@@ -375,7 +375,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
           {/* Pantalon */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">C</div>
               Pantalon
               <StockIndicator 
@@ -425,7 +425,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
           {/* Ceinture */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">D</div>
               Ceinture
               <StockIndicator 
@@ -446,7 +446,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
           {/* Autres Accessoires */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">E</div>
               Autres Accessoires <span className="text-sm font-normal text-gray-500">(facultatif)</span>
             </h4>

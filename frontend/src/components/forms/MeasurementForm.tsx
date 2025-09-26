@@ -279,7 +279,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
           {/* Veste */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">A</div>
               Veste
               <StockIndicator 
@@ -329,7 +329,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           {/* Gilet - Masqué si smoking sélectionné */}
           {!isSmokingSelected() && (
             <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
               <StockIndicator 
@@ -364,7 +364,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
           {/* Pantalon */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">C</div>
               Pantalon
               <StockIndicator 
@@ -410,7 +410,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
           {/* Ceinture */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">D</div>
               Ceinture
               <StockIndicator 
@@ -431,7 +431,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
           {/* Autres Accessoires */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800 mb-4">
+            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">E</div>
               Autres Accessoires <span className="text-sm font-normal text-gray-500">(facultatif)</span>
             </h4>

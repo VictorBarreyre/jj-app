@@ -323,7 +323,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
           {formData.clients?.map((client, index) => (
             <div key={client.id} className="rounded-lg bg-gray-50/50">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="flex items-center gap-2 text-lg font-bold text-gray-800">
+                <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800">
                   <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">
                     {index + 1}
                   </div>
