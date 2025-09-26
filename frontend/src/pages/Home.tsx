@@ -135,9 +135,9 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
             <div className="ml-4">
               <Button 
                 onClick={onCreateNew}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 py-2 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center w-12 sm:w-auto text-lg sm:text-base min-h-[48px] sm:min-h-0 sm:gap-3"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-2 py-1 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center w-10 sm:w-auto text-lg sm:text-base min-h-[40px] sm:min-h-0 sm:gap-3"
               >
-                <Plus className="w-5 h-5 sm:w-5 sm:h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline ml-0 sm:ml-0">Nouvelle commande</span>
               </Button>
             </div>
