@@ -313,7 +313,7 @@ export const ThreeStepRentalForm = forwardRef<
       <div className="flex items-start justify-between mb-6 pb-4 border-b border-gray-200 pt-2 pl-2">
         <div className="flex-1 text-left">
           <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-left">{stepInfo.title}</h2>
-          <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-relaxed text-left">{stepInfo.description}</p>
+          <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-normal sm:leading-relaxed text-left">{stepInfo.description}</p>
         </div>
         <button
           onClick={resetForm}

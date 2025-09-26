@@ -38,7 +38,7 @@ export function Header({
                 onClick={onNavigateHome}
                 className="flex items-start flex-col leading-tight ml-2 sm:ml-4 hover:opacity-80 transition-opacity cursor-pointer"
               >
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight text-left">Jean Jacques Cérémonie</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-900 tracking-tight text-left">Jean Jacques Cérémonie</h1>
                 <p className="text-xs sm:text-sm text-gray-600 font-medium">Maître tailleur depuis 1867</p>
               </button>
             </div>
