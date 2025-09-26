@@ -21,7 +21,12 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.FRONTEND_URL || 'http://localhost:5173', 'http://localhost:5174'],
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:5173', 
+    'http://localhost:5174',
+    'https://admin.jjloc.com',
+    'https://jj-app-git-master-vrs-projects-06078135.vercel.app' // URL Vercel par défaut
+  ],
   credentials: true
 }));
 app.use(morgan('combined'));
