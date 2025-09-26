@@ -215,7 +215,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
               type="date"
               value={formData.dateEssai?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateBasicInfo('dateEssai', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
             />
             {errors.dateEssai && (
               <p className="text-red-500 text-xs mt-1">{errors.dateEssai}</p>

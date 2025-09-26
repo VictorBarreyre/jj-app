@@ -193,7 +193,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               type="date"
               value={form.dateEssai?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateEssai', new Date(e.target.value))}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm text-left"
             />
           </div>
           <div className="md:col-span-3">

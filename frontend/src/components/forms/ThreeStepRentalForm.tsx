@@ -232,22 +232,22 @@ export const ThreeStepRentalForm = forwardRef<
     switch (currentStep) {
       case 1:
         return {
-          title: 'Étape 1/3 : Informations clients',
+          title: 'Étape 1/3 : Clients',
           description: isGroup 
-            ? 'Définissez les informations de base et ajoutez les participants'
-            : 'Définissez les informations de base du client'
+            ? 'Informations et participants'
+            : 'Informations client'
         };
       case 2:
         return {
-          title: 'Étape 2/3 : Choix des vêtements',
+          title: 'Étape 2/3 : Vêtements',
           description: isGroup 
-            ? 'Choisissez les vêtements pour chaque personne du groupe'
-            : 'Choisissez les vêtements du client'
+            ? 'Choix des tenues'
+            : 'Choix des vêtements'
         };
       case 3:
         return {
-          title: 'Étape 3/3 : Bon de location',
-          description: 'Définissez les tarifs, dates et conditions de location'
+          title: 'Étape 3/3 : Location',
+          description: 'Tarifs et conditions'
         };
       default:
         return {

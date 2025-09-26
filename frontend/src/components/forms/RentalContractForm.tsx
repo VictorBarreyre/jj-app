@@ -113,7 +113,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="date"
               value={form.dateEvenement?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateEvenement', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
             />
           </div>
           <div>
@@ -122,7 +122,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="date"
               value={form.dateRetrait?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateRetrait', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
             />
           </div>
           <div>
@@ -131,7 +131,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="date"
               value={form.dateRetour?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateRetour', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
             />
           </div>
         </div>
@@ -198,7 +198,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
                 type="date"
                 value={form.paiementArrhes?.date ? new Date(form.paiementArrhes.date).toISOString().split('T')[0] : ''}
                 onChange={(e) => updatePayment('arrhes', 'date', e.target.value)}
-                className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1"
+                className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
               />
             </div>
             <div>
