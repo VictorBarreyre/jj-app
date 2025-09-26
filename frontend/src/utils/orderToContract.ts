@@ -1,4 +1,4 @@
-import { Order } from '@/types/order';
+import { Order, ChapeauMeasurements, ChaussuresMeasurements } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
 
 export const convertOrderToRentalContract = (order: Order): RentalContract => {
@@ -9,16 +9,16 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     if (category === 'veste' || category === 'gilet' || category === 'pantalon' || category === 'ceinture') {
       tenue[category] = {
         reference: item.reference,
-        taille: item.measurements?.taille || '',
-        longueur: item.measurements?.longueur,
-        longueurManche: item.measurements?.longueurManche,
-        couleur: item.measurements?.couleur || '',
+        taille: (item.measurements as any)?.taille || '',
+        longueur: (item.measurements as any)?.longueur,
+        longueurManche: (item.measurements as any)?.longueurManche,
+        couleur: (item.measurements as any)?.couleur || '',
         notes: item.notes || ''
       };
     } else if (category === 'chapeau') {
-      tenue.tailleChapeau = item.measurements?.taille || '';
+      tenue.tailleChapeau = (item.measurements as ChapeauMeasurements)?.taille || '';
     } else if (category === 'chaussures') {
-      tenue.tailleChaussures = item.measurements?.pointure || item.measurements?.taille || '';
+      tenue.tailleChaussures = (item.measurements as ChaussuresMeasurements)?.pointure || '';
     }
   });
 
@@ -27,8 +27,8 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     numero: order.numero,
     dateCreation: typeof order.dateCreation === 'string' ? new Date(order.dateCreation) : order.dateCreation || new Date(),
     dateEvenement: typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date(),
-    dateRetrait: typeof order.dateRetrait === 'string' ? new Date(order.dateRetrait) : order.dateRetrait || new Date(),
-    dateRetour: typeof order.dateRetour === 'string' ? new Date(order.dateRetour) : order.dateRetour || new Date(),
+    dateRetrait: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // 7 jours après création par défaut
+    dateRetour: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000), // 14 jours après création par défaut
     client: {
       nom: order.client.nom,
       telephone: order.client.telephone,
@@ -37,29 +37,32 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     },
     vendeur: order.createdBy || 'N/A',
     tarifLocation: order.total || 0,
-    depotGarantie: order.depotGarantie || 50,
-    arrhes: order.arrhes || 0,
-    paiementArrhes: order.arrhes ? {
-      amount: order.arrhes,
-      date: order.dateCreation,
-      method: 'especes'
-    } : undefined,
+    depotGarantie: 50, // Valeur par défaut
+    arrhes: 0, // Valeur par défaut
+    paiementArrhes: undefined,
     notes: order.notes,
     tenue: tenue,
     articlesStock: order.items?.map(item => ({
       stockItemId: item.id,
       reference: item.reference,
-      taille: item.measurements?.taille || '',
-      couleur: item.measurements?.couleur || '',
+      taille: (item.measurements as any)?.taille || '',
+      couleur: (item.measurements as any)?.couleur || '',
       quantiteReservee: item.quantity,
       prix: item.unitPrice || 0
     })) || [],
     status: order.status === 'livree' ? 'confirme' : 'brouillon',
-    rendu: order.rendu || false,
+    rendu: false, // Par défaut false
     type: order.type || 'individuel',
     isGroup: order.type === 'groupe',
     participantCount: order.participantCount,
-    groupDetails: order.groupDetails,
+    groupDetails: order.groupDetails ? {
+      participants: order.groupDetails.participants.map(p => ({
+        nom: p.nom,
+        tenue: {} as any, // Tenue vide par défaut
+        pieces: p.pieces,
+        notes: p.notes
+      }))
+    } : undefined,
     createdAt: typeof order.dateCreation === 'string' ? new Date(order.dateCreation) : order.dateCreation || new Date(),
     updatedAt: typeof order.dateCreation === 'string' ? new Date(order.dateCreation) : order.dateCreation || new Date()
   };
