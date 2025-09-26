@@ -152,7 +152,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
                   key={tab.id}
                   onClick={() => handleTypeChange(tab.id)}
                   className={`
-                    flex items-center gap-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-semibold text-base sm:text-sm transition-colors duration-200 whitespace-nowrap
+                    flex items-center gap-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap
                     ${activeType === tab.id
                       ? 'border-amber-500 text-amber-600 bg-amber-50/50'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
