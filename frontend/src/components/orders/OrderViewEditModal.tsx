@@ -110,7 +110,6 @@ export function OrderViewEditModal({
   };
 
   const handleEditItem = (itemId: string) => {
-    console.log('Edit item:', itemId);
     // La fonctionnalité d'édition est maintenant gérée au niveau de la page Home
   };
 
@@ -133,7 +132,6 @@ export function OrderViewEditModal({
       }));
       
       // TODO: Appeler l'API pour mettre à jour le backend et les stocks
-      console.log('Delete item:', itemId);
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
@@ -451,11 +449,6 @@ export function OrderViewEditModal({
                             onClick={() => {
                               const currentState = participant.rendu || false;
                               const newState = !currentState;
-                              console.log('🔄 Frontend toggle:', { 
-                                participantName: participant.nom, 
-                                currentState, 
-                                newState 
-                              });
                               onUpdateParticipantReturn(order.id, index, newState);
                             }}
                             className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
@@ -601,11 +594,6 @@ export function OrderViewEditModal({
                               onClick={() => {
                                 const currentState = virtualParticipant.rendu || false;
                                 const newState = !currentState;
-                                console.log('🔄 Frontend toggle:', {
-                                  participantName: virtualParticipant.nom,
-                                  currentState,
-                                  newState
-                                });
                                 onUpdateParticipantReturn(order.id, 0, newState);
                               }}
                               className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"

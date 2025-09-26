@@ -352,7 +352,6 @@ function App() {
   };
 
   const handleEditOrder = (order: Order) => {
-    console.log('handleEditOrder - ordre reçu:', order);
     setSelectedOrder(order);
     setEditParams({ 
       editMode: true, 
@@ -361,7 +360,6 @@ function App() {
     });
     
     const convertedContract = convertOrderToContract(order);
-    console.log('handleEditOrder - contrat converti:', convertedContract);
     
     setCurrentView('measurement');
   };
@@ -398,14 +396,10 @@ function App() {
                 isEditMode={editParams.editMode}
                 initialGroup={(() => {
                   const group = editParams.editMode && selectedOrder ? convertOrderToGroup(selectedOrder) : undefined;
-                  console.log('Rendu MeasurementFormPage - initialGroup:', group);
                   return group;
                 })()}
                 initialContract={(() => {
                   const contract = editParams.editMode && selectedOrder ? convertOrderToContract(selectedOrder) : undefined;
-                  console.log('Rendu MeasurementFormPage - selectedOrder:', selectedOrder);
-                  console.log('Rendu MeasurementFormPage - editParams:', editParams);
-                  console.log('Rendu MeasurementFormPage - initialContract:', contract);
                   return contract;
                 })()}
               />

@@ -121,28 +121,22 @@ export const ThreeStepRentalForm = forwardRef<
 
   // Gestion des données initiales (mode édition)
   useEffect(() => {
-    console.log('ThreeStepRentalForm - useEffect déclenché avec:', { initialContract, initialGroup });
     if (initialContract || initialGroup) {
-      console.log('Chargement des données initiales:', { initialContract, initialGroup });
       
       if (initialGroup) {
-        console.log('Setting group data from initialGroup:', initialGroup);
         setGroupData(initialGroup as GroupRentalInfo);
         // En mode édition, commencer à l'étape 1 pour permettre la navigation complète
         setCurrentStep(1);
       }
       
       if (initialContract) {
-        console.log('Setting contract data:', initialContract);
         setContractData(initialContract);
       }
       
       // Si on a les deux types de données, on peut naviguer entre toutes les étapes
       if (initialContract && initialGroup) {
-        console.log('Mode édition complet - toutes les données disponibles');
       }
     } else {
-      console.log('Aucune donnée initiale fournie');
     }
   }, [initialContract, initialGroup]);
 

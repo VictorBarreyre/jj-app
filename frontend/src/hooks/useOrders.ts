@@ -130,12 +130,6 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             }, 0);
           }
           
-          console.log('Contract pricing info:', {
-            numero: contract.numero,
-            tarifLocation: contract.tarifLocation,
-            articlesStock: contract.articlesStock?.length || 0,
-            calculatedTotal
-          });
           
           return {
             ...contract,
