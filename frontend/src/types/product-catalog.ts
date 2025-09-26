@@ -65,27 +65,27 @@ export interface ProductOption {
 // Fonction utilitaire pour obtenir toutes les références par catégorie
 export function getReferencesByCategory(category: ProductCategory): ProductOption[] {
   switch (category) {
-    case ProductCategory.VESTE:
+    case 'veste':
       return [
         ...Object.values(VESTE_CATALOG).flat().map(ref => ({
           value: ref,
           label: ref,
-          category: ProductCategory.VESTE
+          category: 'veste'
         }))
       ];
     
-    case ProductCategory.GILET:
+    case 'gilet':
       return GILET_CATALOG.map(ref => ({
         value: ref,
         label: ref,
-        category: ProductCategory.GILET
+        category: 'gilet'
       }));
     
-    case ProductCategory.PANTALON:
+    case 'pantalon':
       return PANTALON_CATALOG.map(ref => ({
         value: ref,
         label: ref,
-        category: ProductCategory.PANTALON
+        category: 'pantalon'
       }));
     
     default:

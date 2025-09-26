@@ -16,7 +16,7 @@ export class PDFService {
     return `${price.toFixed(2)} €`;
   }
 
-  private static addHeader(doc: jsPDF, contract: RentalContract, type: PDFType) {
+  private static addHeader(doc: jsPDF, _contract: RentalContract, _type: PDFType) {
     // Centre pour A5 : 148mm / 2 = 74mm
     const centerX = 74;
 
@@ -168,7 +168,7 @@ export class PDFService {
 
     // Pour contrats de groupe : utiliser les participants
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0) {
-      contract.groupDetails.participants.forEach((participant, index) => {
+      contract.groupDetails.participants.forEach((participant, _index) => {
         allParticipants.push({
           nom: participant.nom,
           tenue: participant.tenue,
@@ -217,7 +217,7 @@ export class PDFService {
             participant.tenue.veste.taille || '',
             participant.tenue.veste.couleur || ''
           ];
-          if (type === 'vendeur') {
+          if (_type === 'vendeur') {
             row.push(participant.tenue.veste.notes || '');
           }
           tableData.push(row);
@@ -230,7 +230,7 @@ export class PDFService {
             participant.tenue.gilet.taille || '',
             participant.tenue.gilet.couleur || ''
           ];
-          if (type === 'vendeur') {
+          if (_type === 'vendeur') {
             row.push(participant.tenue.gilet.notes || '');
           }
           tableData.push(row);
@@ -243,7 +243,7 @@ export class PDFService {
             participant.tenue.pantalon.taille || '',
             participant.tenue.pantalon.couleur || ''
           ];
-          if (type === 'vendeur') {
+          if (_type === 'vendeur') {
             row.push(participant.tenue.pantalon.notes || '');
           }
           tableData.push(row);
@@ -256,7 +256,7 @@ export class PDFService {
             participant.tenue.tailleChapeau,
             ''
           ];
-          if (type === 'vendeur') {
+          if (_type === 'vendeur') {
             row.push('');
           }
           tableData.push(row);
@@ -269,7 +269,7 @@ export class PDFService {
             participant.tenue.tailleChaussures,
             ''
           ];
-          if (type === 'vendeur') {
+          if (_type === 'vendeur') {
             row.push('');
           }
           tableData.push(row);
@@ -368,7 +368,7 @@ export class PDFService {
     return currentY;
   }
 
-  private static addFinancialInfo(doc: jsPDF, contract: RentalContract, startY: number, type: PDFType): number {
+  private static addFinancialInfo(doc: jsPDF, contract: RentalContract, startY: number, _type: PDFType): number {
     let currentY = startY;
 
     doc.setFontSize(12);
@@ -389,7 +389,7 @@ export class PDFService {
     doc.text(`TOTAL: ${this.formatPrice(total)}`, 20, currentY + 20);
 
     // Informations de paiement pour le vendeur uniquement
-    if (type === 'vendeur') {
+    if (_type === 'vendeur') {
       currentY += 30;
       doc.setFont('helvetica', 'normal');
 
@@ -504,7 +504,7 @@ export class PDFService {
     currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
 
     // Section détachable pour vendeur uniquement à position dynamique
-    if (type === 'vendeur') {
+    if (_type === 'vendeur') {
       this.addVendeurDetachableSection(doc, contract, currentY, participantIndex);
     } else {
       // Pour le client, afficher le tableau des tenues et les conditions

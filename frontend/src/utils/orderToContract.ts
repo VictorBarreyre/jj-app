@@ -31,11 +31,11 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     dateRetour: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000), // 14 jours après création par défaut
     client: {
       nom: order.client.nom,
-      telephone: order.client.telephone,
-      email: order.client.email,
+      telephone: order.client.telephone || '',
+      email: order.client.email || '',
       isExistingClient: false
     },
-    vendeur: order.createdBy || 'N/A',
+    vendeur: (order.createdBy || 'N/A') as any,
     tarifLocation: order.total || 0,
     depotGarantie: 50, // Valeur par défaut
     arrhes: 0, // Valeur par défaut
@@ -52,7 +52,6 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     })) || [],
     status: order.status === 'livree' ? 'confirme' : 'brouillon',
     rendu: false, // Par défaut false
-    type: order.type || 'individuel',
     isGroup: order.type === 'groupe',
     participantCount: order.participantCount,
     groupDetails: order.groupDetails ? {

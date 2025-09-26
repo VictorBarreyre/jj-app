@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { StockItem, StockAlert, StockMovement, CreateStockItemData, UpdateStockItemData } from '@/types/stock';
 import { stockService } from '@/services/stock.api';
 import { stockAPI } from '@/services/api';
-import { StockAlerts } from '@/components/stock/StockAlerts';
+// import { StockAlerts } from '@/components/stock/StockAlerts';
 import { StockFilters } from '@/components/stock/StockFilters';
-import { StockList } from '@/components/stock/StockList';
+// import { StockList } from '@/components/stock/StockList';
 import { StockReferenceList } from '@/components/stock/StockReferenceList';
 import { AddStockItemModal } from '@/components/stock/AddStockItemModal';
 import { EditStockItemModal } from '@/components/stock/EditStockItemModal';
 import { DeleteStockItemModal } from '@/components/stock/DeleteStockItemModal';
 import { StockMovementsModal } from '@/components/stock/StockMovementsModal';
 import { Button } from '@/components/ui/button';
-import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight, Grid3X3, List } from 'lucide-react';
+import { Shirt, ShirtIcon, CircleDot, Crown, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type StockCategory = 'veste' | 'gilet' | 'pantalon' | 'accessoire';
 
@@ -44,22 +44,22 @@ interface StockReferenceGroupData {
 }
 
 export function StockManagement() {
-  const [stockItems, setStockItems] = useState<StockItem[]>([]);
+  // const [stockItems] = useState<StockItem[]>([]);
   const [stockGroups, setStockGroups] = useState<StockReferenceGroupData[]>([]);
   const [allStockGroups, setAllStockGroups] = useState<StockReferenceGroupData[]>([]); // Toutes les données
-  const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([]);
+  const [, setStockAlerts] = useState<StockAlert[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<StockCategory>('veste');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const viewMode = 'grouped';
+  // const viewMode = 'grouped';
   
   // Filtres (simplifiés car on filtre par onglet)
   const [searchTerm, setSearchTerm] = useState('');
 
   // État pour la vérification de disponibilité
-  const [checkDate, setCheckDate] = useState(new Date().toISOString().split('T')[0]);
+  // const [checkDate] = useState(new Date().toISOString().split('T')[0]);
   
   // États des modales
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -186,17 +186,16 @@ export function StockManagement() {
     }
   };
 
-  const checkAvailabilityAtDate = async () => {
-    try {
-      const params: Record<string, string> = { category: activeCategory };
-      if (searchTerm) params.reference = searchTerm;
+  // const checkAvailabilityAtDate = async () => {
+  //   try {
+  //     const params: Record<string, string> = { category: activeCategory };
+  //     if (searchTerm) params.reference = searchTerm;
 
-      const data = await stockAPI.getAvailability(checkDate, params);
-      
-    } catch (error) {
-      console.error('Erreur lors de la vérification de disponibilité:', error);
-    }
-  };
+  //     const data = await stockAPI.getAvailability(checkDate, params);
+  //   } catch (error) {
+  //     console.error('Erreur lors de la vérification de disponibilité:', error);
+  //   }
+  // };
 
   // Stocker les compteurs par catégorie (évite de charger tous les articles)
   const [categoryCounts, setCategoryCounts] = useState<Record<StockCategory, number>>({
@@ -266,11 +265,11 @@ export function StockManagement() {
     }
   ];
 
-  const filteredItems = stockItems.filter(item => {
-    // Filtrer par catégorie active
-    if (item.category !== activeCategory) return false;
-    return true;
-  });
+  // const filteredItems = stockItems.filter(item => {
+  //   // Filtrer par catégorie active
+  //   if (item.category !== activeCategory) return false;
+  //   return true;
+  // });
 
   const handleEditItem = (item: StockItem | any) => {
     // Adapter l'item selon le format nécessaire pour la modal

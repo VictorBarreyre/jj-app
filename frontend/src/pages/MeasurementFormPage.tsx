@@ -3,7 +3,7 @@ import React from 'react';
 import { ThreeStepRentalForm } from '@/components/forms/ThreeStepRentalForm';
 import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
-import { RotateCcw } from 'lucide-react';
+// import { RotateCcw } from 'lucide-react';
 
 interface MeasurementFormPageProps {
   onSubmitComplete: (group: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
@@ -22,11 +22,11 @@ export function MeasurementFormPage({
   initialContract,
   isEditMode = false 
 }: MeasurementFormPageProps) {
-  const [pageTitle, setPageTitle] = useState('Nouveau bon de location');
-  const [pageDescription, setPageDescription] = useState('Processus complet : configuration, mesures puis création du bon de location');
-  const [showResetButton, setShowResetButton] = useState(false);
+  const [, setPageTitle] = useState('Nouveau bon de location');
+  const [, setPageDescription] = useState('Processus complet : configuration, mesures puis création du bon de location');
+  const [, setShowResetButton] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [canGoToStep, setCanGoToStep] = useState<(step: number) => boolean>(() => () => false);
+  // const [canGoToStep, setCanGoToStep] = useState<(step: number) => boolean>(() => () => false);
   const formRef = useRef<{ resetForm: () => void }>(null);
   const canGoToStepRef = useRef<(step: number) => boolean>(() => false);
 
@@ -45,11 +45,11 @@ export function MeasurementFormPage({
     }
   };
 
-  const handleReset = () => {
-    if (formRef.current) {
-      formRef.current.resetForm();
-    }
-  };
+  // const handleReset = () => {
+  //   if (formRef.current) {
+  //     formRef.current.resetForm();
+  //   }
+  // };
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
