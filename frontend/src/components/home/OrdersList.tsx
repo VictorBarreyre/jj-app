@@ -87,7 +87,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
   };
 
   const formatPrice = (price?: number) => {
-    if (!price) return '';
+    if (price === undefined || price === null) return '';
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR'
@@ -366,7 +366,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
 
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">{order.articleCount || order.items.length} article{(order.articleCount || order.items.length) > 1 ? 's' : ''}</span>
-                  {order.total && (
+                  {(order.total !== undefined && order.total !== null && order.total > 0) && (
                     <span className="font-medium text-sm text-gray-900">{formatPrice(order.total)}</span>
                   )}
                 </div>
