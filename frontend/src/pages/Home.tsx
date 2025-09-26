@@ -129,8 +129,8 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
           {/* En-tête avec titre et bouton - maintenant dans le bloc */}
           <div className="flex justify-between items-start p-6 sm:p-8 border-b border-gray-200">
             <div className="text-left flex-1">
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight text-left">Gestion des commandes</h1>
-              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-normal sm:leading-relaxed">Consultez, modifiez et gérez toutes vos commandes de cérémonie</p>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight text-left">Commandes</h1>
+              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-tight sm:leading-relaxed">Consultez, modifiez et gérez toutes vos commandes de cérémonie</p>
             </div>
             <div className="ml-4">
               <Button 

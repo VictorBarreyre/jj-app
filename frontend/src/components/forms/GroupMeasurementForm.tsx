@@ -167,7 +167,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
       {/* En-tête avec navigation */}
       <div className="border-b border-gray-200 pb-6">
 
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 text-left">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold text-gray-900 mb-4 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Shirt className="w-5 h-5 text-white" />
           </div>

@@ -392,7 +392,7 @@ export function StockManagement() {
           <div className="flex justify-between items-start p-6 sm:p-8 border-b border-gray-200">
             <div className="text-left flex-1">
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight text-left">Gestion du stock</h1>
-              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-normal sm:leading-relaxed">Suivi en temps réel des articles et disponibilités</p>
+              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-tight sm:leading-relaxed">Suivi en temps réel des articles et disponibilités</p>
             </div>
             <div className="ml-4">
               <Button 
