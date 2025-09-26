@@ -414,7 +414,7 @@ export function StockManagement() {
                   key={tab.id}
                   onClick={() => handleCategoryChange(tab.id)}
                   className={`
-                    flex items-center gap-3 sm:gap-2 py-4 sm:py-4 px-4 sm:px-1 border-b-2 font-semibold text-base sm:text-sm transition-colors duration-200 whitespace-nowrap min-h-[60px] sm:min-h-0
+                    flex items-center gap-3 sm:gap-2 py-4 sm:py-4 px-4 sm:px-1 border-b-2 font-semibold text-sm sm:text-sm transition-colors duration-200 whitespace-nowrap min-h-[60px] sm:min-h-0
                     ${activeCategory === tab.id
                       ? 'border-amber-500 text-amber-700 bg-amber-50/70'
                       : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50/50'
