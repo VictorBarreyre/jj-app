@@ -167,7 +167,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
       {/* En-tête avec navigation */}
       <div className="border-b border-gray-200 pb-6">
 
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold text-gray-900 mb-4 text-left">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-2xl font-bold text-gray-900 mb-4 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Shirt className="w-5 h-5 text-white" />
           </div>
@@ -211,7 +211,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                 Nom du client
               </span>
-              <p className="font-semibold text-gray-900 text-sm">{currentClient.nom}</p>
+              <p className="font-semibold text-gray-900 text-xs sm:text-sm">{currentClient.nom}</p>
             </div>
             
             {currentClient.telephone && (
@@ -219,7 +219,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Téléphone
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{currentClient.telephone}</p>
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{currentClient.telephone}</p>
               </div>
             )}
             
@@ -228,7 +228,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Email
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{currentClient.email}</p>
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{currentClient.email}</p>
               </div>
             )}
           </div>
@@ -240,21 +240,21 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Groupe
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{updatedGroup.groupName}</p>
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{updatedGroup.groupName}</p>
               </div>
               
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Vendeur
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{updatedGroup.vendeur}</p>
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{updatedGroup.vendeur}</p>
               </div>
               
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Date événement
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{updatedGroup.dateEssai.toLocaleDateString('fr-FR')}</p>
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{updatedGroup.dateEssai.toLocaleDateString('fr-FR')}</p>
               </div>
             </div>
           </div>
@@ -267,7 +267,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Progression
                   </span>
-                  <p className="font-semibold text-gray-900 text-sm">
+                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">
                     Client {currentClientIndex + 1} sur {updatedGroup.clients.length}
                   </p>
                 </div>

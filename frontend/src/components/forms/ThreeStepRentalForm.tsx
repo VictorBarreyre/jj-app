@@ -358,14 +358,14 @@ export const ThreeStepRentalForm = forwardRef<
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     {groupData.clients.length > 1 ? 'Groupe' : 'Client'}
                   </span>
-                  <p className="font-semibold text-gray-900 text-sm">{groupData.groupName}</p>
+                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">{groupData.groupName}</p>
                 </div>
                 
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     {groupData.clients.length > 1 ? 'Participants' : 'Téléphone'}
                   </span>
-                  <p className="font-semibold text-gray-900 text-sm">
+                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">
                     {groupData.clients.length > 1 
                       ? `${groupData.clients.length} personne${groupData.clients.length > 1 ? 's' : ''}` 
                       : groupData.telephone
@@ -377,14 +377,14 @@ export const ThreeStepRentalForm = forwardRef<
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Vendeur
                   </span>
-                  <p className="font-semibold text-gray-900 text-sm">{groupData.vendeur}</p>
+                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">{groupData.vendeur}</p>
                 </div>
                 
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Date événement
                   </span>
-                  <p className="font-semibold text-gray-900 text-sm">{groupData.dateEssai.toLocaleDateString('fr-FR')}</p>
+                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">{groupData.dateEssai.toLocaleDateString('fr-FR')}</p>
                 </div>
               </div>
               
@@ -483,14 +483,14 @@ export const ThreeStepRentalForm = forwardRef<
                       <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                         Téléphone du groupe
                       </span>
-                      <p className="font-semibold text-gray-900 text-sm">{groupData.telephone}</p>
+                      <p className="font-semibold text-gray-900 text-xs sm:text-sm">{groupData.telephone}</p>
                     </div>
                     {groupData.email && (
                       <div className="text-left">
                         <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                           Email du groupe
                         </span>
-                        <p className="font-semibold text-gray-900 text-sm">{groupData.email}</p>
+                        <p className="font-semibold text-gray-900 text-xs sm:text-sm">{groupData.email}</p>
                       </div>
                     )}
                   </div>

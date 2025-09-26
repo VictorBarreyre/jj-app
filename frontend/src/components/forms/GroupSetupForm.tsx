@@ -198,7 +198,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       
       {/* 1. Informations de base du groupe */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-left">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Calendar className="w-5 h-5 text-white" />
           </div>
@@ -286,7 +286,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
             placeholder="Nom automatique basé sur les clients"
             className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
           />
-          <p className="text-xs text-gray-500 mt-2 sm:mt-1 text-left">
+          <p className="hidden sm:block text-xs text-gray-500 mt-2 sm:mt-1 text-left">
             Le nom sera automatiquement généré si vous le laissez vide
           </p>
         </div>
@@ -295,7 +295,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       {/* 2. Gestion des clients */}
       <div className="border-b border-gray-200 pb-8">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold text-gray-900 text-left">
+          <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-2xl font-bold text-gray-900 text-left">
             <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
               <Users className="w-5 h-5 text-white" />
             </div>
@@ -367,7 +367,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
 
       {/* 3. Notes du groupe */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-left">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>

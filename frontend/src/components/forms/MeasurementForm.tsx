@@ -179,7 +179,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 1. Informations de base */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Calendar className="w-5 h-5 text-white" />
           </div>
@@ -214,7 +214,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 2. Informations client */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <User className="w-5 h-5 text-white" />
           </div>
@@ -269,7 +269,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
 
       {/* 3. Sélection de la tenue */}
       <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
+        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Shirt className="w-5 h-5 text-white" />
           </div>
