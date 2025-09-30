@@ -10,6 +10,24 @@ import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle, Messa
 import { useAuth } from '@/contexts/AuthContext';
 import { calculateDefaultDates } from '@/utils/dateCalculations';
 
+// CSS personnalisé pour réduire l'espacement de l'icône calendrier
+const dateInputStyles = `
+  .date-input-tight::-webkit-calendar-picker-indicator {
+    padding: 0;
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+    margin-left: -2px;
+  }
+  
+  .date-input-tight::-webkit-inner-spin-button,
+  .date-input-tight::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`;
+
 interface RentalContractFormProps {
   onSubmit: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
   onSaveDraft: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
@@ -120,7 +138,9 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
   const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait && form.dateRetour;
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <>
+      <style>{dateInputStyles}</style>
+      <div className="space-y-6 sm:space-y-8">
       
       {/* 1. Dates importantes */}
       <div className="border-b border-gray-200 pb-8">
@@ -137,7 +157,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="date"
               value={form.dateEvenement?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateEvenement', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
             />
           </div>
           <div>
@@ -146,7 +166,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="date"
               value={form.dateRetrait?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateRetrait', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
             />
           </div>
           <div>
@@ -155,7 +175,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="date"
               value={form.dateRetour?.toISOString().split('T')[0] || ''}
               onChange={(e) => updateForm('dateRetour', new Date(e.target.value))}
-              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
+              className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
             />
           </div>
         </div>
@@ -222,7 +242,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
                 type="date"
                 value={form.paiementArrhes?.date ? new Date(form.paiementArrhes.date).toISOString().split('T')[0] : ''}
                 onChange={(e) => updatePayment('arrhes', 'date', e.target.value)}
-                className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left"
+                className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
               />
             </div>
             <div>
@@ -289,5 +309,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
         )}
       </div>
     </div>
+    </>
   );
 }

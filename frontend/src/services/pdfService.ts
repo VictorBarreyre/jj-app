@@ -48,9 +48,10 @@ export class PDFService {
     doc.setFont('helvetica', 'normal');
     doc.text('Ouvert du mardi au samedi de 9h à 18h sans interruption', centerX, 38, { align: 'center' });
     doc.text('Fermé dimanche et lundi', centerX, 42, { align: 'center' });
+    doc.text('RC PARIS 90B 16427', centerX, 46, { align: 'center' });
 
     // Ligne de séparation - ajusté pour A5
-    doc.line(10, 48, 138, 48);
+    doc.line(10, 52, 138, 52);
   }
 
   private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number): number {
@@ -149,12 +150,11 @@ export class PDFService {
     currentY += 13;
 
     // Dépôt, arrhes et prix - A5 compact (en gras) - bien espacé sur toute la largeur
-    const total = contract.tarifLocation + contract.depotGarantie;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 74, currentY, { align: 'center' });
-    doc.text(`Prix: ${this.formatPrice(total)}`, 138, currentY, { align: 'right' });
+    doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 138, currentY, { align: 'right' });
     currentY += 11;
 
     return currentY;
@@ -379,18 +379,13 @@ export class PDFService {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
 
-    const total = contract.tarifLocation + contract.depotGarantie;
-
     doc.text(`Tarif location: ${this.formatPrice(contract.tarifLocation)}`, 20, currentY);
     doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY + 6);
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY + 12);
 
-    doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL: ${this.formatPrice(total)}`, 20, currentY + 20);
-
     // Informations de paiement pour le vendeur uniquement
     if (_type === 'vendeur') {
-      currentY += 30;
+      currentY += 20;
       doc.setFont('helvetica', 'normal');
 
       if (contract.paiementArrhes) {
