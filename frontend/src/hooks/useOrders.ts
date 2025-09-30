@@ -35,7 +35,11 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
                 category: 'veste',
                 reference: contract.tenue.veste.reference,
                 quantity: 1,
-                measurements: { taille: contract.tenue.veste.taille },
+                measurements: { 
+                  taille: contract.tenue.veste.taille,
+                  manches: contract.tenue.veste.longueurManche,
+                  couleur: contract.tenue.veste.couleur
+                },
                 notes: ''
               });
             }
@@ -46,7 +50,10 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
                 category: 'gilet',
                 reference: contract.tenue.gilet.reference,
                 quantity: 1,
-                measurements: { taille: contract.tenue.gilet.taille },
+                measurements: { 
+                  taille: contract.tenue.gilet.taille,
+                  couleur: contract.tenue.gilet.couleur
+                },
                 notes: ''
               });
             }
@@ -57,7 +64,11 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
                 category: 'pantalon',
                 reference: contract.tenue.pantalon.reference,
                 quantity: 1,
-                measurements: { taille: contract.tenue.pantalon.taille },
+                measurements: { 
+                  taille: contract.tenue.pantalon.taille,
+                  longueur: contract.tenue.pantalon.longueur,
+                  couleur: contract.tenue.pantalon.couleur
+                },
                 notes: ''
               });
             }
