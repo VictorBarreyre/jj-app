@@ -100,7 +100,7 @@ export interface Order {
   sousTotal?: number;
   tva?: number;
   total?: number;
-  status: 'brouillon' | 'livree' | 'rendue';
+  status: 'brouillon' | 'livree' | 'rendue' | 'active' | 'delivered' | 'completed' | 'returned' | 'draft' | string;
   type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
   

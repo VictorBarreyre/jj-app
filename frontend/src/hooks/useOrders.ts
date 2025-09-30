@@ -148,7 +148,9 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             },
             dateCreation: contract.dateCreation,
             dateLivraison: contract.dateEvenement,
-            status: contract.status || (contract.rendu ? 'rendue' : 'livree'),
+            status: contract.status === 'brouillon' ? 'brouillon' : 
+                    contract.status === 'rendue' ? 'rendue' : 
+                    contract.rendu ? 'rendue' : 'livree',
             items: items,
             sousTotal: calculatedTotal,
             total: calculatedTotal,
