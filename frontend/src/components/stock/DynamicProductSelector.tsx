@@ -113,6 +113,9 @@ export function DynamicProductSelector({
             )}
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">
+            <SelectItem value="">
+              <span className="text-gray-500 italic">Aucun modèle sélectionné</span>
+            </SelectItem>
             {references.map(ref => (
               <SelectItem key={ref.id} value={ref.id}>
                 {ref.name}
@@ -141,6 +144,9 @@ export function DynamicProductSelector({
             )}
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">
+            <SelectItem value="">
+              <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
+            </SelectItem>
             {sizeInfo?.sizes.map(size => (
               <SelectItem key={size} value={size}>
                 {size}

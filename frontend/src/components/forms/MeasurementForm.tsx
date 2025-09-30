@@ -483,13 +483,16 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Select
-                  value={form.tenue?.tailleChapeau}
+                  value={form.tenue?.tailleChapeau || ''}
                   onValueChange={(value) => updateAccessoire('tailleChapeau', value as TailleChapeau)}
                 >
                   <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                     <SelectValue placeholder="Taille chapeau" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
+                    <SelectItem value="">
+                      <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
+                    </SelectItem>
                     {TAILLES_CHAPEAUX.map(taille => (
                       <SelectItem key={taille} value={taille}>{taille}</SelectItem>
                     ))}
@@ -498,13 +501,16 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               </div>
               <div>
                 <Select
-                  value={form.tenue?.tailleChaussures}
+                  value={form.tenue?.tailleChaussures || ''}
                   onValueChange={(value) => updateAccessoire('tailleChaussures', value as TailleChaussure)}
                 >
                   <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                     <SelectValue placeholder="Taille chaussures" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
+                    <SelectItem value="">
+                      <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
+                    </SelectItem>
                     {TAILLES_CHAUSSURES.map(taille => (
                       <SelectItem key={taille} value={taille}>{taille}</SelectItem>
                     ))}
