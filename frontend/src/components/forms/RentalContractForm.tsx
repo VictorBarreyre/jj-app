@@ -8,6 +8,7 @@ import { RentalContract, PaymentMethod } from '@/types/rental-contract';
 import { TenueMeasurement, Vendeur } from '@/types/measurement-form';
 import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { calculateDefaultDates } from '@/utils/dateCalculations';
 
 interface RentalContractFormProps {
   onSubmit: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
@@ -22,11 +23,14 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
   const { user } = useAuth();
   
   const [form, setForm] = useState<Partial<RentalContract>>(() => {
+    const today = new Date();
+    const defaultDates = calculateDefaultDates(today);
+    
     const defaultValues = {
       dateCreation: new Date(),
-      dateEvenement: new Date(),
-      dateRetrait: new Date(),
-      dateRetour: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // +3 jours par défaut
+      dateEvenement: today,
+      dateRetrait: defaultDates.dateRetrait, // Jeudi avant l'événement
+      dateRetour: defaultDates.dateRetour, // Mardi après l'événement
       client: {
         nom: '',
         telephone: '',
@@ -83,7 +87,18 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
   }, [form, onAutoSave, initialData]);
 
   const updateForm = (field: keyof RentalContract, value: any) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // Si la date d'événement change, recalculer automatiquement les dates de retrait et retour
+      if (field === 'dateEvenement' && value instanceof Date) {
+        const defaultDates = calculateDefaultDates(value);
+        updated.dateRetrait = defaultDates.dateRetrait;
+        updated.dateRetour = defaultDates.dateRetour;
+      }
+      
+      return updated;
+    });
   };
 
   const updatePayment = (type: 'arrhes' | 'solde', field: string, value: any) => {

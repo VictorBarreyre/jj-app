@@ -5,6 +5,7 @@ import { RentalContractForm } from './RentalContractForm';
 import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
 import { RotateCcw } from 'lucide-react';
+import { calculateDefaultDates } from '@/utils/dateCalculations';
 
 // Clés pour localStorage
 const STORAGE_KEYS = {
@@ -172,11 +173,15 @@ export const ThreeStepRentalForm = forwardRef<
     
     // Pré-remplir les données du contrat avec les infos du groupe
     const mainClient = updatedGroup.clients[0];
+    
+    // Calculer les dates par défaut basées sur la date d'événement
+    const defaultDates = calculateDefaultDates(updatedGroup.dateEssai);
+    
     const prefilledContract: Partial<RentalContract> = {
       dateCreation: new Date(),
       dateEvenement: updatedGroup.dateEssai,
-      dateRetrait: updatedGroup.dateEssai,
-      dateRetour: new Date(updatedGroup.dateEssai.getTime() + 3 * 24 * 60 * 60 * 1000), // +3 jours par défaut
+      dateRetrait: defaultDates.dateRetrait, // Jeudi avant l'événement
+      dateRetour: defaultDates.dateRetour, // Mardi après l'événement
       
       client: {
         nom: updatedGroup.clients.length === 1 ? mainClient.nom : updatedGroup.groupName,
