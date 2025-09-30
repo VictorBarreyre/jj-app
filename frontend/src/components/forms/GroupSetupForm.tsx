@@ -413,7 +413,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
         </div>
         
         {!isFormValid && (
-          <p className="text-sm text-red-600 text-center mt-3">
+          <p className="text-sm text-red-600 text-left mt-3">
             ⚠️ Veuillez remplir tous les champs obligatoires
           </p>
         )}
