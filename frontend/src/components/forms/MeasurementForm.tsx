@@ -392,8 +392,8 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onColorChange={(color) => updateTenueColor('gilet', color)}
             />
             
-            {/* Ceinture - Affichée si une veste est sélectionnée */}
-            {form.tenue?.veste?.reference && (
+            {/* Ceinture - Affichée si un gilet est sélectionné */}
+            {form.tenue?.gilet?.reference && (
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-3">
                   <StockIndicator 

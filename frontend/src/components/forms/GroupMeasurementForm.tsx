@@ -380,8 +380,8 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'gilet', color)}
             />
             
-            {/* Ceinture - Affichée si une veste est sélectionnée */}
-            {currentClient.tenue?.veste?.reference && (
+            {/* Ceinture - Affichée si un gilet est sélectionné */}
+            {currentClient.tenue?.gilet?.reference && (
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <div className="flex items-center gap-2 mb-3">
                   <StockIndicator 
