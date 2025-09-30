@@ -168,7 +168,7 @@ export class PDFService {
         currentY += 8;
       }
 
-      currentY += 18;
+      currentY += 10;
     }
 
     // À prendre le / À rendre le (sur une ligne) - A5
@@ -176,7 +176,7 @@ export class PDFService {
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
-    currentY += 18;
+    currentY += 10;
 
     // Prix, caution et arrhes - A5 compact (en gras) - bien espacé sur toute la largeur
     doc.setFontSize(11);
