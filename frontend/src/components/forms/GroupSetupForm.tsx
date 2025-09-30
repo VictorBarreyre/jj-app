@@ -171,7 +171,8 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
     const updatedClients = [...(formData.clients || [])];
     if (updatedClients[index]) {
       updatedClients[index] = { ...updatedClients[index], [field]: value };
-      updateBasicInfo('clients', updatedClients);
+      // Mise à jour directe sans déclencher la logique d'auto-génération du nom
+      setFormData(prev => ({ ...prev, clients: updatedClients }));
     }
   };
 
