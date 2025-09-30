@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { User, Users, Plus } from 'lucide-react';
 import { rentalContractApi } from '@/services/rental-contract.api';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 interface HomeProps {
   onCreateNew: () => void;
@@ -78,12 +79,57 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
 
   const handleUpdateParticipantReturn = async (orderId: string, participantIndex: number, returned: boolean) => {
     try {
-      await rentalContractApi.updateParticipantReturn(orderId, participantIndex, returned);
+      console.log('Mise à jour statut participant:', { orderId, participantIndex, returned });
       
-      // Invalider et refetch les données des commandes
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      // Récupérer le contrat actuel
+      const contract = await rentalContractApi.getById(orderId);
+      console.log('Contrat récupéré:', contract);
+      
+      // Pour les commandes de groupe avec des participants réels
+      if (contract.type === 'groupe' && contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants[participantIndex]) {
+        console.log('Participant de groupe trouvé, mise à jour...');
+        contract.groupDetails.participants[participantIndex].rendu = returned;
+        
+        // Sauvegarder via l'endpoint de mise à jour général
+        const updateData = { groupDetails: contract.groupDetails };
+        console.log('Données à envoyer pour groupe:', updateData);
+        
+        await rentalContractApi.update(orderId, updateData);
+        console.log('Mise à jour groupe réussie');
+        
+        // Invalider et refetch les données des commandes
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        
+        // Afficher un message de succès
+        toast.success(`Statut de rendu mis à jour pour ${contract.groupDetails.participants[participantIndex].nom}`);
+      } 
+      // Pour les commandes individuelles (participant virtuel)
+      else if (contract.type === 'individuel' && participantIndex === 0) {
+        console.log('Commande individuelle, mise à jour du statut général...');
+        
+        // Mettre à jour directement le statut de rendu de la commande
+        await rentalContractApi.update(orderId, { rendu: returned });
+        console.log('Mise à jour individuelle réussie');
+        
+        // Invalider et refetch les données des commandes
+        queryClient.invalidateQueries({ queryKey: ['orders'] });
+        
+        // Afficher un message de succès
+        toast.success(`Statut de rendu mis à jour pour ${contract.client.nom}`);
+      }
+      else {
+        console.error('Configuration non supportée:', { 
+          contractType: contract.type,
+          hasGroupDetails: !!contract.groupDetails,
+          hasParticipants: !!(contract.groupDetails?.participants),
+          participantCount: contract.groupDetails?.participants?.length,
+          requestedIndex: participantIndex
+        });
+        toast.error('Configuration de participant non supportée');
+      }
     } catch (error) {
       console.error('Erreur lors de la mise à jour du statut de rendu:', error);
+      toast.error('Erreur lors de la mise à jour du statut de rendu');
       throw error;
     }
   };

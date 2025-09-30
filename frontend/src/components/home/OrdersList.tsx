@@ -18,16 +18,28 @@ interface OrdersListProps {
   activeType?: string;
 }
 
-const statusColors: Record<Order['status'], string> = {
+const statusColors: Record<string, string> = {
   'brouillon': 'bg-yellow-500',
   'livree': 'bg-green-500',
-  'rendue': 'bg-gray-500'
+  'rendue': 'bg-gray-500',
+  // Anciens statuts pour compatibilité
+  'active': 'bg-green-500',
+  'delivered': 'bg-green-500',
+  'completed': 'bg-gray-500',
+  'returned': 'bg-gray-500',
+  'draft': 'bg-yellow-500'
 };
 
-const statusLabels: Record<Order['status'], string> = {
+const statusLabels: Record<string, string> = {
   'brouillon': 'Brouillon',
   'livree': 'Livrée',
-  'rendue': 'Rendue'
+  'rendue': 'Rendue',
+  // Anciens statuts pour compatibilité
+  'active': 'Livrée',
+  'delivered': 'Livrée',
+  'completed': 'Rendue',
+  'returned': 'Rendue',
+  'draft': 'Brouillon'
 };
 
 const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'];
@@ -294,8 +306,8 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
 
               {/* Statut */}
               <div className="col-span-2">
-                <Badge className={`${statusColors[order.status]} text-white text-xs`}>
-                  {statusLabels[order.status]}
+                <Badge className={`${statusColors[order.status] || 'bg-gray-500'} text-white text-xs`}>
+                  {statusLabels[order.status] || order.status || 'Statut inconnu'}
                 </Badge>
               </div>
 
@@ -337,8 +349,8 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                   <div className="font-bold text-base text-amber-600 text-left">#{order.numero}</div>
                   <div className="text-xs text-gray-500 text-left font-medium">par {order.createdBy}</div>
                 </div>
-                <Badge className={`${statusColors[order.status]} text-white text-xs`}>
-                  {statusLabels[order.status]}
+                <Badge className={`${statusColors[order.status] || 'bg-gray-500'} text-white text-xs`}>
+                  {statusLabels[order.status] || order.status || 'Statut inconnu'}
                 </Badge>
               </div>
 
