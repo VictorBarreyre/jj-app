@@ -119,6 +119,10 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       newErrors.telephone = 'Le téléphone est obligatoire';
     }
 
+    if (!formData.email?.trim()) {
+      newErrors.email = 'L\'email est obligatoire';
+    }
+
     if (!formData.clients || formData.clients.length === 0) {
       newErrors.clients = 'Veuillez ajouter au moins une personne';
     } else {
@@ -189,6 +193,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
   const isFormValid = formData.vendeur && 
                      formData.dateEssai && 
                      formData.telephone?.trim() &&
+                     formData.email?.trim() &&
                      formData.clients && 
                      formData.clients.length > 0 && 
                      formData.clients.every(c => c.nom.trim());
@@ -262,7 +267,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
 
           <div>
             <Label htmlFor="email" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-              Email de contact
+              Email de contact *
             </Label>
             <Input
               id="email"
@@ -272,6 +277,9 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
               placeholder="contact@exemple.com"
               className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
         </div>
 
