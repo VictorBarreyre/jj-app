@@ -12,7 +12,7 @@ import { RentalContract } from './types/rental-contract'
 import { Order } from './types/order'
 import { GroupRentalInfo } from './types/group-rental'
 import { rentalContractApi } from './services/rental-contract.api'
-import { useOrder } from './hooks/useOrders'
+import { useOrder, useSaveDraft } from './hooks/useOrders'
 import './App.css'
 
 type AppView = 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
@@ -45,6 +45,9 @@ function App() {
 
   // Hook pour charger les données de la commande en mode édition
   const { data: orderData } = useOrder(editParams.editMode && editParams.orderId ? editParams.orderId : '');
+  
+  // Hook pour sauvegarder en brouillon
+  const saveDraftMutation = useSaveDraft();
 
   // Fonction pour convertir Order vers GroupRentalInfo (pour les étapes 1 et 2)
   const convertOrderToGroup = (order: Order): Partial<GroupRentalInfo> => {
@@ -319,8 +322,49 @@ function App() {
     }
   };
 
-  const handleRentalSaveDraft = (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>) => {
-    // Sauvegarde silencieuse
+  const handleRentalSaveDraft = async (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>) => {
+    if (!groupData || !contract) {
+      console.warn('Données manquantes pour la sauvegarde du brouillon');
+      return;
+    }
+
+    try {
+      // Convertir les données vers le format de contrat avec statut brouillon
+      const contractData = {
+        dateCreation: new Date(),
+        dateEvenement: contract.dateEvenement || new Date(),
+        dateRetrait: contract.dateRetrait || new Date(),
+        dateRetour: contract.dateRetour || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        client: {
+          nom: groupData.clients?.[0]?.nom || '',
+          telephone: groupData.telephone || '',
+          email: groupData.email || ''
+        },
+        vendeur: groupData.vendeur || 'N/A',
+        tarifLocation: contract.tarifLocation || 0,
+        depotGarantie: contract.depotGarantie || 400,
+        arrhes: contract.arrhes || 50,
+        paiementArrhes: contract.paiementArrhes,
+        notes: contract.notes || groupData.groupNotes || '',
+        tenue: groupData.clients?.[0]?.tenue || {},
+        status: 'brouillon', // Statut brouillon
+        rendu: false,
+        type: groupData.clients?.length && groupData.clients.length > 1 ? 'groupe' : 'individuel',
+        participantCount: groupData.clients?.length || 1,
+        groupDetails: groupData.clients && groupData.clients.length > 1 ? {
+          participants: groupData.clients.map(client => ({
+            nom: client.nom,
+            tenue: client.tenue,
+            pieces: [], // Sera calculé par le backend
+            notes: client.notes
+          }))
+        } : undefined
+      };
+
+      await saveDraftMutation.mutateAsync(contractData);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du brouillon:', error);
+    }
   };
 
   const handlePrint = (contractId: string, type: 'jj' | 'client') => {
