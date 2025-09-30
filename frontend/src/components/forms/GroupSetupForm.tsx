@@ -398,13 +398,13 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
               ⚠️ Veuillez remplir tous les champs obligatoires
             </p>
           )}
-          <div className="flex flex-col sm:flex-row gap-4 ml-auto">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto sm:ml-auto">
             {onSave && (
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleSave}
-                className="px-6 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm min-h-[48px]"
+                className="w-full sm:w-auto px-6 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm min-h-[48px]"
               >
                 💾 Sauvegarder brouillon
               </Button>
@@ -412,7 +412,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
             <Button
               onClick={handleSubmit}
               disabled={!isFormValid}
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px]"
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px]"
             >
               ➡️ Continuer vers les mesures
             </Button>
