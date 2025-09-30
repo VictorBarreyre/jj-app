@@ -175,7 +175,49 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     onSave(form as MeasurementFormType);
   };
 
-  const isFormValid = form.vendeur && form.client?.nom && form.client?.telephone;
+  // Validation des mesures pour chaque vêtement sélectionné
+  const validateClothingMeasurements = () => {
+    const tenue = form.tenue;
+    if (!tenue) return false; // Au moins un vêtement doit être sélectionné
+
+    // Vérifier qu'au moins un item est sélectionné
+    const hasAnyItem = (
+      tenue.veste?.reference ||
+      tenue.gilet?.reference ||
+      tenue.pantalon?.reference ||
+      tenue.ceinture?.reference ||
+      tenue.tailleChapeau ||
+      tenue.tailleChaussures
+    );
+    
+    if (!hasAnyItem) return false;
+
+    // Validation veste : doit avoir taille et longueur de manche si sélectionnée
+    if (tenue.veste?.reference) {
+      if (!tenue.veste.taille) return false;
+      if (!tenue.veste.longueurManche) return false;
+    }
+
+    // Validation gilet : doit avoir taille si sélectionné
+    if (tenue.gilet?.reference && !tenue.gilet.taille) {
+      return false;
+    }
+
+    // Validation pantalon : doit avoir taille et longueur si sélectionné
+    if (tenue.pantalon?.reference) {
+      if (!tenue.pantalon.taille) return false;
+      if (!tenue.pantalon.longueur) return false;
+    }
+
+    // Validation ceinture : doit avoir taille si sélectionnée
+    if (tenue.ceinture?.reference && !tenue.ceinture.taille) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isFormValid = form.vendeur && form.client?.nom && form.client?.telephone && validateClothingMeasurements();
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -495,7 +537,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
         </div>
         {!isFormValid && (
           <p className="text-sm text-red-600 text-center mt-3">
-            ⚠️ Veuillez remplir les champs obligatoires : Vendeur, Nom client, Téléphone
+            ⚠️ Veuillez remplir les champs obligatoires : Vendeur, Nom client, Téléphone et toutes les mesures des vêtements sélectionnés (taille + longueurs)
           </p>
         )}
       </div>
