@@ -476,13 +476,13 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               <div>
                 <Select
                   value={currentClient.tenue.tailleChapeau || ''}
-                  onValueChange={(value) => updateClientAccessoire(currentClientIndex, 'tailleChapeau', value as TailleChapeau)}
+                  onValueChange={(value) => updateClientAccessoire(currentClientIndex, 'tailleChapeau', value === '__none__' ? '' : value as TailleChapeau)}
                 >
                   <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                     <SelectValue placeholder="Taille chapeau" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    <SelectItem value="">
+                    <SelectItem value="__none__">
                       <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
                     </SelectItem>
                     {TAILLES_CHAPEAUX.map(taille => (
@@ -494,13 +494,13 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               <div>
                 <Select
                   value={currentClient.tenue.tailleChaussures || ''}
-                  onValueChange={(value) => updateClientAccessoire(currentClientIndex, 'tailleChaussures', value as TailleChaussure)}
+                  onValueChange={(value) => updateClientAccessoire(currentClientIndex, 'tailleChaussures', value === '__none__' ? '' : value as TailleChaussure)}
                 >
                   <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                     <SelectValue placeholder="Taille chaussures" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
-                    <SelectItem value="">
+                    <SelectItem value="__none__">
                       <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
                     </SelectItem>
                     {TAILLES_CHAUSSURES.map(taille => (

@@ -99,7 +99,7 @@ export function DynamicProductSelector({
       <div>
         <Select
           value={selectedReference || ''}
-          onValueChange={onReferenceChange}
+          onValueChange={(value) => onReferenceChange(value === '__none__' ? '' : value)}
           disabled={loadingReferences || references.length === 0}
         >
           <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
@@ -113,7 +113,7 @@ export function DynamicProductSelector({
             )}
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">
-            <SelectItem value="">
+            <SelectItem value="__none__">
               <span className="text-gray-500 italic">Aucun modèle sélectionné</span>
             </SelectItem>
             {references.map(ref => (
@@ -130,7 +130,7 @@ export function DynamicProductSelector({
       <div>
         <Select
           value={selectedSize || ''}
-          onValueChange={onSizeChange}
+          onValueChange={(value) => onSizeChange(value === '__none__' ? '' : value)}
           disabled={loadingSizes || !sizeInfo || sizeInfo.sizes.length === 0}
         >
           <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
@@ -144,7 +144,7 @@ export function DynamicProductSelector({
             )}
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">
-            <SelectItem value="">
+            <SelectItem value="__none__">
               <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
             </SelectItem>
             {sizeInfo?.sizes.map(size => (
