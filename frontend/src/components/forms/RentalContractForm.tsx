@@ -21,27 +21,36 @@ interface RentalContractFormProps {
 export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData, isEditMode = false }: RentalContractFormProps) {
   const { user } = useAuth();
   
-  const [form, setForm] = useState<Partial<RentalContract>>({
-    dateCreation: new Date(),
-    dateEvenement: new Date(),
-    dateRetrait: new Date(),
-    dateRetour: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // +3 jours par défaut
-    client: {
-      nom: '',
-      telephone: '',
-      email: ''
-    },
-    vendeur: user?.prenom as Vendeur,
-    tenue: {},
-    tarifLocation: 0,
-    depotGarantie: 400,
-    arrhes: 50,
-    paiementArrhes: {
-      date: new Date().toISOString().split('T')[0],
-      method: undefined
-    },
-    status: 'brouillon',
-    ...initialData
+  const [form, setForm] = useState<Partial<RentalContract>>(() => {
+    const defaultValues = {
+      dateCreation: new Date(),
+      dateEvenement: new Date(),
+      dateRetrait: new Date(),
+      dateRetour: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // +3 jours par défaut
+      client: {
+        nom: '',
+        telephone: '',
+        email: ''
+      },
+      vendeur: user?.prenom as Vendeur,
+      tenue: {},
+      tarifLocation: 0,
+      depotGarantie: 400,
+      arrhes: 50,
+      paiementArrhes: {
+        date: new Date().toISOString().split('T')[0],
+        method: undefined
+      },
+      status: 'brouillon'
+    };
+    
+    return {
+      ...defaultValues,
+      ...initialData,
+      // Force les nouvelles valeurs par défaut si elles ne sont pas définies dans initialData
+      depotGarantie: initialData?.depotGarantie ?? 400,
+      arrhes: initialData?.arrhes ?? 50
+    };
   });
 
   const paymentMethods: { value: PaymentMethod; label: string }[] = [
