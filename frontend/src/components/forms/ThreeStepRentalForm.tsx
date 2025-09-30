@@ -431,7 +431,8 @@ export const ThreeStepRentalForm = forwardRef<
                     // Veste
                     if (client.tenue.veste) {
                       const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
-                      pieces.push(`Veste ${client.tenue.veste.reference}${taille}`);
+                      const longueurManche = client.tenue.veste.longueurManche ? ` - Longueur de manches ${client.tenue.veste.longueurManche}cm` : '';
+                      pieces.push(`Veste ${client.tenue.veste.reference}${taille}${longueurManche}`);
                     }
                     
                     // Gilet

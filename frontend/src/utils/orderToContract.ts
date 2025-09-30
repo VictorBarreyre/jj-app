@@ -10,10 +10,10 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     if (category === 'veste' || category === 'gilet' || category === 'pantalon' || category === 'ceinture') {
       tenue[category] = {
         reference: item.reference,
-        taille: (item.measurements as any)?.taille || '',
+        taille: (item.measurements as any)?.taille || item.size || '',
         longueur: (item.measurements as any)?.longueur,
-        longueurManche: (item.measurements as any)?.longueurManche,
-        couleur: (item.measurements as any)?.couleur || '',
+        longueurManche: (item.measurements as any)?.manches, // Corriger manches -> longueurManche
+        couleur: (item.measurements as any)?.couleur || item.color || '',
         notes: item.notes || ''
       };
     } else if (category === 'chapeau') {
@@ -50,8 +50,8 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     articlesStock: order.items?.map(item => ({
       stockItemId: item.id,
       reference: item.reference,
-      taille: (item.measurements as any)?.taille || '',
-      couleur: (item.measurements as any)?.couleur || '',
+      taille: (item.measurements as any)?.taille || item.size || '',
+      couleur: (item.measurements as any)?.couleur || item.color || '',
       quantiteReservee: item.quantity,
       prix: item.unitPrice || 0
     })) || [],

@@ -117,7 +117,7 @@ export class PDFService {
 
       if (participant.tenue?.veste) {
         const vesteInfo = `Veste:  ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`;
-        const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}` : '';
+        const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}cm` : '';
         items.push(`${vesteInfo}${longueurManche}`.trim());
       }
       if (participant.tenue?.gilet) {
@@ -125,7 +125,7 @@ export class PDFService {
       }
       if (participant.tenue?.pantalon) {
         const pantalonInfo = `Pantalon:  ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`;
-        const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}` : '';
+        const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}cm` : '';
         items.push(`${pantalonInfo}${longueur}`.trim());
       }
       if (participant.tenue?.tailleChapeau) {
@@ -168,15 +168,16 @@ export class PDFService {
         currentY += 8;
       }
 
-      currentY += 18;
+      currentY += 10;
     }
 
-    // À prendre le / À rendre le (sur une ligne) - A5
-    doc.setFontSize(11);
+    // À prendre le / Événement / À rendre le (sur une ligne) - A5
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
+    doc.text(`Événement: ${this.formatDate(contract.dateEvenement)}`, 74, currentY, { align: 'center' });
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
-    currentY += 18;
+    currentY += 10;
 
     // Prix, caution et arrhes - A5 compact (en gras) - bien espacé sur toute la largeur
     doc.setFontSize(11);
@@ -241,7 +242,7 @@ export class PDFService {
         // Articles de la tenue
         if (participant.tenue?.veste) {
           const taille = participant.tenue.veste.taille || '';
-          const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}` : '';
+          const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}cm` : '';
           const row = [
             '  • Veste',
             participant.tenue.veste.reference || '',
@@ -269,7 +270,7 @@ export class PDFService {
 
         if (participant.tenue?.pantalon) {
           const taille = participant.tenue.pantalon.taille || '';
-          const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}` : '';
+          const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}cm` : '';
           const row = [
             '  • Pantalon',
             participant.tenue.pantalon.reference || '',
