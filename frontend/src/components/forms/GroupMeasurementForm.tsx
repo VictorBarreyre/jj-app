@@ -141,21 +141,38 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
   const currentClient = updatedGroup.clients[currentClientIndex];
   
-  // Fonction pour vérifier si un item est complet (sans notes)
-  const isItemComplete = (item: any) => {
-    return item && item.reference && item.taille;
+  // Fonction pour vérifier si un item est complet avec les mesures requises
+  const isItemComplete = (item: any, category: 'veste' | 'gilet' | 'pantalon' | 'ceinture') => {
+    if (!item || !item.reference || !item.taille) return false;
+    
+    // Vérifications spécifiques par catégorie
+    if (category === 'veste' && !item.longueurManche) return false;
+    if (category === 'pantalon' && !item.longueur) return false;
+    
+    return true;
   };
 
-  // Fonction pour vérifier si un client a au moins un item complet
+  // Fonction pour vérifier si tous les items sélectionnés d'un client sont complets
   const hasCompleteItem = (client: any) => {
-    return (
-      isItemComplete(client.tenue.veste) ||
-      isItemComplete(client.tenue.gilet) ||
-      isItemComplete(client.tenue.pantalon) ||
-      isItemComplete(client.tenue.ceinture) ||
-      client.tenue.tailleChapeau ||
-      client.tenue.tailleChaussures
+    const tenue = client.tenue;
+    
+    // Vérifier que tous les items sélectionnés sont complets
+    if (tenue.veste?.reference && !isItemComplete(tenue.veste, 'veste')) return false;
+    if (tenue.gilet?.reference && !isItemComplete(tenue.gilet, 'gilet')) return false;
+    if (tenue.pantalon?.reference && !isItemComplete(tenue.pantalon, 'pantalon')) return false;
+    if (tenue.ceinture?.reference && !isItemComplete(tenue.ceinture, 'ceinture')) return false;
+    
+    // Vérifier qu'au moins un item est sélectionné
+    const hasAnyItem = (
+      tenue.veste?.reference ||
+      tenue.gilet?.reference ||
+      tenue.pantalon?.reference ||
+      tenue.ceinture?.reference ||
+      tenue.tailleChapeau ||
+      tenue.tailleChaussures
     );
+    
+    return hasAnyItem;
   };
 
   // Validation complète : tous les clients doivent avoir au moins un item complet  
@@ -582,7 +599,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
       {!isFormValid && (
         <p className="text-sm text-red-600 text-center">
-          ⚠️ Veuillez sélectionner et dimensionner au moins une pièce complète (référence + taille) pour chaque personne
+          ⚠️ Veuillez sélectionner et dimensionner au moins une pièce complète (référence + taille + longueurs) pour chaque personne
         </p>
       )}
     </div>
