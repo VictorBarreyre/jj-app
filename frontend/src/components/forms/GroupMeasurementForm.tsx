@@ -334,12 +334,10 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               <div className="mt-4">
                 <Input
                   id="longueur-manche"
-                  type="number"
-                  min="0"
-                  step="0.5"
+                  type="text"
                   value={currentClient.tenue.veste?.longueurManche || ''}
                   onChange={(e) => updateClientTenue(currentClientIndex, 'veste', 'longueurManche', e.target.value)}
-                  placeholder="Longueur de manche"
+                  placeholder="Ex: 60, 58-60, ajustable"
                   className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
                 />
               </div>
@@ -441,12 +439,10 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               <div className="mt-4">
                 <Input
                   id={`longueurPantalon-${currentClientIndex}`}
-                  type="number"
-                  min="0"
-                  step="0.5"
+                  type="text"
                   value={currentClient.tenue.pantalon?.longueur || ''}
                   onChange={(e) => updateClientTenue(currentClientIndex, 'pantalon', 'longueur', e.target.value)}
-                  placeholder="Longueur du pantalon"
+                  placeholder="Ex: 105, 103-105, standard"
                   className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
                 />
               </div>

@@ -3,27 +3,27 @@ import { ProductCategory, VesteReference, GiletReference, PantalonReference, Cha
 // Interface pour les mesures spécifiques par type de produit
 export interface VesteMeasurements {
   // Mesures principales
-  longueur?: number;
-  poitrine?: number;
-  taille?: number;
-  epaules?: number;
-  manches?: number;
+  longueur?: string;
+  poitrine?: string;
+  taille?: string;
+  epaules?: string;
+  manches?: string;
   // Mesures complémentaires
-  carrure?: number;
-  tourDeCol?: number;
-  hauteurPoitrine?: number;
+  carrure?: string;
+  tourDeCol?: string;
+  hauteurPoitrine?: string;
   // Notes spécifiques
   notes?: string;
 }
 
 export interface GiletMeasurements {
   // Mesures principales
-  longueur?: number;
-  poitrine?: number;
-  taille?: number;
+  longueur?: string;
+  poitrine?: string;
+  taille?: string;
   // Mesures complémentaires
-  carrure?: number;
-  hauteurPoitrine?: number;
+  carrure?: string;
+  hauteurPoitrine?: string;
   // Options
   croise?: boolean;
   // Notes spécifiques
@@ -32,15 +32,15 @@ export interface GiletMeasurements {
 
 export interface PantalonMeasurements {
   // Mesures principales
-  taille?: number;
-  longueur?: number;
-  entrejambe?: number;
-  tour_de_cuisse?: number;
-  tour_de_genou?: number;
-  tour_de_cheville?: number;
+  taille?: string;
+  longueur?: string;
+  entrejambe?: string;
+  tour_de_cuisse?: string;
+  tour_de_genou?: string;
+  tour_de_cheville?: string;
   // Mesures complémentaires
-  montant?: number;
-  bassin?: number;
+  montant?: string;
+  bassin?: string;
   // Notes spécifiques
   notes?: string;
 }
