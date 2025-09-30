@@ -304,9 +304,6 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
             placeholder="Nom automatique basé sur les clients"
             className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
           />
-          <p className="hidden sm:block text-xs text-gray-500 mt-2 sm:mt-1 text-left">
-            Le nom sera automatiquement généré si vous le laissez vide
-          </p>
         </div>
       </div>
 
