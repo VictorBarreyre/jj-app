@@ -32,7 +32,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
   const [vesteReferences, setVesteReferences] = useState<any[]>([]);
-  const [accessoireReferences, setAccessoireReferences] = useState<any[]>([]);
 
   // Charger les références de veste au montage
   useEffect(() => {
@@ -47,28 +46,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
     fetchVesteReferences();
   }, []);
 
-  // Charger les références d'accessoires au montage
-  useEffect(() => {
-    const fetchAccessoireReferences = async () => {
-      try {
-        const data = await stockAPI.getReferences('accessoire');
-        setAccessoireReferences(data.references || []);
-      } catch (error) {
-        console.warn('Erreur lors du chargement des références accessoire:', error);
-      }
-    };
-    fetchAccessoireReferences();
-  }, []);
 
-  // Fonction pour trouver l'ID de la ceinture scratch
-  const getScratchBeltId = () => {
-    const scratchBelt = accessoireReferences.find(ref => 
-      ref.name?.toLowerCase().includes('scratch') || 
-      ref.title?.toLowerCase().includes('scratch') ||
-      ref.nom?.toLowerCase().includes('scratch')
-    );
-    return scratchBelt?.id || null;
-  };
 
   // Auto-sauvegarde des données quand elles changent
   useEffect(() => {
@@ -136,13 +114,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
         });
       }
       
-      // Déclencher automatiquement la ceinture scratch quand une veste est sélectionnée
-      if (referenceId && !updatedGroup.clients[clientIndex].tenue.ceinture?.reference) {
-        const scratchBeltId = getScratchBeltId();
-        if (scratchBeltId) {
-          updateClientTenue(clientIndex, 'ceinture', 'reference', scratchBeltId);
-        }
-      }
     }
   };
 
