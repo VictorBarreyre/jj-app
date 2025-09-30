@@ -482,6 +482,9 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                     <SelectValue placeholder="Taille chapeau" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
+                    <SelectItem value="">
+                      <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
+                    </SelectItem>
                     {TAILLES_CHAPEAUX.map(taille => (
                       <SelectItem key={taille} value={taille}>{taille}</SelectItem>
                     ))}
@@ -497,6 +500,9 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                     <SelectValue placeholder="Taille chaussures" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-300 text-gray-900">
+                    <SelectItem value="">
+                      <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
+                    </SelectItem>
                     {TAILLES_CHAUSSURES.map(taille => (
                       <SelectItem key={taille} value={taille}>{taille}</SelectItem>
                     ))}
