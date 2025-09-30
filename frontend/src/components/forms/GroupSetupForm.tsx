@@ -207,7 +207,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Calendar className="w-5 h-5 text-white" />
           </div>
-          1. Informations du groupe
+          1. Information liste
         </h2>
 
         <div className="flex flex-col md:flex-row gap-3 md:gap-4">
