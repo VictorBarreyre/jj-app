@@ -171,10 +171,11 @@ export class PDFService {
       currentY += 10;
     }
 
-    // À prendre le / À rendre le (sur une ligne) - A5
-    doc.setFontSize(11);
+    // À prendre le / Événement / À rendre le (sur une ligne) - A5
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
+    doc.text(`Événement: ${this.formatDate(contract.dateEvenement)}`, 74, currentY, { align: 'center' });
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
     currentY += 10;
 
