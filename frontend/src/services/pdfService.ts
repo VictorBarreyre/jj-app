@@ -504,7 +504,7 @@ export class PDFService {
     currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
 
     // Section détachable pour vendeur uniquement à position dynamique
-    if (_type === 'vendeur') {
+    if (type === 'vendeur') {
       this.addVendeurDetachableSection(doc, contract, currentY, participantIndex);
     } else {
       // Pour le client, afficher le tableau des tenues et les conditions
