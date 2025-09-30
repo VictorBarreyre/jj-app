@@ -148,7 +148,7 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             },
             dateCreation: contract.dateCreation,
             dateLivraison: contract.dateEvenement,
-            status: contract.rendu ? 'rendue' : 'livree',
+            status: contract.status || (contract.rendu ? 'rendue' : 'livree'),
             items: items,
             sousTotal: calculatedTotal,
             total: calculatedTotal,
@@ -218,6 +218,28 @@ export const useDeleteOrder = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.error || 'Erreur lors de la suppression du bon de location');
+    },
+  });
+};
+
+export const useSaveDraft = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (contractData: any) => {
+      // Forcer le statut brouillon
+      const draftData = {
+        ...contractData,
+        status: 'brouillon'
+      };
+      return contractsAPI.create(draftData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success('Brouillon sauvegardé avec succès');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.error || 'Erreur lors de la sauvegarde du brouillon');
     },
   });
 };
