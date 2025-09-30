@@ -113,6 +113,13 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
           }
         }));
       }
+      
+      // Déclencher automatiquement la ceinture scratch quand une veste est sélectionnée
+      if (referenceId && !form.tenue?.ceinture?.reference) {
+        // Ici on devrait trouver l'ID de la ceinture scratch dans les références accessoires
+        // Pour l'instant, on utilise un placeholder - il faudra ajuster avec l'ID réel
+        updateCeinture('reference', 'ceinture-scratch-id');
+      }
     }
   };
 
@@ -347,6 +354,29 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onColorChange={(color) => updateTenueColor('gilet', color)}
             />
             
+            {/* Ceinture - Affichée si une veste est sélectionnée */}
+            {form.tenue?.veste?.reference && (
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <h5 className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">C</div>
+                  Ceinture
+                  <StockIndicator 
+                    selectedReference={form.tenue?.ceinture?.reference} 
+                    selectedSize={form.tenue?.ceinture?.taille} 
+                  />
+                </h5>
+                <DynamicProductSelector
+                  category="accessoire"
+                  selectedReference={form.tenue?.ceinture?.reference}
+                  selectedSize={form.tenue?.ceinture?.taille}
+                  selectedColor={form.tenue?.ceinture?.couleur}
+                  onReferenceChange={(ref) => updateCeintureReference(ref)}
+                  onSizeChange={(size) => updateCeintureSize(size)}
+                  onColorChange={(color) => updateCeintureColor(color)}
+                />
+              </div>
+            )}
+            
             {/* Notes gilet */}
             {form.tenue?.gilet?.reference && (
               <div className="mt-4 pt-4 border-t border-gray-200">
@@ -408,31 +438,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             )}
           </div>
 
-          {/* Ceinture */}
-          <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">D</div>
-              Ceinture
-              <StockIndicator 
-                selectedReference={form.tenue?.ceinture?.reference} 
-                selectedSize={form.tenue?.ceinture?.taille} 
-              />
-            </h4>
-            <DynamicProductSelector
-              category="accessoire"
-              selectedReference={form.tenue?.ceinture?.reference}
-              selectedSize={form.tenue?.ceinture?.taille}
-              selectedColor={form.tenue?.ceinture?.couleur}
-              onReferenceChange={(ref) => updateCeintureReference(ref)}
-              onSizeChange={(size) => updateCeintureSize(size)}
-              onColorChange={(color) => updateCeintureColor(color)}
-            />
-          </div>
-
           {/* Autres Accessoires */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">E</div>
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">D</div>
               Autres Accessoires <span className="text-sm font-normal text-gray-500">(facultatif)</span>
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
