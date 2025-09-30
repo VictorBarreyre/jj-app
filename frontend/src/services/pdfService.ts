@@ -116,23 +116,30 @@ export class PDFService {
       const items = [];
 
       if (participant.tenue?.veste) {
-        const vesteInfo = `Veste:  ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`;
+        const reference = participant.tenue.veste.reference || '';
+        const taille = participant.tenue.veste.taille ? ` Taille: ${participant.tenue.veste.taille}` : '';
+        const couleur = participant.tenue.veste.couleur ? ` ${participant.tenue.veste.couleur}` : '';
         const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}cm` : '';
-        items.push(`${vesteInfo}${longueurManche}`.trim());
+        items.push(`Veste:  ${reference}${taille}${couleur}${longueurManche}`.trim());
       }
       if (participant.tenue?.gilet) {
-        items.push(`Gilet:  ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+        const reference = participant.tenue.gilet.reference || '';
+        const taille = participant.tenue.gilet.taille ? ` Taille: ${participant.tenue.gilet.taille}` : '';
+        const couleur = participant.tenue.gilet.couleur ? ` ${participant.tenue.gilet.couleur}` : '';
+        items.push(`Gilet:  ${reference}${taille}${couleur}`.trim());
       }
       if (participant.tenue?.pantalon) {
-        const pantalonInfo = `Pantalon:  ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`;
+        const reference = participant.tenue.pantalon.reference || '';
+        const taille = participant.tenue.pantalon.taille ? ` Taille: ${participant.tenue.pantalon.taille}` : '';
+        const couleur = participant.tenue.pantalon.couleur ? ` ${participant.tenue.pantalon.couleur}` : '';
         const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}cm` : '';
-        items.push(`${pantalonInfo}${longueur}`.trim());
+        items.push(`Pantalon:  ${reference}${taille}${couleur}${longueur}`.trim());
       }
       if (participant.tenue?.tailleChapeau) {
-        items.push(`Chapeau:  taille ${participant.tenue.tailleChapeau}`);
+        items.push(`Chapeau:  Taille: ${participant.tenue.tailleChapeau}`);
       }
       if (participant.tenue?.tailleChaussures) {
-        items.push(`Chaussures:  taille ${participant.tenue.tailleChaussures}`);
+        items.push(`Chaussures:  Taille: ${participant.tenue.tailleChaussures}`);
       }
 
       if (items.length > 0) {

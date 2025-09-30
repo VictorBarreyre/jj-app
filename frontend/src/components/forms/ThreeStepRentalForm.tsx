@@ -430,38 +430,42 @@ export const ThreeStepRentalForm = forwardRef<
                     
                     // Veste
                     if (client.tenue.veste) {
-                      const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
-                      const longueurManche = client.tenue.veste.longueurManche ? ` - Longueur de manches ${client.tenue.veste.longueurManche}cm` : '';
-                      pieces.push(`Veste ${client.tenue.veste.reference}${taille}${longueurManche}`);
+                      const reference = client.tenue.veste.reference ? `${client.tenue.veste.reference}` : '';
+                      const taille = client.tenue.veste.taille ? ` - Taille: ${client.tenue.veste.taille}` : ' - Taille: non spécifiée';
+                      const longueurManche = client.tenue.veste.longueurManche ? ` - Longueur de manches: ${client.tenue.veste.longueurManche}cm` : '';
+                      pieces.push(`Veste ${reference}${taille}${longueurManche}`);
                     }
                     
                     // Gilet
                     if (client.tenue.gilet) {
-                      const taille = client.tenue.gilet.taille ? ` - Taille ${client.tenue.gilet.taille}` : ' - Taille non spécifiée';
-                      pieces.push(`Gilet ${client.tenue.gilet.reference}${taille}`);
+                      const reference = client.tenue.gilet.reference ? `${client.tenue.gilet.reference}` : '';
+                      const taille = client.tenue.gilet.taille ? ` - Taille: ${client.tenue.gilet.taille}` : ' - Taille: non spécifiée';
+                      pieces.push(`Gilet ${reference}${taille}`);
                     }
                     
                     // Pantalon
                     if (client.tenue.pantalon) {
-                      const taille = client.tenue.pantalon.taille ? ` - Taille ${client.tenue.pantalon.taille}` : ' - Taille non spécifiée';
-                      const longueur = client.tenue.pantalon.longueur ? ` - Longueur ${client.tenue.pantalon.longueur}cm` : '';
-                      pieces.push(`Pantalon ${client.tenue.pantalon.reference}${taille}${longueur}`);
+                      const reference = client.tenue.pantalon.reference ? `${client.tenue.pantalon.reference}` : '';
+                      const taille = client.tenue.pantalon.taille ? ` - Taille: ${client.tenue.pantalon.taille}` : ' - Taille: non spécifiée';
+                      const longueur = client.tenue.pantalon.longueur ? ` - Longueur: ${client.tenue.pantalon.longueur}cm` : '';
+                      pieces.push(`Pantalon ${reference}${taille}${longueur}`);
                     }
                     
                     // Ceinture
                     if (client.tenue.ceinture) {
-                      const taille = client.tenue.ceinture.taille ? ` - Taille ${client.tenue.ceinture.taille}` : ' - Taille non spécifiée';
-                      pieces.push(`Ceinture ${client.tenue.ceinture.reference}${taille}`);
+                      const reference = client.tenue.ceinture.reference ? `${client.tenue.ceinture.reference}` : '';
+                      const taille = client.tenue.ceinture.taille ? ` - Taille: ${client.tenue.ceinture.taille}` : ' - Taille: non spécifiée';
+                      pieces.push(`Ceinture ${reference}${taille}`);
                     }
                     
                     // Chapeau
                     if (client.tenue.tailleChapeau) {
-                      pieces.push(`Chapeau - Taille ${client.tenue.tailleChapeau}`);
+                      pieces.push(`Chapeau - Taille: ${client.tenue.tailleChapeau}`);
                     }
                     
                     // Chaussures
                     if (client.tenue.tailleChaussures) {
-                      pieces.push(`Chaussures - Pointure ${client.tenue.tailleChaussures}`);
+                      pieces.push(`Chaussures - Taille: ${client.tenue.tailleChaussures}`);
                     }
                     
                     if (pieces.length === 0) {
