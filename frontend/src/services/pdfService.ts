@@ -116,23 +116,23 @@ export class PDFService {
       const items = [];
 
       if (participant.tenue?.veste) {
-        const vesteInfo = `Veste: ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`;
+        const vesteInfo = `Veste:  ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`;
         const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}` : '';
         items.push(`${vesteInfo}${longueurManche}`.trim());
       }
       if (participant.tenue?.gilet) {
-        items.push(`Gilet: ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+        items.push(`Gilet:  ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
       }
       if (participant.tenue?.pantalon) {
-        const pantalonInfo = `Pantalon: ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`;
+        const pantalonInfo = `Pantalon:  ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`;
         const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}` : '';
         items.push(`${pantalonInfo}${longueur}`.trim());
       }
       if (participant.tenue?.tailleChapeau) {
-        items.push(`Chapeau: taille ${participant.tenue.tailleChapeau}`);
+        items.push(`Chapeau:  taille ${participant.tenue.tailleChapeau}`);
       }
       if (participant.tenue?.tailleChaussures) {
-        items.push(`Chaussures: taille ${participant.tenue.tailleChaussures}`);
+        items.push(`Chaussures:  taille ${participant.tenue.tailleChaussures}`);
       }
 
       if (items.length > 0) {
