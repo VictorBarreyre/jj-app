@@ -236,12 +236,14 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
           {/* Informations du groupe de base */}
           <div className="pt-3 border-t border-gray-300">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-left">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                  Groupe
-                </span>
-                <p className="font-medium text-gray-900 text-xs sm:text-sm">{updatedGroup.groupName}</p>
-              </div>
+              {updatedGroup.groupName && (
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    Groupe
+                  </span>
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{updatedGroup.groupName}</p>
+                </div>
+              )}
               
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
