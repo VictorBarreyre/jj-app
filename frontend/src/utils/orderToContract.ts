@@ -1,5 +1,6 @@
 import { Order, ChapeauMeasurements, ChaussuresMeasurements } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
+import { calculateDefaultDates } from './dateCalculations';
 
 export const convertOrderToRentalContract = (order: Order): RentalContract => {
   // Convertir les items en tenue
@@ -22,13 +23,17 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     }
   });
 
+  // Calculer les dates par défaut basées sur la date d'événement
+  const eventDate = typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date();
+  const defaultDates = calculateDefaultDates(eventDate);
+
   return {
     id: order.id,
     numero: order.numero,
     dateCreation: typeof order.dateCreation === 'string' ? new Date(order.dateCreation) : order.dateCreation || new Date(),
     dateEvenement: typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date(),
-    dateRetrait: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // 7 jours après création par défaut
-    dateRetour: new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000), // 14 jours après création par défaut
+    dateRetrait: defaultDates.dateRetrait, // Jeudi avant l'événement
+    dateRetour: defaultDates.dateRetour, // Mardi après l'événement
     client: {
       nom: order.client.nom,
       telephone: order.client.telephone || '',
