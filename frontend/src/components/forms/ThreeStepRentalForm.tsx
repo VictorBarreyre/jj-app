@@ -96,7 +96,15 @@ export const ThreeStepRentalForm = forwardRef<
   
   const [contractData, setContractData] = useState<Partial<RentalContract> | null>(() => {
     const savedData = loadFromStorage<Partial<RentalContract>>(STORAGE_KEYS.CONTRACT_DATA);
-    return savedData || null;
+    if (savedData) {
+      // Appliquer les nouvelles valeurs par défaut si elles ne sont pas définies
+      return {
+        ...savedData,
+        depotGarantie: savedData.depotGarantie ?? 400,
+        arrhes: savedData.arrhes ?? 50
+      };
+    }
+    return null;
   });
   
   const [formKey, setFormKey] = useState(0);
