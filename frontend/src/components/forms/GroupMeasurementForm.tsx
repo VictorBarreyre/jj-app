@@ -395,14 +395,12 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
             {/* Ceinture - Affichée si une veste est sélectionnée */}
             {currentClient.tenue?.veste?.reference && (
               <div className="mt-6 pt-4 border-t border-gray-200">
-                <h5 className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-xs font-bold"></div>
-                  Ceinture
+                <div className="flex items-center gap-2 mb-3">
                   <StockIndicator 
                     selectedReference={currentClient.tenue.ceinture?.reference} 
                     selectedSize={currentClient.tenue.ceinture?.taille} 
                   />
-                </h5>
+                </div>
                 <DynamicProductSelector
                   category="accessoire"
                   selectedReference={currentClient.tenue.ceinture?.reference}
