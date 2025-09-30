@@ -139,7 +139,7 @@ function App() {
         adresse: order.client.adresse
       },
       vendeur: order.createdBy || 'N/A',
-      tarifLocation: order.total || 0,
+      tarifLocation: order.total || undefined,
       depotGarantie: order.depotGarantie || 400,
       arrhes: order.arrhes || 50,
       paiementArrhes: {
@@ -341,7 +341,7 @@ function App() {
           email: groupData.email || ''
         },
         vendeur: groupData.vendeur || 'N/A',
-        tarifLocation: contract.tarifLocation || 0,
+        tarifLocation: contract.tarifLocation || undefined,
         depotGarantie: contract.depotGarantie || 400,
         arrhes: contract.arrhes || 50,
         paiementArrhes: contract.paiementArrhes,

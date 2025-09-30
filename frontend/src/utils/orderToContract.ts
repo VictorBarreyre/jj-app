@@ -36,7 +36,7 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
       isExistingClient: false
     },
     vendeur: (order.createdBy || 'N/A') as any,
-    tarifLocation: order.total || 0,
+    tarifLocation: order.total || undefined,
     depotGarantie: 400, // Valeur par défaut
     arrhes: 50, // Valeur par défaut
     paiementArrhes: undefined,

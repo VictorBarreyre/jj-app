@@ -39,7 +39,7 @@ export interface CreateRentalContractRequest {
   };
   vendeur: string;
   tenue?: any;
-  tarifLocation: number;
+  tarifLocation?: number;
   depotGarantie: number;
   arrhes: number;
   paiementArrhes?: {
