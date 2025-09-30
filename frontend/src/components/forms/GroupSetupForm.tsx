@@ -301,7 +301,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
             id="groupName"
             value={formData.groupName || ''}
             onChange={(e) => updateBasicInfo('groupName', e.target.value)}
-            placeholder="Nom automatique basé sur les clients"
+            placeholder="Nom du groupe ou de l'événement"
             className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
           />
         </div>
