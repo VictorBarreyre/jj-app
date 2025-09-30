@@ -79,19 +79,26 @@ export class PDFService {
       participantName = contract.client.nom;
     }
 
-    // Téléphone - A5 (label en gras, valeur normale)
+    // Téléphone et Email sur la même ligne - A5 (justify-content: space-between)
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`Téléphone: `, 10, currentY);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${contract.client.telephone}`, 35, currentY);
-    currentY += 11;
-
-    // Email - A5 (label en gras, valeur normale)
+    doc.text(`${contract.client.telephone}`, 32, currentY);
+    
+    // Email aligné à droite comme "À rendre" et "Arrhes"
+    const emailLabel = 'Email: ';
+    const emailValue = contract.client.email || 'Non renseigné';
+    const spacing = 2; // Petit espacement entre label et valeur
+    
+    // Calculer la position pour aligner le tout à droite
+    const totalWidth = doc.getTextWidth(emailLabel) + spacing + doc.getTextWidth(emailValue);
+    const startPosition = 138 - totalWidth;
+    
     doc.setFont('helvetica', 'bold');
-    doc.text(`Email: `, 10, currentY);
+    doc.text(emailLabel, startPosition, currentY);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${contract.client.email || 'Non renseigné'}`, 25, currentY);
+    doc.text(emailValue, startPosition + doc.getTextWidth(emailLabel) + spacing, currentY);
     currentY += 13;
 
     if (participant) {
@@ -100,7 +107,7 @@ export class PDFService {
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
         doc.text(`Tenue de ${participantName}:`, 10, currentY);
-        currentY += 11;
+        currentY += 8;
       }
 
       // Descriptif de ce qu'il a loué - A5 (même taille que téléphone/email)
@@ -109,37 +116,59 @@ export class PDFService {
       const items = [];
 
       if (participant.tenue?.veste) {
-        items.push(`Veste ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`.trim());
+        const vesteInfo = `Veste: ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`;
+        const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}` : '';
+        items.push(`${vesteInfo}${longueurManche}`.trim());
       }
       if (participant.tenue?.gilet) {
-        items.push(`Gilet ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+        items.push(`Gilet: ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
       }
       if (participant.tenue?.pantalon) {
-        items.push(`Pantalon ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`.trim());
+        const pantalonInfo = `Pantalon: ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`;
+        const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}` : '';
+        items.push(`${pantalonInfo}${longueur}`.trim());
       }
       if (participant.tenue?.tailleChapeau) {
-        items.push(`Chapeau taille ${participant.tenue.tailleChapeau}`);
+        items.push(`Chapeau: taille ${participant.tenue.tailleChapeau}`);
       }
       if (participant.tenue?.tailleChaussures) {
-        items.push(`Chaussures taille ${participant.tenue.tailleChaussures}`);
+        items.push(`Chaussures: taille ${participant.tenue.tailleChaussures}`);
       }
 
       if (items.length > 0) {
-        const itemsText = items.join(' / ');
-        // Largeur maximum pour A5 (128mm utilisables)
-        const maxWidth = 128;
-        const textLines = doc.splitTextToSize(itemsText, maxWidth);
-
-        textLines.forEach((line: string) => {
-          doc.text(line, 10, currentY);
+        // Afficher chaque article sur une ligne séparée avec puce
+        items.forEach((item: string) => {
+          // Séparer la catégorie (avant le :) du reste
+          const colonIndex = item.indexOf(':');
+          if (colonIndex !== -1) {
+            const category = item.substring(0, colonIndex + 1); // "Veste:", "Gilet:", etc.
+            const details = item.substring(colonIndex + 1); // Le reste après le ":"
+            
+            // Afficher la puce et la catégorie en gras
+            doc.setFont('helvetica', 'bold');
+            const bulletAndCategory = `• ${category}`;
+            doc.text(bulletAndCategory, 10, currentY);
+            
+            // Calculer la largeur du texte en gras pour positionner le texte normal
+            const bulletCategoryWidth = doc.getTextWidth(bulletAndCategory);
+            
+            // Afficher les détails en normal
+            doc.setFont('helvetica', 'normal');
+            doc.text(details, 10 + bulletCategoryWidth, currentY);
+          } else {
+            // Cas où il n'y a pas de ":" (fallback)
+            doc.setFont('helvetica', 'normal');
+            doc.text(`• ${item}`, 10, currentY);
+          }
           currentY += 8;
         });
       } else {
-        doc.text(`Aucun article`, 10, currentY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`• Aucun article`, 10, currentY);
         currentY += 8;
       }
 
-      currentY += 8;
+      currentY += 18;
     }
 
     // À prendre le / À rendre le (sur une ligne) - A5
@@ -147,7 +176,7 @@ export class PDFService {
     doc.setFont('helvetica', 'bold');
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
-    currentY += 13;
+    currentY += 18;
 
     // Prix, caution et arrhes - A5 compact (en gras) - bien espacé sur toute la largeur
     doc.setFontSize(11);
@@ -211,10 +240,12 @@ export class PDFService {
 
         // Articles de la tenue
         if (participant.tenue?.veste) {
+          const taille = participant.tenue.veste.taille || '';
+          const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}` : '';
           const row = [
             '  • Veste',
             participant.tenue.veste.reference || '',
-            participant.tenue.veste.taille || '',
+            `${taille}${longueurManche}`.trim(),
             participant.tenue.veste.couleur || ''
           ];
           if (_type === 'vendeur') {
@@ -237,10 +268,12 @@ export class PDFService {
         }
 
         if (participant.tenue?.pantalon) {
+          const taille = participant.tenue.pantalon.taille || '';
+          const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}` : '';
           const row = [
             '  • Pantalon',
             participant.tenue.pantalon.reference || '',
-            participant.tenue.pantalon.taille || '',
+            `${taille}${longueur}`.trim(),
             participant.tenue.pantalon.couleur || ''
           ];
           if (_type === 'vendeur') {
