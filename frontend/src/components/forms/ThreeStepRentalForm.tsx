@@ -194,8 +194,8 @@ export const ThreeStepRentalForm = forwardRef<
       
       // Valeurs par défaut pour la tarification
       tarifLocation: 0,
-      depotGarantie: 50,
-      arrhes: 0,
+      depotGarantie: 400,
+      arrhes: 50,
       
       status: 'brouillon',
       rendu: false,

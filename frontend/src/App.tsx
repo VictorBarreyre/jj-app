@@ -137,10 +137,10 @@ function App() {
       },
       vendeur: order.createdBy || 'N/A',
       tarifLocation: order.total || 0,
-      depotGarantie: order.depotGarantie || 50,
-      arrhes: order.arrhes || 0,
+      depotGarantie: order.depotGarantie || 400,
+      arrhes: order.arrhes || 50,
       paiementArrhes: {
-        amount: order.arrhes || 0 // Champ requis pour éviter l'erreur
+        amount: order.arrhes || 50 // Champ requis pour éviter l'erreur
       },
       notes: order.notes,
       tenue: tenue,
