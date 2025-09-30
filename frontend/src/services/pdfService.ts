@@ -117,7 +117,7 @@ export class PDFService {
 
       if (participant.tenue?.veste) {
         const vesteInfo = `Veste:  ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`;
-        const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}` : '';
+        const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}cm` : '';
         items.push(`${vesteInfo}${longueurManche}`.trim());
       }
       if (participant.tenue?.gilet) {
@@ -125,7 +125,7 @@ export class PDFService {
       }
       if (participant.tenue?.pantalon) {
         const pantalonInfo = `Pantalon:  ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`;
-        const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}` : '';
+        const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}cm` : '';
         items.push(`${pantalonInfo}${longueur}`.trim());
       }
       if (participant.tenue?.tailleChapeau) {
@@ -241,7 +241,7 @@ export class PDFService {
         // Articles de la tenue
         if (participant.tenue?.veste) {
           const taille = participant.tenue.veste.taille || '';
-          const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}` : '';
+          const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}cm` : '';
           const row = [
             '  • Veste',
             participant.tenue.veste.reference || '',
@@ -269,7 +269,7 @@ export class PDFService {
 
         if (participant.tenue?.pantalon) {
           const taille = participant.tenue.pantalon.taille || '';
-          const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}` : '';
+          const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}cm` : '';
           const row = [
             '  • Pantalon',
             participant.tenue.pantalon.reference || '',
