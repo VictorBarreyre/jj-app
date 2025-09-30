@@ -121,7 +121,7 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
           };
 
           // Calculer le total à partir des articles si tarifLocation n'existe pas
-          let calculatedTotal = contract.tarifLocation || 0;
+          let calculatedTotal = contract.tarifLocation;
           
           // Si pas de tarif de location, essayer de calculer depuis les articles de stock
           if (!calculatedTotal && contract.articlesStock?.length > 0) {

@@ -34,7 +34,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       },
       vendeur: user?.prenom as Vendeur,
       tenue: {},
-      tarifLocation: 0,
+      tarifLocation: undefined,
       depotGarantie: 400,
       arrhes: 50,
       paiementArrhes: {
@@ -161,8 +161,8 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               type="number"
               step="0.01"
               min="0"
-              value={form.tarifLocation || 0}
-              onChange={(e) => updateForm('tarifLocation', parseFloat(e.target.value) || 0)}
+              value={form.tarifLocation || ''}
+              onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
               className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
             />
           </div>

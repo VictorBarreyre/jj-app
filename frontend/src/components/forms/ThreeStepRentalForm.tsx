@@ -193,7 +193,7 @@ export const ThreeStepRentalForm = forwardRef<
       notes: updatedGroup.groupNotes || mainClient.notes,
       
       // Valeurs par défaut pour la tarification
-      tarifLocation: 0,
+      tarifLocation: undefined,
       depotGarantie: 400,
       arrhes: 50,
       
