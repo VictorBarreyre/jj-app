@@ -38,6 +38,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     ...initialData
   });
   const [vesteReferences, setVesteReferences] = useState<any[]>([]);
+  const [accessoireReferences, setAccessoireReferences] = useState<any[]>([]);
 
   // Charger les références de veste au montage
   useEffect(() => {
@@ -51,6 +52,29 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
     };
     fetchVesteReferences();
   }, []);
+
+  // Charger les références d'accessoires au montage
+  useEffect(() => {
+    const fetchAccessoireReferences = async () => {
+      try {
+        const data = await stockAPI.getReferences('accessoire');
+        setAccessoireReferences(data.references || []);
+      } catch (error) {
+        console.warn('Erreur lors du chargement des références accessoire:', error);
+      }
+    };
+    fetchAccessoireReferences();
+  }, []);
+
+  // Fonction pour trouver l'ID de la ceinture scratch
+  const getScratchBeltId = () => {
+    const scratchBelt = accessoireReferences.find(ref => 
+      ref.name?.toLowerCase().includes('scratch') || 
+      ref.title?.toLowerCase().includes('scratch') ||
+      ref.nom?.toLowerCase().includes('scratch')
+    );
+    return scratchBelt?.id || null;
+  };
 
   // Mettre à jour le vendeur quand l'utilisateur se connecte
   useEffect(() => {
@@ -116,9 +140,10 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
       
       // Déclencher automatiquement la ceinture scratch quand une veste est sélectionnée
       if (referenceId && !form.tenue?.ceinture?.reference) {
-        // Ici on devrait trouver l'ID de la ceinture scratch dans les références accessoires
-        // Pour l'instant, on utilise un placeholder - il faudra ajuster avec l'ID réel
-        updateCeinture('reference', 'ceinture-scratch-id');
+        const scratchBeltId = getScratchBeltId();
+        if (scratchBeltId) {
+          updateCeinture('reference', scratchBeltId);
+        }
       }
     }
   };
