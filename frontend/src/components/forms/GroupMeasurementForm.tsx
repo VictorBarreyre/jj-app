@@ -32,6 +32,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
   const [vesteReferences, setVesteReferences] = useState<any[]>([]);
+  const [accessoireReferences, setAccessoireReferences] = useState<any[]>([]);
 
   // Charger les références de veste au montage
   useEffect(() => {
@@ -45,6 +46,29 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
     };
     fetchVesteReferences();
   }, []);
+
+  // Charger les références d'accessoires au montage
+  useEffect(() => {
+    const fetchAccessoireReferences = async () => {
+      try {
+        const data = await stockAPI.getReferences('accessoire');
+        setAccessoireReferences(data.references || []);
+      } catch (error) {
+        console.warn('Erreur lors du chargement des références accessoire:', error);
+      }
+    };
+    fetchAccessoireReferences();
+  }, []);
+
+  // Fonction pour trouver l'ID de la ceinture scratch
+  const getScratchBeltId = () => {
+    const scratchBelt = accessoireReferences.find(ref => 
+      ref.name?.toLowerCase().includes('scratch') || 
+      ref.title?.toLowerCase().includes('scratch') ||
+      ref.nom?.toLowerCase().includes('scratch')
+    );
+    return scratchBelt?.id || null;
+  };
 
   // Auto-sauvegarde des données quand elles changent
   useEffect(() => {
@@ -110,6 +134,14 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
           newClients[clientIndex].tenue.gilet = undefined;
           return { ...prev, clients: newClients };
         });
+      }
+      
+      // Déclencher automatiquement la ceinture scratch quand une veste est sélectionnée
+      if (referenceId && !updatedGroup.clients[clientIndex].tenue.ceinture?.reference) {
+        const scratchBeltId = getScratchBeltId();
+        if (scratchBeltId) {
+          updateClientTenue(clientIndex, 'ceinture', 'reference', scratchBeltId);
+        }
       }
     }
   };
@@ -360,6 +392,29 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               onColorChange={(color) => updateTenueColor(currentClientIndex, 'gilet', color)}
             />
             
+            {/* Ceinture - Affichée si une veste est sélectionnée */}
+            {currentClient.tenue?.veste?.reference && (
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <h5 className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-xs font-bold">C</div>
+                  Ceinture
+                  <StockIndicator 
+                    selectedReference={currentClient.tenue.ceinture?.reference} 
+                    selectedSize={currentClient.tenue.ceinture?.taille} 
+                  />
+                </h5>
+                <DynamicProductSelector
+                  category="accessoire"
+                  selectedReference={currentClient.tenue.ceinture?.reference}
+                  selectedSize={currentClient.tenue.ceinture?.taille}
+                  selectedColor={currentClient.tenue.ceinture?.couleur}
+                  onReferenceChange={(ref) => updateTenueReference(currentClientIndex, 'accessoire', ref)}
+                  onSizeChange={(size) => updateTenueSize(currentClientIndex, 'accessoire', size)}
+                  onColorChange={(color) => updateTenueColor(currentClientIndex, 'accessoire', color)}
+                />
+              </div>
+            )}
+            
             {/* Notes gilet */}
             {currentClient.tenue.gilet?.reference && (
               <div className="mt-4 pt-4 border-t border-gray-200">
@@ -425,31 +480,10 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
             )}
           </div>
 
-          {/* Ceinture */}
-          <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-700 text-sm font-bold">D</div>
-              Ceinture
-              <StockIndicator 
-                selectedReference={currentClient.tenue.ceinture?.reference} 
-                selectedSize={currentClient.tenue.ceinture?.taille} 
-              />
-            </h4>
-            <DynamicProductSelector
-              category="accessoire"
-              selectedReference={currentClient.tenue.ceinture?.reference}
-              selectedSize={currentClient.tenue.ceinture?.taille}
-              selectedColor={currentClient.tenue.ceinture?.couleur}
-              onReferenceChange={(ref) => updateTenueReference(currentClientIndex, 'ceinture', ref)}
-              onSizeChange={(size) => updateTenueSize(currentClientIndex, 'ceinture', size)}
-              onColorChange={(color) => updateTenueColor(currentClientIndex, 'ceinture', color)}
-            />
-          </div>
-
           {/* Autres Accessoires */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">E</div>
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">D</div>
               Autres Accessoires <span className="text-sm font-normal text-gray-500">(facultatif)</span>
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
