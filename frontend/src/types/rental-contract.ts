@@ -55,7 +55,7 @@ export interface RentalContract {
   
   // Tarification
   tarifLocation: number;        // Tarif de location en euros
-  depotGarantie: number;       // Dépôt de garantie en euros
+  depotGarantie: number;       // Caution en euros
   arrhes: number;              // Arrhes en euros
   
   // Suivi des paiements

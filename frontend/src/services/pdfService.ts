@@ -152,7 +152,7 @@ export class PDFService {
     const total = contract.tarifLocation + contract.depotGarantie;
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Dépôt: ${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
+    doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 74, currentY, { align: 'center' });
     doc.text(`Prix: ${this.formatPrice(total)}`, 138, currentY, { align: 'right' });
     currentY += 11;
@@ -382,7 +382,7 @@ export class PDFService {
     const total = contract.tarifLocation + contract.depotGarantie;
 
     doc.text(`Tarif location: ${this.formatPrice(contract.tarifLocation)}`, 20, currentY);
-    doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY + 6);
+    doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY + 6);
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY + 12);
 
     doc.setFont('helvetica', 'bold');

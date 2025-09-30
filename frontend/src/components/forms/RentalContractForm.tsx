@@ -34,8 +34,8 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     vendeur: user?.prenom as Vendeur,
     tenue: {},
     tarifLocation: 0,
-    depotGarantie: 50,
-    arrhes: 0,
+    depotGarantie: 400,
+    arrhes: 50,
     paiementArrhes: {
       date: new Date().toISOString().split('T')[0],
       method: undefined
@@ -158,7 +158,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             />
           </div>
           <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie (€)</Label>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Caution (€)</Label>
             <Input
               type="number"
               step="0.01"
