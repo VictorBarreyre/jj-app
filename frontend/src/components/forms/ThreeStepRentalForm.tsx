@@ -354,12 +354,14 @@ export const ThreeStepRentalForm = forwardRef<
               
               {/* Informations principales - alignées à gauche */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                <div className="text-left">
-                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    {groupData.clients.length > 1 ? 'Groupe' : 'Client'}
-                  </span>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.groupName}</p>
-                </div>
+                {groupData.groupName && (
+                  <div className="text-left">
+                    <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                      {groupData.clients.length > 1 ? 'Groupe' : 'Client'}
+                    </span>
+                    <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.groupName}</p>
+                  </div>
+                )}
                 
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
