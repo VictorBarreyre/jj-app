@@ -149,12 +149,12 @@ export class PDFService {
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
     currentY += 13;
 
-    // Dépôt, arrhes et prix - A5 compact (en gras) - bien espacé sur toute la largeur
+    // Prix, caution et arrhes - A5 compact (en gras) - bien espacé sur toute la largeur
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 10, currentY);
-    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 74, currentY, { align: 'center' });
-    doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 138, currentY, { align: 'right' });
+    doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 10, currentY);
+    doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
+    doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 138, currentY, { align: 'right' });
     currentY += 11;
 
     return currentY;
