@@ -473,24 +473,30 @@ export function OrderViewEditModal({
                             const reference = participant.tenue.veste.reference || '';
                             const taille = participant.tenue.veste.taille || '';
                             const couleur = participant.tenue.veste.couleur || '';
-                            const longueurManche = participant.tenue.veste.longueurManche ? ` LM: ${participant.tenue.veste.longueurManche}cm` : '';
-                            pieces.push(`Veste ${reference} ${taille} ${couleur}${longueurManche}`.trim());
+                            const longueurManche = participant.tenue.veste.longueurManche || '';
+                            const parts = [reference, taille, couleur, longueurManche].filter(part => part);
+                            pieces.push(`Veste: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.gilet) {
-                            pieces.push(`Gilet ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+                            const reference = participant.tenue.gilet.reference || '';
+                            const taille = participant.tenue.gilet.taille || '';
+                            const couleur = participant.tenue.gilet.couleur || '';
+                            const parts = [reference, taille, couleur].filter(part => part);
+                            pieces.push(`Gilet: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.pantalon) {
                             const reference = participant.tenue.pantalon.reference || '';
                             const taille = participant.tenue.pantalon.taille || '';
                             const couleur = participant.tenue.pantalon.couleur || '';
-                            const longueur = participant.tenue.pantalon.longueur ? ` L: ${participant.tenue.pantalon.longueur}cm` : '';
-                            pieces.push(`Pantalon ${reference} ${taille} ${couleur}${longueur}`.trim());
+                            const longueur = participant.tenue.pantalon.longueur || '';
+                            const parts = [reference, taille, couleur, longueur].filter(part => part);
+                            pieces.push(`Pantalon: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.tailleChapeau) {
-                            pieces.push(`Chapeau taille ${participant.tenue.tailleChapeau}`);
+                            pieces.push(`Chapeau: ${participant.tenue.tailleChapeau}`);
                           }
                           if (participant.tenue?.tailleChaussures) {
-                            pieces.push(`Chaussures taille ${participant.tenue.tailleChaussures}`);
+                            pieces.push(`Chaussures: ${participant.tenue.tailleChaussures}`);
                           }
 
                           return pieces.length > 0 ? (
@@ -628,24 +634,30 @@ export function OrderViewEditModal({
                               const reference = virtualParticipant.tenue.veste.reference || '';
                               const taille = virtualParticipant.tenue.veste.taille || '';
                               const couleur = virtualParticipant.tenue.veste.couleur || '';
-                              const longueurManche = virtualParticipant.tenue.veste.longueurManche ? ` LM: ${virtualParticipant.tenue.veste.longueurManche}cm` : '';
-                              pieces.push(`Veste ${reference} ${taille} ${couleur}${longueurManche}`.trim());
+                              const longueurManche = virtualParticipant.tenue.veste.longueurManche || '';
+                              const parts = [reference, taille, couleur, longueurManche].filter(part => part);
+                              pieces.push(`Veste: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.gilet) {
-                              pieces.push(`Gilet ${virtualParticipant.tenue.gilet.reference || ''} ${virtualParticipant.tenue.gilet.taille || ''} ${virtualParticipant.tenue.gilet.couleur || ''}`.trim());
+                              const reference = virtualParticipant.tenue.gilet.reference || '';
+                              const taille = virtualParticipant.tenue.gilet.taille || '';
+                              const couleur = virtualParticipant.tenue.gilet.couleur || '';
+                              const parts = [reference, taille, couleur].filter(part => part);
+                              pieces.push(`Gilet: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.pantalon) {
                               const reference = virtualParticipant.tenue.pantalon.reference || '';
                               const taille = virtualParticipant.tenue.pantalon.taille || '';
                               const couleur = virtualParticipant.tenue.pantalon.couleur || '';
-                              const longueur = virtualParticipant.tenue.pantalon.longueur ? ` L: ${virtualParticipant.tenue.pantalon.longueur}cm` : '';
-                              pieces.push(`Pantalon ${reference} ${taille} ${couleur}${longueur}`.trim());
+                              const longueur = virtualParticipant.tenue.pantalon.longueur || '';
+                              const parts = [reference, taille, couleur, longueur].filter(part => part);
+                              pieces.push(`Pantalon: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.tailleChapeau) {
-                              pieces.push(`Chapeau taille ${virtualParticipant.tenue.tailleChapeau}`);
+                              pieces.push(`Chapeau: ${virtualParticipant.tenue.tailleChapeau}`);
                             }
                             if (virtualParticipant.tenue?.tailleChaussures) {
-                              pieces.push(`Chaussures taille ${virtualParticipant.tenue.tailleChaussures}`);
+                              pieces.push(`Chaussures: ${virtualParticipant.tenue.tailleChaussures}`);
                             }
 
                             return pieces.length > 0 ? (
