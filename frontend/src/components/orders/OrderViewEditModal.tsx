@@ -470,19 +470,33 @@ export function OrderViewEditModal({
 
                           // Générer les pièces à partir de participant.tenue
                           if (participant.tenue?.veste) {
-                            pieces.push(`Veste ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`.trim());
+                            const reference = participant.tenue.veste.reference || '';
+                            const taille = participant.tenue.veste.taille || '';
+                            const couleur = participant.tenue.veste.couleur || '';
+                            const longueurManche = participant.tenue.veste.longueurManche || '';
+                            const parts = [reference, taille, couleur, longueurManche].filter(part => part);
+                            pieces.push(`Veste: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.gilet) {
-                            pieces.push(`Gilet ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+                            const reference = participant.tenue.gilet.reference || '';
+                            const taille = participant.tenue.gilet.taille || '';
+                            const couleur = participant.tenue.gilet.couleur || '';
+                            const parts = [reference, taille, couleur].filter(part => part);
+                            pieces.push(`Gilet: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.pantalon) {
-                            pieces.push(`Pantalon ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`.trim());
+                            const reference = participant.tenue.pantalon.reference || '';
+                            const taille = participant.tenue.pantalon.taille || '';
+                            const couleur = participant.tenue.pantalon.couleur || '';
+                            const longueur = participant.tenue.pantalon.longueur || '';
+                            const parts = [reference, taille, couleur, longueur].filter(part => part);
+                            pieces.push(`Pantalon: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.tailleChapeau) {
-                            pieces.push(`Chapeau taille ${participant.tenue.tailleChapeau}`);
+                            pieces.push(`Chapeau: ${participant.tenue.tailleChapeau}`);
                           }
                           if (participant.tenue?.tailleChaussures) {
-                            pieces.push(`Chaussures taille ${participant.tenue.tailleChaussures}`);
+                            pieces.push(`Chaussures: ${participant.tenue.tailleChaussures}`);
                           }
 
                           return pieces.length > 0 ? (
@@ -529,6 +543,7 @@ export function OrderViewEditModal({
                       virtualParticipant.tenue.veste = {
                         reference: item.reference,
                         taille: item.measurements?.taille || '',
+                        longueurManche: item.measurements?.manches,
                         couleur: item.measurements?.couleur || ''
                       };
                     } else if (item.category === 'gilet') {
@@ -541,6 +556,7 @@ export function OrderViewEditModal({
                       virtualParticipant.tenue.pantalon = {
                         reference: item.reference,
                         taille: item.measurements?.taille || '',
+                        longueur: item.measurements?.longueur,
                         couleur: item.measurements?.couleur || ''
                       };
                     } else if (item.category === 'chapeau') {
@@ -615,19 +631,33 @@ export function OrderViewEditModal({
 
                             // Générer les pièces à partir de virtualParticipant.tenue
                             if (virtualParticipant.tenue?.veste) {
-                              pieces.push(`Veste ${virtualParticipant.tenue.veste.reference || ''} ${virtualParticipant.tenue.veste.taille || ''} ${virtualParticipant.tenue.veste.couleur || ''}`.trim());
+                              const reference = virtualParticipant.tenue.veste.reference || '';
+                              const taille = virtualParticipant.tenue.veste.taille || '';
+                              const couleur = virtualParticipant.tenue.veste.couleur || '';
+                              const longueurManche = virtualParticipant.tenue.veste.longueurManche || '';
+                              const parts = [reference, taille, couleur, longueurManche].filter(part => part);
+                              pieces.push(`Veste: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.gilet) {
-                              pieces.push(`Gilet ${virtualParticipant.tenue.gilet.reference || ''} ${virtualParticipant.tenue.gilet.taille || ''} ${virtualParticipant.tenue.gilet.couleur || ''}`.trim());
+                              const reference = virtualParticipant.tenue.gilet.reference || '';
+                              const taille = virtualParticipant.tenue.gilet.taille || '';
+                              const couleur = virtualParticipant.tenue.gilet.couleur || '';
+                              const parts = [reference, taille, couleur].filter(part => part);
+                              pieces.push(`Gilet: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.pantalon) {
-                              pieces.push(`Pantalon ${virtualParticipant.tenue.pantalon.reference || ''} ${virtualParticipant.tenue.pantalon.taille || ''} ${virtualParticipant.tenue.pantalon.couleur || ''}`.trim());
+                              const reference = virtualParticipant.tenue.pantalon.reference || '';
+                              const taille = virtualParticipant.tenue.pantalon.taille || '';
+                              const couleur = virtualParticipant.tenue.pantalon.couleur || '';
+                              const longueur = virtualParticipant.tenue.pantalon.longueur || '';
+                              const parts = [reference, taille, couleur, longueur].filter(part => part);
+                              pieces.push(`Pantalon: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.tailleChapeau) {
-                              pieces.push(`Chapeau taille ${virtualParticipant.tenue.tailleChapeau}`);
+                              pieces.push(`Chapeau: ${virtualParticipant.tenue.tailleChapeau}`);
                             }
                             if (virtualParticipant.tenue?.tailleChaussures) {
-                              pieces.push(`Chaussures taille ${virtualParticipant.tenue.tailleChaussures}`);
+                              pieces.push(`Chaussures: ${virtualParticipant.tenue.tailleChaussures}`);
                             }
 
                             return pieces.length > 0 ? (

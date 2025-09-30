@@ -430,38 +430,46 @@ export const ThreeStepRentalForm = forwardRef<
                     
                     // Veste
                     if (client.tenue.veste) {
-                      const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
-                      const longueurManche = client.tenue.veste.longueurManche ? ` - Longueur de manches ${client.tenue.veste.longueurManche}cm` : '';
-                      pieces.push(`Veste ${client.tenue.veste.reference}${taille}${longueurManche}`);
+                      const reference = client.tenue.veste.reference || '';
+                      const taille = client.tenue.veste.taille || '';
+                      const longueurManche = client.tenue.veste.longueurManche || '';
+                      const parts = [reference, taille, longueurManche].filter(part => part);
+                      pieces.push(`Veste: ${parts.join(' / ')}`);
                     }
                     
                     // Gilet
                     if (client.tenue.gilet) {
-                      const taille = client.tenue.gilet.taille ? ` - Taille ${client.tenue.gilet.taille}` : ' - Taille non spécifiée';
-                      pieces.push(`Gilet ${client.tenue.gilet.reference}${taille}`);
+                      const reference = client.tenue.gilet.reference || '';
+                      const taille = client.tenue.gilet.taille || '';
+                      const parts = [reference, taille].filter(part => part);
+                      pieces.push(`Gilet: ${parts.join(' / ')}`);
                     }
                     
                     // Pantalon
                     if (client.tenue.pantalon) {
-                      const taille = client.tenue.pantalon.taille ? ` - Taille ${client.tenue.pantalon.taille}` : ' - Taille non spécifiée';
-                      const longueur = client.tenue.pantalon.longueur ? ` - Longueur ${client.tenue.pantalon.longueur}cm` : '';
-                      pieces.push(`Pantalon ${client.tenue.pantalon.reference}${taille}${longueur}`);
+                      const reference = client.tenue.pantalon.reference || '';
+                      const taille = client.tenue.pantalon.taille || '';
+                      const longueur = client.tenue.pantalon.longueur || '';
+                      const parts = [reference, taille, longueur].filter(part => part);
+                      pieces.push(`Pantalon: ${parts.join(' / ')}`);
                     }
                     
                     // Ceinture
                     if (client.tenue.ceinture) {
-                      const taille = client.tenue.ceinture.taille ? ` - Taille ${client.tenue.ceinture.taille}` : ' - Taille non spécifiée';
-                      pieces.push(`Ceinture ${client.tenue.ceinture.reference}${taille}`);
+                      const reference = client.tenue.ceinture.reference || '';
+                      const taille = client.tenue.ceinture.taille || '';
+                      const parts = [reference, taille].filter(part => part);
+                      pieces.push(`Ceinture: ${parts.join(' / ')}`);
                     }
                     
                     // Chapeau
                     if (client.tenue.tailleChapeau) {
-                      pieces.push(`Chapeau - Taille ${client.tenue.tailleChapeau}`);
+                      pieces.push(`Chapeau: ${client.tenue.tailleChapeau}`);
                     }
                     
                     // Chaussures
                     if (client.tenue.tailleChaussures) {
-                      pieces.push(`Chaussures - Pointure ${client.tenue.tailleChaussures}`);
+                      pieces.push(`Chaussures: ${client.tenue.tailleChaussures}`);
                     }
                     
                     if (pieces.length === 0) {

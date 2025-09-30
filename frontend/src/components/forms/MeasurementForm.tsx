@@ -351,13 +351,11 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                   </Label>
                   <Input
                     id="longueurManche"
-                    type="number"
-                    min="0"
-                    step="0.5"
+                    type="text"
                     value={form.tenue?.veste?.longueurManche || ''}
                     onChange={(e) => updateTenue('veste', 'longueurManche', e.target.value)}
-                    placeholder="Ex: 60"
-                    className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                    placeholder="Ex: 60, 58-60, ajustable"
+                    className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
                   />
                 </div>
                 <Textarea
@@ -454,13 +452,11 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
                 <div>
                   <Input
                     id="longueurPantalon"
-                    type="number"
-                    min="0"
-                    step="0.5"
+                    type="text"
                     value={form.tenue?.pantalon?.longueur || ''}
                     onChange={(e) => updateTenue('pantalon', 'longueur', e.target.value)}
-                    placeholder="Longueur du pantalon (cm)"
-                    className="w-32 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                    placeholder="Ex: 105, 103-105, standard"
+                    className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
                   />
                 </div>
                 <Textarea
