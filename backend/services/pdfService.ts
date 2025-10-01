@@ -302,7 +302,17 @@ export class BackendPDFService {
 
       // Configuration spécifique pour Heroku avec Chrome for Testing
       if (process.env.DYNO) {
-        config.executablePath = process.env.CHROME_EXECUTABLE_PATH || process.env.GOOGLE_CHROME_BIN;
+        console.log('🔍 Environment variables pour Chrome:');
+        console.log('CHROME_EXECUTABLE_PATH:', process.env.CHROME_EXECUTABLE_PATH);
+        console.log('GOOGLE_CHROME_BIN:', process.env.GOOGLE_CHROME_BIN);
+        console.log('CHROME_BIN:', process.env.CHROME_BIN);
+        
+        config.executablePath = process.env.CHROME_EXECUTABLE_PATH || 
+                               process.env.GOOGLE_CHROME_BIN || 
+                               process.env.CHROME_BIN ||
+                               '/app/.chrome-for-testing/chrome-linux64/chrome';
+        
+        console.log('📍 Chemin Chrome utilisé:', config.executablePath);
       }
       
       browser = await puppeteer.launch(config);
