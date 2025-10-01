@@ -16,11 +16,6 @@ export class BackendPDFService {
   }
 
   private generateHTMLContent(contract: RentalContract, type: PDFType, participantIndex?: number): string {
-    // Debug logs
-    console.log('=== PDF Generation Debug ===');
-    console.log('Type:', type);
-    console.log('Contract client:', contract.client);
-    console.log('Contract numero:', contract.numero);
     // Déterminer le participant et ses vêtements
     let participant = null;
     let participantName = '';
@@ -272,7 +267,7 @@ export class BackendPDFService {
 
               <div class="right-section">
                 N° ${contract.numero}<br>
-                <strong style="font-size: 10px; color: black;">CLIENT: ${contract.client?.nom || 'UNDEFINED'}</strong><br>
+                <strong style="font-size: 10px; color: black;">${participantName}</strong><br>
                 <span style="font-size: 8px; color: #666;">(à ne pas retirer de la housse)</span>
               </div>
             </div>
