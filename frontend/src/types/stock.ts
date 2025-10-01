@@ -1,13 +1,14 @@
 // Types pour les catégories d'articles
 export type ArticleCategory = 'veste' | 'gilet' | 'pantalon' | 'accessoire';
 export type VesteSubCategory = 'jaquette' | 'costume-ville' | 'smoking' | 'habit-queue-de-pie' | 'autre';
+export type GiletSubCategory = 'classique-standard' | 'classique-croise' | 'ficelle-droit' | 'ficelle-croise' | 'ecru-croise' | 'habit';
 export type MovementType = 'entree' | 'sortie' | 'reservation' | 'retour' | 'annulation' | 'destruction' | 'perte';
 
 // Interface pour un article de stock
 export interface StockItem {
   id: string;
   category: ArticleCategory;
-  subCategory?: VesteSubCategory;
+  subCategory?: VesteSubCategory | GiletSubCategory;
   reference: string;
   taille: string;
   couleur?: string;

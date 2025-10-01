@@ -3,12 +3,13 @@ import { Schema, model, Document } from 'mongoose';
 // Types pour les articles en stock
 export type ArticleCategory = 'veste' | 'gilet' | 'pantalon' | 'accessoire';
 export type VesteSubCategory = 'jaquette' | 'costume-ville' | 'smoking' | 'habit-queue-de-pie' | 'autre';
+export type GiletSubCategory = 'classique-standard' | 'classique-croise' | 'ficelle-droit' | 'ficelle-croise' | 'ecru-croise' | 'habit';
 export type MovementType = 'entree' | 'sortie' | 'reservation' | 'retour' | 'annulation' | 'destruction' | 'perte';
 
 // Interface pour un article de stock
 export interface IStockItem extends Document {
   category: ArticleCategory;
-  subCategory?: VesteSubCategory; // Sous-catégorie pour les vestes
+  subCategory?: VesteSubCategory | GiletSubCategory; // Sous-catégorie pour les vestes et gilets
   reference: string;          // Ex: "Jaquette FFF", "Costume bleu"
   taille: string;             // Ex: "52", "46N", "48L", etc.
   couleur?: string;           // Ex: "Noir", "Bleu marine"
@@ -28,9 +29,9 @@ const stockItemSchema = new Schema<IStockItem>({
   },
   subCategory: {
     type: String,
-    enum: ['jaquette', 'costume-ville', 'smoking', 'habit-queue-de-pie', 'autre'],
+    enum: ['jaquette', 'costume-ville', 'smoking', 'habit-queue-de-pie', 'autre', 'classique-standard', 'classique-croise', 'ficelle-droit', 'ficelle-croise', 'ecru-croise', 'habit'],
     required: function() {
-      return this.category === 'veste';
+      return this.category === 'veste' || this.category === 'gilet';
     }
   },
   reference: {

@@ -62,6 +62,11 @@ export const GILET_SIZES_ECRU = [
   '42', '42L', '44', '44L', '46', '46L', '48', '48L'
 ];
 
+// Tailles pour gilet blanc habit (tailles spécifiques)
+export const GILET_SIZES_BLANC_HABIT = [
+  '38', '40', '42', '44', '46', '48', '50'
+];
+
 // Tailles pour ceintures
 export const CEINTURE_SIZES = [
   '34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '55', '57', '60'
@@ -309,6 +314,18 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     colors: ['écru'],
     basePrice: 85,
     description: 'Gilet écru croisé avec tailles spécifiques'
+  },
+
+  // GILET BLANC HABIT
+  {
+    id: 'gilet-blanc-habit',
+    name: 'Gilet blanc habit',
+    category: 'gilet',
+    subCategory: 'habit',
+    availableSizes: GILET_SIZES_BLANC_HABIT,
+    colors: ['blanc'],
+    basePrice: 90,
+    description: 'Gilet blanc pour habit de cérémonie'
   },
 
   // CEINTURES
