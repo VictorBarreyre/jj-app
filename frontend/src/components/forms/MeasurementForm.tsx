@@ -374,7 +374,7 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
             <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
-              Gilet
+              Gilet ou ceinture
               <StockIndicator 
                 selectedReference={form.tenue?.gilet?.reference} 
                 selectedSize={form.tenue?.gilet?.taille} 

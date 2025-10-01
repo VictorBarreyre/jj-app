@@ -63,7 +63,7 @@ export function StockIndicator({ selectedReference, selectedSize }: StockIndicat
   }, [selectedReference, selectedSize]);
 
   if (loading) {
-    return <span className="text-xs text-gray-500">...</span>;
+    return null;
   }
 
   if (!stockInfo) {
