@@ -156,7 +156,7 @@ export class BackendPDFService {
               right: 0;
               border-top: 2px dashed #000;
               padding-top: 8px;
-              height: 25mm;
+              height: 35mm;
             }
 
             .vertical-separator {
@@ -191,9 +191,12 @@ export class BackendPDFService {
             .right-section {
               position: absolute;
               right: 5mm;
-              top: 5px;
+              top: 8px;
+              width: 40mm;
               font-size: 11px;
               font-weight: bold;
+              text-align: left;
+              line-height: 1.3;
             }
 
             .client-name {
@@ -265,10 +268,10 @@ export class BackendPDFService {
                 <div class="left-vertical-text chapeau">Chapeau: ${participant.tenue.tailleChapeau}</div>
               ` : ''}
 
-              <div class="right-section">
+              <div style="position: absolute; right: 5mm; top: 8px; width: 40mm; font-size: 11px; font-weight: bold; text-align: left; line-height: 1.4; color: black;">
                 N° ${contract.numero}<br>
-                <strong style="font-size: 10px; color: black;">${participantName}</strong><br>
-                <span style="font-size: 8px; color: #666;">(à ne pas retirer de la housse)</span>
+                <span style="font-size: 10px; font-weight: bold; color: black; display: block; margin-top: 3px;">${participantName}</span><br>
+                <span style="font-size: 8px; font-weight: normal; color: #666; display: block; margin-top: 2px;">(à ne pas retirer de la housse)</span>
               </div>
             </div>
           ` : ''}
