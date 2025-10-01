@@ -283,10 +283,29 @@ export class BackendPDFService {
   async generatePDF(contract: RentalContract, type: PDFType, participantIndex?: number): Promise<Buffer> {
     let browser;
     try {
-      browser = await puppeteer.launch({
+      // Configuration spécifique pour différents environnements
+      const config: any = {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-web-security',
+          '--disable-features=VizDisplayCompositor',
+          '--disable-extensions',
+          '--disable-plugins',
+          '--disable-images',
+          '--disable-javascript',
+          '--virtual-time-budget=5000'
+        ]
+      };
+
+      // Configuration spécifique pour Heroku
+      if (process.env.DYNO) {
+        config.executablePath = process.env.GOOGLE_CHROME_BIN || '/app/.chrome-for-testing/chrome-linux64/chrome';
+      }
+      
+      browser = await puppeteer.launch(config);
 
       const page = await browser.newPage();
       const htmlContent = this.generateHTMLContent(contract, type, participantIndex);
