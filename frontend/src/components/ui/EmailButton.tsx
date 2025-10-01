@@ -39,6 +39,12 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
         return;
       }
 
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('Vous devez être connecté pour envoyer un email');
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/contracts/${contract.id}/send-email`, {
         method: 'POST',
         headers: {
@@ -53,6 +59,10 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          setMessage('Session expirée. Veuillez vous reconnecter.');
+          return;
+        }
         const errorData = await response.json();
         throw new Error(errorData.message || 'Erreur lors de l\'envoi de l\'email');
       }

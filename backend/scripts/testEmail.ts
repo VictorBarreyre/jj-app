@@ -57,7 +57,7 @@ async function testEmailConfiguration() {
     const emailSent = await emailService.sendContractEmail(
       testContract, 
       testPdfBuffer,
-      'ton-email@gmail.com' // 👈 REMPLACE PAR TON EMAIL
+      'barreyrevictorcontact@gmail.com' // Email de test
     );
 
     if (emailSent) {
