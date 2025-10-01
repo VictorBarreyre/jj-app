@@ -84,7 +84,7 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
         title={`Envoyer le bon de location par email ${type === 'vendeur' ? '(vendeur)' : '(client)'}`}
       >
         <Mail className={`w-3 h-3 ${isLoading ? 'animate-pulse' : ''}`} />
-        {showText && <span className="ml-1">{isLoading ? 'Envoi...' : 'Email'}</span>}
+        {showText && <span className="ml-1">{isLoading ? 'Envoi...' : 'Renvoyer l\'email'}</span>}
       </Button>
 
       {message && (
