@@ -36,7 +36,8 @@ export class EmailService {
           <title>Bon de location Jean Jacques Cérémonies</title>
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .header { background-color: #1f2937; color: white; padding: 20px; text-align: center; }
+            .header { background-color: #000000; color: white; padding: 20px; text-align: center; }
+            .header a { color: white; text-decoration: none; }
             .content { padding: 20px; }
             .footer { background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 12px; }
             .highlight { color: #d97706; font-weight: bold; }
@@ -45,7 +46,7 @@ export class EmailService {
         <body>
           <div class="header">
             <h1>JEAN JACQUES CÉRÉMONIES</h1>
-            <p>Fondé en 1867 - www.jjloc.fr</p>
+            <p>Fondé en 1867 - <a href="https://www.jjloc.fr">www.jjloc.fr</a></p>
           </div>
 
           <div class="content">
