@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { ArticleCategory } from '@/types/stock';
 import { Loader2 } from 'lucide-react';
 import { stockAPI } from '@/services/api';
@@ -93,6 +94,13 @@ export function DynamicProductSelector({
     setSizeInfo(null);
   }, [category]);
 
+  // Vérifier si la référence sélectionnée est une ceinture scratch
+  const isCeintureScratched = () => {
+    if (!selectedReference) return false;
+    const reference = references.find(ref => ref.id === selectedReference);
+    return reference?.id === 'ceinture-scratch';
+  };
+
   return (
     <div className="space-y-4">
       {/* Sélection de la référence */}
@@ -134,32 +142,43 @@ export function DynamicProductSelector({
 
       {/* Sélection de la taille */}
       <div>
-        <Select
-          value={selectedSize || ''}
-          onValueChange={(value) => onSizeChange(value === '__none__' ? '' : value)}
-          disabled={loadingSizes || !sizeInfo || sizeInfo.sizes.length === 0}
-        >
-          <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-            {loadingSizes ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Chargement des tailles...</span>
-              </div>
-            ) : (
-              <SelectValue placeholder="Sélectionner une taille" />
-            )}
-          </SelectTrigger>
-          <SelectContent className="bg-white border-gray-300 text-gray-900">
-            <SelectItem value="__none__">
-              <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
-            </SelectItem>
-            {sizeInfo?.sizes.map(size => (
-              <SelectItem key={size} value={size}>
-                {size}
+        {isCeintureScratched() ? (
+          // Input libre pour ceinture scratch
+          <Input
+            value={selectedSize || ''}
+            onChange={(e) => onSizeChange(e.target.value)}
+            placeholder="Saisir la taille (ex: 85, 90-95, ajustable)"
+            className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl"
+          />
+        ) : (
+          // Select classique pour les autres références
+          <Select
+            value={selectedSize || ''}
+            onValueChange={(value) => onSizeChange(value === '__none__' ? '' : value)}
+            disabled={loadingSizes || !sizeInfo || sizeInfo.sizes.length === 0}
+          >
+            <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+              {loadingSizes ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Chargement des tailles...</span>
+                </div>
+              ) : (
+                <SelectValue placeholder="Sélectionner une taille" />
+              )}
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-300 text-gray-900">
+              <SelectItem value="__none__">
+                <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+              {sizeInfo?.sizes.map(size => (
+                <SelectItem key={size} value={size}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
     </div>

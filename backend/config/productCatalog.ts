@@ -67,6 +67,9 @@ export const GILET_SIZES_BLANC_HABIT = [
   '38', '40', '42', '44', '46', '48', '50'
 ];
 
+// Tailles pour ceinture scratch (flexible - saisie libre)
+export const CEINTURE_SIZES_FLEXIBLE = [];
+
 // Tailles pour ceintures
 export const CEINTURE_SIZES = [
   '34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '55', '57', '60'
@@ -328,17 +331,18 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     description: 'Gilet blanc pour habit de cérémonie'
   },
 
-  // CEINTURES
+  // CEINTURE SCRATCH (maintenant dans les gilets)
   {
     id: 'ceinture-scratch',
     name: 'Ceinture scratch',
-    category: 'accessoire',
+    category: 'gilet',
     subCategory: 'ceinture',
-    availableSizes: CEINTURE_SIZES,
+    availableSizes: CEINTURE_SIZES_FLEXIBLE,
     colors: ['noir'],
     basePrice: 25,
-    description: 'Ceinture scratch pratique et ajustable'
+    description: 'Ceinture scratch pratique et ajustable - taille libre'
   },
+
 
   // PANTALONS
   {

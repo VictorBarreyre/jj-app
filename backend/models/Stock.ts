@@ -3,7 +3,7 @@ import { Schema, model, Document } from 'mongoose';
 // Types pour les articles en stock
 export type ArticleCategory = 'veste' | 'gilet' | 'pantalon' | 'accessoire';
 export type VesteSubCategory = 'jaquette' | 'costume-ville' | 'smoking' | 'habit-queue-de-pie' | 'autre';
-export type GiletSubCategory = 'classique-standard' | 'classique-croise' | 'ficelle-droit' | 'ficelle-croise' | 'ecru-croise' | 'habit';
+export type GiletSubCategory = 'classique-standard' | 'classique-croise' | 'ficelle-droit' | 'ficelle-croise' | 'ecru-croise' | 'habit' | 'ceinture';
 export type MovementType = 'entree' | 'sortie' | 'reservation' | 'retour' | 'annulation' | 'destruction' | 'perte';
 
 // Interface pour un article de stock
@@ -29,7 +29,7 @@ const stockItemSchema = new Schema<IStockItem>({
   },
   subCategory: {
     type: String,
-    enum: ['jaquette', 'costume-ville', 'smoking', 'habit-queue-de-pie', 'autre', 'classique-standard', 'classique-croise', 'ficelle-droit', 'ficelle-croise', 'ecru-croise', 'habit'],
+    enum: ['jaquette', 'costume-ville', 'smoking', 'habit-queue-de-pie', 'autre', 'classique-standard', 'classique-croise', 'ficelle-droit', 'ficelle-croise', 'ecru-croise', 'habit', 'ceinture'],
     required: function() {
       return this.category === 'veste' || this.category === 'gilet';
     }

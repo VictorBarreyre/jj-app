@@ -393,26 +393,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
           </div>
           )}
 
-          {/* Ceinture - Toujours affichée */}
-          <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
-            <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B2</div>
-              Ceinture
-              <StockIndicator 
-                selectedReference={currentClient.tenue.ceinture?.reference} 
-                selectedSize={currentClient.tenue.ceinture?.taille} 
-              />
-            </h4>
-            <DynamicProductSelector
-              category="accessoire"
-              selectedReference={currentClient.tenue.ceinture?.reference}
-              selectedSize={currentClient.tenue.ceinture?.taille}
-              selectedColor={currentClient.tenue.ceinture?.couleur}
-              onReferenceChange={(ref) => updateTenueReference(currentClientIndex, 'accessoire', ref)}
-              onSizeChange={(size) => updateTenueSize(currentClientIndex, 'accessoire', size)}
-              onColorChange={(color) => updateTenueColor(currentClientIndex, 'accessoire', color)}
-            />
-          </div>
 
           {/* Pantalon */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
