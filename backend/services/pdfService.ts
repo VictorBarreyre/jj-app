@@ -283,20 +283,24 @@ export class BackendPDFService {
   async generatePDF(contract: RentalContract, type: PDFType, participantIndex?: number): Promise<Buffer> {
     let browser;
     try {
-      // Configuration spécifique pour différents environnements
+      // Configuration optimisée pour Heroku
       const config: any = {
         headless: true,
+        timeout: 60000, // 60 secondes
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
           '--disable-web-security',
-          '--disable-features=VizDisplayCompositor',
-          '--disable-extensions',
-          '--disable-plugins',
-          '--disable-images',
-          '--disable-javascript',
-          '--virtual-time-budget=5000'
+          '--disable-features=TranslateUI',
+          '--disable-ipc-flooding-protection',
+          '--memory-pressure-off',
+          '--max_old_space_size=4096'
         ]
       };
 
@@ -315,12 +319,24 @@ export class BackendPDFService {
         console.log('📍 Chemin Chrome utilisé:', config.executablePath);
       }
       
+      console.log('🚀 Lancement de Chrome...');
       browser = await puppeteer.launch(config);
 
+      console.log('📄 Création d\'une nouvelle page...');
       const page = await browser.newPage();
+      
+      // Configuration de la page
+      await page.setDefaultTimeout(30000);
+      await page.setViewport({ width: 1200, height: 1600 });
+      
+      console.log('📝 Génération du contenu HTML...');
       const htmlContent = this.generateHTMLContent(contract, type, participantIndex);
 
-      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+      console.log('🔄 Chargement du contenu dans la page...');
+      await page.setContent(htmlContent, { 
+        waitUntil: 'domcontentloaded',
+        timeout: 30000 
+      });
 
       const pdfBuffer = await page.pdf({
         format: 'A5',
