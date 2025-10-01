@@ -199,6 +199,8 @@ export class BackendPDFService {
             .client-name {
               font-size: 10px;
               margin-top: 3px;
+              font-weight: bold;
+              display: block;
             }
 
             .not-remove-text {
@@ -206,6 +208,7 @@ export class BackendPDFService {
               margin-top: 2px;
               font-weight: normal;
               color: #666;
+              display: block;
             }
           </style>
         </head>
