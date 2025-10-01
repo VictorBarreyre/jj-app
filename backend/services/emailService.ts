@@ -73,7 +73,7 @@ export class EmailService {
           </div>
 
           <div class="footer">
-            <p>2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)<br>
+            <p>3 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)<br>
             Ouvert du mardi au samedi de 9h à 18h sans interruption</p>
           </div>
         </body>

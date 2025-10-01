@@ -567,11 +567,16 @@ export const rentalContractsController = {
         throw createError('Aucune adresse email spécifiée pour l\'envoi', 400);
       }
 
-      console.log(`📧 Test envoi email SANS PDF pour le contrat ${contract.numero} à ${recipientEmail}`);
+      console.log(`📧 Génération et envoi du PDF ${type} pour le contrat ${contract.numero} à ${recipientEmail}`);
 
-      // TEMPORAIRE: Envoyer l'email SANS PDF pour tester
-      console.log('📤 Début envoi email sans PDF...');
-      const emailSent = await emailService.sendContractEmail(contract as any, Buffer.from('Test PDF temporaire'), recipientEmail);
+      // Générer le PDF
+      console.log('🔄 Début génération PDF...');
+      const pdfBuffer = await backendPDFService.generatePDF(contract as any, type as 'vendeur' | 'client', participantIndex);
+      console.log('✅ PDF généré, taille:', pdfBuffer.length, 'bytes');
+
+      // Envoyer l'email avec le PDF en pièce jointe
+      console.log('📤 Début envoi email...');
+      const emailSent = await emailService.sendContractEmail(contract as any, pdfBuffer, recipientEmail);
       console.log('📧 Résultat envoi email:', emailSent);
 
       if (!emailSent) {
