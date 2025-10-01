@@ -39,7 +39,7 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
         return;
       }
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('jj_auth_token');
       if (!token) {
         setMessage('Vous devez être connecté pour envoyer un email');
         return;
@@ -49,7 +49,7 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           email: recipientEmail,
