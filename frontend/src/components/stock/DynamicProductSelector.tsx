@@ -114,7 +114,13 @@ export function DynamicProductSelector({
           </SelectTrigger>
           <SelectContent className="bg-white border-gray-300 text-gray-900">
             <SelectItem value="__none__">
-              <span className="text-gray-500 italic">Aucun modèle sélectionné</span>
+              <span className="text-gray-500 italic">
+                {category === 'veste' ? 'Sans veste' : 
+                 category === 'gilet' ? 'Sans gilet' : 
+                 category === 'pantalon' ? 'Sans pantalon' : 
+                 category === 'accessoire' ? 'Sans ceinture' : 
+                 'Aucun modèle sélectionné'}
+              </span>
             </SelectItem>
             {references.map(ref => (
               <SelectItem key={ref.id} value={ref.id}>

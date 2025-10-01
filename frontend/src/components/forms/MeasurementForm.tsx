@@ -390,26 +390,24 @@ export function MeasurementForm({ onSubmit, onSave, initialData }: MeasurementFo
               onColorChange={(color) => updateTenueColor('gilet', color)}
             />
             
-            {/* Ceinture - Affichée si un gilet est sélectionné */}
-            {form.tenue?.gilet?.reference && (
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <StockIndicator 
-                    selectedReference={form.tenue?.ceinture?.reference} 
-                    selectedSize={form.tenue?.ceinture?.taille} 
-                  />
-                </div>
-                <DynamicProductSelector
-                  category="accessoire"
-                  selectedReference={form.tenue?.ceinture?.reference}
-                  selectedSize={form.tenue?.ceinture?.taille}
-                  selectedColor={form.tenue?.ceinture?.couleur}
-                  onReferenceChange={(ref) => updateCeintureReference(ref)}
-                  onSizeChange={(size) => updateCeintureSize(size)}
-                  onColorChange={(color) => updateCeintureColor(color)}
+            {/* Ceinture - Toujours affichée */}
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="flex items-center gap-2 mb-3">
+                <StockIndicator 
+                  selectedReference={form.tenue?.ceinture?.reference} 
+                  selectedSize={form.tenue?.ceinture?.taille} 
                 />
               </div>
-            )}
+              <DynamicProductSelector
+                category="accessoire"
+                selectedReference={form.tenue?.ceinture?.reference}
+                selectedSize={form.tenue?.ceinture?.taille}
+                selectedColor={form.tenue?.ceinture?.couleur}
+                onReferenceChange={(ref) => updateCeintureReference(ref)}
+                onSizeChange={(size) => updateCeintureSize(size)}
+                onColorChange={(color) => updateCeintureColor(color)}
+              />
+            </div>
             
             {/* Notes gilet */}
             {form.tenue?.gilet?.reference && (
