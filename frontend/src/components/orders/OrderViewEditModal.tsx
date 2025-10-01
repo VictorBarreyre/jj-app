@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Order, OrderItem } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
+import { EmailButton } from '@/components/ui/EmailButton';
 
 interface OrderViewEditModalProps {
   isOpen: boolean;
@@ -194,13 +195,26 @@ export function OrderViewEditModal({
                 {/* Boutons d'action en bas à droite */}
                 <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                   {!isEditing ? (
-                    <Button 
-                      onClick={handleEditOrderRedirect}
-                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                      <span>Modifier</span>
-                    </Button>
+                    <>
+                      {/* Bouton Email - uniquement si client a un email */}
+                      {order?.client?.email && (
+                        <EmailButton
+                          contract={order as RentalContract}
+                          type="client"
+                          variant="outline"
+                          showText={true}
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 hover:border-blue-300 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                        />
+                      )}
+                      
+                      <Button 
+                        onClick={handleEditOrderRedirect}
+                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                        <span>Modifier</span>
+                      </Button>
+                    </>
                   ) : (
                     <div className="flex gap-1 sm:gap-2">
                       <Button 

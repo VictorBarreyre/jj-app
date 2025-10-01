@@ -39,7 +39,7 @@ export const EmailButton: React.FC<EmailButtonProps> = ({
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/api/contracts/${contract.id}/send-email`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/contracts/${contract.id}/send-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
