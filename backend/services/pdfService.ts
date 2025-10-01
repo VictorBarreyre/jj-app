@@ -268,10 +268,10 @@ export class BackendPDFService {
                 <div class="left-vertical-text chapeau">Chapeau: ${participant.tenue.tailleChapeau}</div>
               ` : ''}
 
-              <div style="position: absolute; right: 5mm; top: 8px; width: 40mm; font-size: 11px; font-weight: bold; text-align: left; line-height: 1.4; color: black;">
-                N° ${contract.numero}<br>
-                <span style="font-size: 10px; font-weight: bold; color: black; display: block; margin-top: 3px;">${participantName}</span><br>
-                <span style="font-size: 8px; font-weight: normal; color: #666; display: block; margin-top: 2px;">(à ne pas retirer de la housse)</span>
+              <div class="right-section">
+                N° ${contract.numero}
+                <span class="client-name">${participantName}</span>
+                <span class="not-remove-text">(à ne pas retirer de la housse)</span>
               </div>
             </div>
           ` : ''}
