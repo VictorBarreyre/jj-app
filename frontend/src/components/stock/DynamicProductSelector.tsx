@@ -106,7 +106,7 @@ export function DynamicProductSelector({
       {/* Sélection de la référence */}
       <div>
         <Select
-          value={selectedReference || '__none__'}
+          value={selectedReference === null || selectedReference === undefined ? '' : (selectedReference === '' ? '__none__' : selectedReference)}
           onValueChange={(value) => onReferenceChange(value === '__none__' ? '' : value)}
           disabled={loadingReferences || references.length === 0}
         >
