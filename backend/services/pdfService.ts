@@ -269,8 +269,8 @@ export class BackendPDFService {
               ` : ''}
 
               <div class="right-section">
-                N° ${contract.numero}
-                <span class="client-name">${participantName}</span>
+                N° ${contract.numero}<br>
+                <span class="client-name">${participantName}</span><br>
                 <span class="not-remove-text">(à ne pas retirer de la housse)</span>
               </div>
             </div>
