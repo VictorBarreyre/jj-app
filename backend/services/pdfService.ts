@@ -195,6 +195,18 @@ export class BackendPDFService {
               font-size: 11px;
               font-weight: bold;
             }
+
+            .client-name {
+              font-size: 10px;
+              margin-top: 3px;
+            }
+
+            .not-remove-text {
+              font-size: 8px;
+              margin-top: 2px;
+              font-weight: normal;
+              color: #666;
+            }
           </style>
         </head>
         <body>
@@ -252,6 +264,8 @@ export class BackendPDFService {
 
               <div class="right-section">
                 N° ${contract.numero}
+                <div class="client-name">${contract.client.nom} ${contract.client.prenom || ''}</div>
+                <div class="not-remove-text">(à ne pas retirer de la housse)</div>
               </div>
             </div>
           ` : ''}
