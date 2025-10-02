@@ -94,7 +94,7 @@ export class EmailService {
 
   async sendContractEmail(
     contract: RentalContract,
-    pdfBuffer: Buffer,
+    pdfBuffers: Buffer | Buffer[],
     recipientEmail?: string
   ): Promise<boolean> {
     try {
@@ -105,18 +105,25 @@ export class EmailService {
         return false;
       }
 
+      // Convertir en tableau si c'est un seul buffer
+      const buffers = Array.isArray(pdfBuffers) ? pdfBuffers : [pdfBuffers];
+
+      // Créer les pièces jointes
+      const attachments = buffers.map((buffer, index) => {
+        const participantSuffix = buffers.length > 1 ? `-participant-${index + 1}` : '';
+        return {
+          filename: `bon-location-${contract.numero}${participantSuffix}.pdf`,
+          content: buffer,
+          contentType: 'application/pdf'
+        };
+      });
+
       const mailOptions = {
         from: process.env.EMAIL_FROM || 'Jean Jacques Cérémonies <noreply@jjloc.fr>',
         to: toEmail,
         subject: `Bon de location Jean Jacques Cérémonies - N° ${contract.numero}`,
         html: this.generateEmailTemplate(contract),
-        attachments: [
-          {
-            filename: `bon-location-${contract.numero}.pdf`,
-            content: pdfBuffer,
-            contentType: 'application/pdf'
-          }
-        ]
+        attachments
       };
 
       const info = await this.transporter.sendMail(mailOptions);

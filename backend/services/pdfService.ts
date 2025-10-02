@@ -23,10 +23,10 @@ export class BackendPDFService {
 
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
       participant = contract.groupDetails.participants[participantIndex];
-      participantName = participant?.nom || '';
+      participantName = participant?.prenom ? `${participant.prenom} ${participant.nom}` : participant?.nom || '';
     } else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
       participant = { tenue: contract.tenue };
-      participantName = contract.client.nom;
+      participantName = contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom;
     }
 
     // Construire la liste des vêtements

@@ -293,8 +293,25 @@ export const rentalContractsController = {
       if (savedContract.client.email && savedContract.status !== 'brouillon') {
         try {
           console.log(`📧 Envoi automatique du bon de location à ${savedContract.client.email}`);
-          const pdfBuffer = await backendPDFService.generatePDF(savedContract as any, 'client');
-          await emailService.sendContractEmail(savedContract as any, pdfBuffer);
+
+          // Générer un PDF par participant (comme côté vendeur)
+          const pdfBuffers: Buffer[] = [];
+
+          if (savedContract.groupDetails?.participants && savedContract.groupDetails.participants.length > 0) {
+            // Contrat de groupe : un PDF par participant
+            console.log(`📄 Génération de ${savedContract.groupDetails.participants.length} PDFs (un par participant)`);
+            for (let i = 0; i < savedContract.groupDetails.participants.length; i++) {
+              const buffer = await backendPDFService.generatePDF(savedContract as any, 'client', i);
+              pdfBuffers.push(buffer);
+            }
+          } else {
+            // Contrat individuel : un seul PDF
+            console.log('📄 Génération d\'1 PDF (contrat individuel)');
+            const buffer = await backendPDFService.generatePDF(savedContract as any, 'client');
+            pdfBuffers.push(buffer);
+          }
+
+          await emailService.sendContractEmail(savedContract as any, pdfBuffers);
           console.log('✅ Email automatique envoyé avec succès');
         } catch (emailError) {
           console.error('⚠️ Erreur lors de l\'envoi automatique de l\'email (n\'affecte pas la création du contrat):', emailError);
@@ -574,14 +591,28 @@ export const rentalContractsController = {
 
       console.log(`📧 Génération et envoi du PDF ${type} pour le contrat ${contract.numero} à ${recipientEmail}`);
 
-      // Générer le PDF
+      // Générer les PDFs
       console.log('🔄 Début génération PDF...');
-      const pdfBuffer = await backendPDFService.generatePDF(contract as any, type as 'vendeur' | 'client', participantIndex);
-      console.log('✅ PDF généré, taille:', pdfBuffer.length, 'bytes');
+      const pdfBuffers: Buffer[] = [];
 
-      // Envoyer l'email avec le PDF en pièce jointe
+      // Pour le type client, générer un PDF par participant (comme côté vendeur)
+      if (type === 'client' && contract.groupDetails?.participants && contract.groupDetails.participants.length > 0) {
+        console.log(`📄 Génération de ${contract.groupDetails.participants.length} PDFs pour le client`);
+        for (let i = 0; i < contract.groupDetails.participants.length; i++) {
+          const buffer = await backendPDFService.generatePDF(contract as any, 'client', i);
+          pdfBuffers.push(buffer);
+        }
+      } else {
+        // Pour vendeur ou contrat individuel : un seul PDF
+        const buffer = await backendPDFService.generatePDF(contract as any, type as 'vendeur' | 'client', participantIndex);
+        pdfBuffers.push(buffer);
+      }
+
+      console.log(`✅ ${pdfBuffers.length} PDF(s) généré(s)`);
+
+      // Envoyer l'email avec les PDFs en pièces jointes
       console.log('📤 Début envoi email...');
-      const emailSent = await emailService.sendContractEmail(contract as any, pdfBuffer, recipientEmail);
+      const emailSent = await emailService.sendContractEmail(contract as any, pdfBuffers, recipientEmail);
       console.log('📧 Résultat envoi email:', emailSent);
 
       if (!emailSent) {
