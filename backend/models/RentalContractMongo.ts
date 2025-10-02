@@ -61,6 +61,7 @@ export interface IRentalContractDocument extends Document {
 // Schéma pour les informations client
 const clientInfoSchema = new Schema<ClientInfo>({
   nom: { type: String, required: true },
+  prenom: { type: String },
   telephone: { type: String, required: true },
   email: { type: String },
   isExistingClient: { type: Boolean, default: false },
@@ -132,9 +133,9 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
   notes: { type: String },
   
   // Financier
-  tarifLocation: { type: Number, required: true, min: 0 },
-  depotGarantie: { type: Number, required: true, min: 0 },
-  arrhes: { type: Number, required: true, min: 0 },
+  tarifLocation: { type: Number, required: false, min: 0 },
+  depotGarantie: { type: Number, required: false, min: 0, default: 400 },
+  arrhes: { type: Number, required: false, min: 0, default: 50 },
   
   // Paiements
   paiementArrhes: paymentInfoSchema,
@@ -164,6 +165,7 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
   groupDetails: {
     participants: [{
       nom: { type: String, required: true },
+      prenom: { type: String },
       tenue: tenueSchema,
       pieces: [{ type: String }],
       notes: { type: String },
