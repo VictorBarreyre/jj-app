@@ -232,11 +232,6 @@ export class PDFService {
           currentY += 15;
         }
 
-        // Nom du participant
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`Tenue de ${participant.nom}:`, 20, currentY);
-        currentY += 8;
 
         // Debug: vérifier si on a des articles
         let hasArticles = false;
