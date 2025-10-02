@@ -95,8 +95,8 @@ export class BackendPDFService {
 
             .header {
               text-align: center;
-              margin-bottom: 15px;
-              padding-bottom: 10px;
+              margin-bottom: 20px;
+              padding-bottom: 12px;
               border-bottom: 1px solid #000;
             }
 
@@ -124,11 +124,11 @@ export class BackendPDFService {
             .reservation-number {
               font-size: 14px;
               font-weight: bold;
-              margin-bottom: 16px;
+              margin-bottom: 20px;
             }
 
             .client-info {
-              margin-bottom: 16px;
+              margin-bottom: 24px;
               font-size: 13px;
               display: flex;
               justify-content: space-between;
@@ -142,19 +142,19 @@ export class BackendPDFService {
               font-size: 14px;
               font-weight: bold;
               margin-bottom: 6px;
-              margin-top: 18px;
+              margin-top: 24px;
             }
 
             .items-section {
               font-size: 13px;
-              margin-bottom: 30px;
+              margin-bottom: 36px;
             }
 
             .dates-row {
               font-size: 11px;
               font-weight: bold;
-              margin-bottom: 24px;
-              margin-top: 12px;
+              margin-bottom: 28px;
+              margin-top: 16px;
               display: flex;
               justify-content: space-between;
               align-items: center;
@@ -163,8 +163,8 @@ export class BackendPDFService {
             .prices-row {
               font-size: 13px;
               font-weight: bold;
-              margin-bottom: 24px;
-              margin-top: 12px;
+              margin-bottom: 28px;
+              margin-top: 16px;
               display: flex;
               justify-content: space-between;
             }
