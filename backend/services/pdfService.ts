@@ -37,7 +37,7 @@ export class BackendPDFService {
         participant.tenue.veste.couleur,
         participant.tenue.veste.longueurManche
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 10px;"><span style="font-weight: bold;">• Veste:</span> ${parts}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Veste:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.gilet) {
       const parts = [
@@ -45,7 +45,7 @@ export class BackendPDFService {
         participant.tenue.gilet.taille,
         participant.tenue.gilet.couleur
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 10px;"><span style="font-weight: bold;">• Gilet:</span> ${parts}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Gilet:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.pantalon) {
       const parts = [
@@ -54,13 +54,13 @@ export class BackendPDFService {
         participant.tenue.pantalon.couleur,
         participant.tenue.pantalon.longueur
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 10px;"><span style="font-weight: bold;">• Pantalon:</span> ${parts}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Pantalon:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.tailleChapeau) {
-      itemsHTML.push(`<div style="margin-bottom: 10px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
     }
     if (participant?.tenue?.tailleChaussures) {
-      itemsHTML.push(`<div style="margin-bottom: 10px;"><span style="font-weight: bold;">• Chaussures:</span> ${participant.tenue.tailleChaussures}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Chaussures:</span> ${participant.tenue.tailleChaussures}</div>`);
     }
 
     const itemsText = itemsHTML.length > 0 ? itemsHTML.join('') : '<div>• Aucun article</div>';
@@ -141,20 +141,20 @@ export class BackendPDFService {
             .participant-section {
               font-size: 11px;
               font-weight: bold;
-              margin-bottom: 12px;
-              margin-top: 8px;
+              margin-bottom: 18px;
+              margin-top: 15px;
             }
 
             .items-section {
               font-size: 11px;
-              margin-bottom: 18px;
+              margin-bottom: 25px;
             }
 
             .dates-row {
               font-size: 9px;
               font-weight: bold;
-              margin-bottom: 15px;
-              margin-top: 5px;
+              margin-bottom: 20px;
+              margin-top: 10px;
               display: flex;
               justify-content: space-between;
               align-items: center;
@@ -163,8 +163,8 @@ export class BackendPDFService {
             .prices-row {
               font-size: 11px;
               font-weight: bold;
-              margin-bottom: 15px;
-              margin-top: 5px;
+              margin-bottom: 20px;
+              margin-top: 10px;
               display: flex;
               justify-content: space-between;
             }
