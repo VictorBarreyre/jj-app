@@ -37,7 +37,7 @@ export class BackendPDFService {
         participant.tenue.veste.couleur,
         participant.tenue.veste.longueurManche
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Veste:</span> ${parts}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Veste:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.gilet) {
       const parts = [
@@ -45,7 +45,7 @@ export class BackendPDFService {
         participant.tenue.gilet.taille,
         participant.tenue.gilet.couleur
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Gilet:</span> ${parts}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Gilet:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.pantalon) {
       const parts = [
@@ -54,13 +54,13 @@ export class BackendPDFService {
         participant.tenue.pantalon.couleur,
         participant.tenue.pantalon.longueur
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Pantalon:</span> ${parts}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Pantalon:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.tailleChapeau) {
-      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
     }
     if (participant?.tenue?.tailleChaussures) {
-      itemsHTML.push(`<div style="margin-bottom: 14px;"><span style="font-weight: bold;">• Chaussures:</span> ${participant.tenue.tailleChaussures}</div>`);
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chaussures:</span> ${participant.tenue.tailleChaussures}</div>`);
     }
 
     const itemsText = itemsHTML.length > 0 ? itemsHTML.join('') : '<div>• Aucun article</div>';
@@ -85,8 +85,8 @@ export class BackendPDFService {
 
             body {
               font-family: Helvetica, Arial, sans-serif;
-              font-size: 11px;
-              line-height: 1.4;
+              font-size: 12px;
+              line-height: 1.5;
               padding: 10mm 10mm 10mm 10mm;
               width: 148mm;
               height: 210mm;
@@ -101,14 +101,14 @@ export class BackendPDFService {
             }
 
             .header h1 {
-              font-size: 18px;
+              font-size: 20px;
               font-weight: bold;
-              margin-bottom: 5px;
+              margin-bottom: 8px;
             }
 
             .header .subtitle {
-              font-size: 8px;
-              margin: 2px 0;
+              font-size: 9px;
+              margin: 3px 0;
             }
 
             .header .subtitle.small {
@@ -122,14 +122,14 @@ export class BackendPDFService {
             }
 
             .reservation-number {
-              font-size: 11px;
+              font-size: 13px;
               font-weight: bold;
-              margin-bottom: 13px;
+              margin-bottom: 16px;
             }
 
             .client-info {
-              margin-bottom: 13px;
-              font-size: 11px;
+              margin-bottom: 16px;
+              font-size: 12px;
               display: flex;
               justify-content: space-between;
             }
@@ -139,32 +139,32 @@ export class BackendPDFService {
             }
 
             .participant-section {
-              font-size: 11px;
+              font-size: 13px;
               font-weight: bold;
-              margin-bottom: 18px;
-              margin-top: 15px;
+              margin-bottom: 22px;
+              margin-top: 18px;
             }
 
             .items-section {
-              font-size: 11px;
-              margin-bottom: 25px;
+              font-size: 12px;
+              margin-bottom: 30px;
             }
 
             .dates-row {
-              font-size: 9px;
+              font-size: 10px;
               font-weight: bold;
-              margin-bottom: 20px;
-              margin-top: 10px;
+              margin-bottom: 24px;
+              margin-top: 12px;
               display: flex;
               justify-content: space-between;
               align-items: center;
             }
 
             .prices-row {
-              font-size: 11px;
+              font-size: 12px;
               font-weight: bold;
-              margin-bottom: 20px;
-              margin-top: 10px;
+              margin-bottom: 24px;
+              margin-top: 12px;
               display: flex;
               justify-content: space-between;
             }
