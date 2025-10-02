@@ -61,7 +61,7 @@ export class PDFService {
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° Réservation: ${contract.numero}`, 10, currentY);
-    currentY += 13;
+    currentY += 15;
 
     // Afficher le participant et ses vêtements
     let participant = null;
@@ -99,7 +99,7 @@ export class PDFService {
     doc.text(emailLabel, startPosition, currentY);
     doc.setFont('helvetica', 'normal');
     doc.text(emailValue, startPosition + doc.getTextWidth(emailLabel) + spacing, currentY);
-    currentY += 13;
+    currentY += 15;
 
     if (participant) {
       // "Tenue de" + nom du participant (seulement pour les groupes) - A5
@@ -107,7 +107,7 @@ export class PDFService {
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
         doc.text(`Tenue de ${participantName}:`, 10, currentY);
-        currentY += 18;
+        currentY += 22;
       }
 
       // Descriptif de ce qu'il a loué - A5 (même taille que téléphone/email)
