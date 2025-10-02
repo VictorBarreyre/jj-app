@@ -107,7 +107,7 @@ export class PDFService {
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
         doc.text(`Tenue de ${participantName}:`, 10, currentY);
-        currentY += 8;
+        currentY += 18;
       }
 
       // Descriptif de ce qu'il a loué - A5 (même taille que téléphone/email)
@@ -170,15 +170,15 @@ export class PDFService {
             doc.setFont('helvetica', 'normal');
             doc.text(`• ${item}`, 10, currentY);
           }
-          currentY += 8;
+          currentY += 14;
         });
       } else {
         doc.setFont('helvetica', 'normal');
         doc.text(`• Aucun article`, 10, currentY);
-        currentY += 8;
+        currentY += 14;
       }
 
-      currentY += 10;
+      currentY += 25;
     }
 
     // À prendre le / Événement / À rendre le (sur une ligne) - A5
@@ -187,7 +187,7 @@ export class PDFService {
     doc.text(`À prendre le: ${this.formatDate(contract.dateRetrait)}`, 10, currentY);
     doc.text(`Événement: ${this.formatDate(contract.dateEvenement)}`, 74, currentY, { align: 'center' });
     doc.text(`À rendre le: ${this.formatDate(contract.dateRetour)}`, 138, currentY, { align: 'right' });
-    currentY += 10;
+    currentY += 20;
 
     // Prix, caution et arrhes - A5 compact (en gras) - bien espacé sur toute la largeur
     doc.setFontSize(11);
@@ -195,7 +195,7 @@ export class PDFService {
     doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 10, currentY);
     doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 138, currentY, { align: 'right' });
-    currentY += 11;
+    currentY += 20;
 
     return currentY;
   }
