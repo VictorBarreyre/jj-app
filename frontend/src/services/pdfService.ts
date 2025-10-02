@@ -238,11 +238,15 @@ export class PDFService {
         doc.text(`Tenue de ${participant.nom}:`, 20, currentY);
         currentY += 8;
 
+        // Debug: vérifier si on a des articles
+        let hasArticles = false;
+
         // Articles de la tenue
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
 
         if (participant.tenue?.veste) {
+          hasArticles = true;
           const parts = [
             participant.tenue.veste.reference,
             participant.tenue.veste.taille,
@@ -257,6 +261,7 @@ export class PDFService {
         }
 
         if (participant.tenue?.gilet) {
+          hasArticles = true;
           const parts = [
             participant.tenue.gilet.reference,
             participant.tenue.gilet.taille,
@@ -270,6 +275,7 @@ export class PDFService {
         }
 
         if (participant.tenue?.pantalon) {
+          hasArticles = true;
           const parts = [
             participant.tenue.pantalon.reference,
             participant.tenue.pantalon.taille,
@@ -284,6 +290,7 @@ export class PDFService {
         }
 
         if (participant.tenue?.tailleChapeau) {
+          hasArticles = true;
           doc.setFont('helvetica', 'bold');
           doc.text('• Chapeau:', 25, currentY);
           doc.setFont('helvetica', 'normal');
@@ -292,10 +299,18 @@ export class PDFService {
         }
 
         if (participant.tenue?.tailleChaussures) {
+          hasArticles = true;
           doc.setFont('helvetica', 'bold');
           doc.text('• Chaussures:', 25, currentY);
           doc.setFont('helvetica', 'normal');
           doc.text(participant.tenue.tailleChaussures, 45, currentY);
+          currentY += 6;
+        }
+
+        // Si aucun article trouvé, afficher un message
+        if (!hasArticles) {
+          doc.setFont('helvetica', 'normal');
+          doc.text('• Aucun article', 25, currentY);
           currentY += 6;
         }
 
@@ -492,13 +507,7 @@ export class PDFService {
       this.addVendeurDetachableSection(doc, contract, currentY, participantIndex);
     }
 
-    // Afficher le tableau des tenues pour les deux types (vendeur et client)
-    // Créer une nouvelle page pour le tableau détaillé pour les deux types
-    if (type === 'vendeur' || type === 'client') {
-      doc.addPage();
-      currentY = 20;
-    }
-
+    // Afficher les tenues sur la page courante
     currentY = this.addTenueInfo(doc, contract, currentY, type);
 
     // Stock items
