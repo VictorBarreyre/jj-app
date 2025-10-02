@@ -28,6 +28,9 @@ export class EmailService {
   }
 
   private generateEmailTemplate(contract: RentalContract): string {
+    // Utiliser le nom du premier participant si disponible, sinon le nom du client
+    const nomDestinataire = contract.groupDetails?.participants?.[0]?.nom || contract.client.nom;
+
     return `
       <!DOCTYPE html>
       <html>
@@ -37,9 +40,10 @@ export class EmailService {
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .header { background-color: #000000; color: white; padding: 20px; text-align: center; }
-            .header a { color: white; text-decoration: underline; }
+            .header a { color: white !important; text-decoration: underline !important; }
             .content { padding: 20px; }
-            .content a { color: #000000; }
+            .content a { color: #000000 !important; text-decoration: none !important; }
+            a { color: #000000 !important; }
             .footer { background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 12px; }
             .highlight { color: #000000; font-weight: bold; }
           </style>
@@ -51,12 +55,13 @@ export class EmailService {
           </div>
 
           <div class="content">
-            <h2>Bonjour M. ${contract.client.nom},</h2>
+            <h2>Bonjour M. ${nomDestinataire},</h2>
 
             <p>Nous vous remercions pour votre confiance. Voici votre bon de location :</p>
 
             <ul>
               <li><strong>Numéro de réservation :</strong> <span class="highlight">${contract.numero}</span></li>
+              <li><strong>Date de l'événement :</strong> ${this.formatDate(contract.dateEvenement)}</li>
               <li><strong>Date de retrait :</strong> ${this.formatDate(contract.dateRetrait)}</li>
               <li><strong>Date de retour :</strong> ${this.formatDate(contract.dateRetour)}</li>
               <li><strong>Vendeur :</strong> ${contract.vendeur}</li>
