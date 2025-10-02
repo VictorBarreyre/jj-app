@@ -50,7 +50,7 @@ export class EmailService {
           </div>
 
           <div class="content">
-            <h2>Bonjour ${contract.client.nom},</h2>
+            <h2>Bonjour M. ${contract.client.nom},</h2>
 
             <p>Nous vous remercions pour votre confiance. Voici votre bon de location :</p>
 
@@ -63,9 +63,10 @@ export class EmailService {
 
             <p><strong>Important :</strong></p>
             <ul>
-              <li>Merci de vous présenter avec une pièce d'identité pour le retrait</li>
               <li>Vérifiez soigneusement vos articles à la réception</li>
               <li>Tout retard fera l'objet d'une facturation supplémentaire</li>
+              <li>Il vous faudra payer le solde de la location et la caution lors de la récupération</li>
+              <li>En payant les arrhes vous avez accepté <a href="https://www.jjloc.fr/documentary">les conditions de location</a></li>
             </ul>
 
             <p>En cas de question, n'hésitez pas à nous contacter au 01 43 54 25 56.</p>
