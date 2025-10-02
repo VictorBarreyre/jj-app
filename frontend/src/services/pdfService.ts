@@ -259,7 +259,7 @@ export class PDFService {
             `${taille}${longueurManche}`.trim(),
             participant.tenue.veste.couleur || ''
           ];
-          if (_type === 'vendeur') {
+          if (type === 'vendeur') {
             row.push(participant.tenue.veste.notes || '');
           }
           tableData.push(row);
@@ -272,7 +272,7 @@ export class PDFService {
             participant.tenue.gilet.taille || '',
             participant.tenue.gilet.couleur || ''
           ];
-          if (_type === 'vendeur') {
+          if (type === 'vendeur') {
             row.push(participant.tenue.gilet.notes || '');
           }
           tableData.push(row);
@@ -287,7 +287,7 @@ export class PDFService {
             `${taille}${longueur}`.trim(),
             participant.tenue.pantalon.couleur || ''
           ];
-          if (_type === 'vendeur') {
+          if (type === 'vendeur') {
             row.push(participant.tenue.pantalon.notes || '');
           }
           tableData.push(row);
@@ -300,7 +300,7 @@ export class PDFService {
             participant.tenue.tailleChapeau,
             ''
           ];
-          if (_type === 'vendeur') {
+          if (type === 'vendeur') {
             row.push('');
           }
           tableData.push(row);
@@ -313,7 +313,7 @@ export class PDFService {
             participant.tenue.tailleChaussures,
             ''
           ];
-          if (_type === 'vendeur') {
+          if (type === 'vendeur') {
             row.push('');
           }
           tableData.push(row);
