@@ -289,8 +289,8 @@ export const rentalContractsController = {
         await createStockMovements(savedContract, 'reservation');
       }
 
-      // Envoyer automatiquement le bon de location par email au client
-      if (savedContract.client.email) {
+      // Envoyer automatiquement le bon de location par email au client (sauf pour les brouillons)
+      if (savedContract.client.email && savedContract.status !== 'brouillon') {
         try {
           console.log(`📧 Envoi automatique du bon de location à ${savedContract.client.email}`);
           const pdfBuffer = await backendPDFService.generatePDF(savedContract as any, 'client');
@@ -300,6 +300,8 @@ export const rentalContractsController = {
           console.error('⚠️ Erreur lors de l\'envoi automatique de l\'email (n\'affecte pas la création du contrat):', emailError);
           // Ne pas faire échouer la création du contrat si l'email ne peut pas être envoyé
         }
+      } else if (savedContract.status === 'brouillon') {
+        console.log('📝 Brouillon sauvegardé - aucun email envoyé');
       }
 
       res.status(201).json(savedContract);
