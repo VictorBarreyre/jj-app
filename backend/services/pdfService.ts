@@ -16,10 +16,9 @@ export class BackendPDFService {
   }
 
   private generateHTMLContent(contract: RentalContract, type: PDFType, participantIndex?: number): string {
-    // Déterminer le participant et ses vêtements
+    // Déterminer le participant
     let participant = null;
     let participantName = '';
-    let showParticipantName = true;
 
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
       participant = contract.groupDetails.participants[participantIndex];
@@ -30,63 +29,90 @@ export class BackendPDFService {
     }
 
     // Construire la liste des vêtements
-    const items = [];
+    const itemsHTML = [];
     if (participant?.tenue?.veste) {
-      items.push(`Veste ${participant.tenue.veste.reference || ''} ${participant.tenue.veste.taille || ''} ${participant.tenue.veste.couleur || ''}`.trim());
+      const parts = [
+        participant.tenue.veste.reference,
+        participant.tenue.veste.taille,
+        participant.tenue.veste.couleur,
+        participant.tenue.veste.longueurManche
+      ].filter(p => p).join(' / ');
+      itemsHTML.push(`<div style="margin-bottom: 8px;"><span style="font-weight: bold;">• Veste:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.gilet) {
-      items.push(`Gilet ${participant.tenue.gilet.reference || ''} ${participant.tenue.gilet.taille || ''} ${participant.tenue.gilet.couleur || ''}`.trim());
+      const parts = [
+        participant.tenue.gilet.reference,
+        participant.tenue.gilet.taille,
+        participant.tenue.gilet.couleur
+      ].filter(p => p).join(' / ');
+      itemsHTML.push(`<div style="margin-bottom: 8px;"><span style="font-weight: bold;">• Gilet:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.pantalon) {
-      items.push(`Pantalon ${participant.tenue.pantalon.reference || ''} ${participant.tenue.pantalon.taille || ''} ${participant.tenue.pantalon.couleur || ''}`.trim());
+      const parts = [
+        participant.tenue.pantalon.reference,
+        participant.tenue.pantalon.taille,
+        participant.tenue.pantalon.couleur,
+        participant.tenue.pantalon.longueur
+      ].filter(p => p).join(' / ');
+      itemsHTML.push(`<div style="margin-bottom: 8px;"><span style="font-weight: bold;">• Pantalon:</span> ${parts}</div>`);
     }
     if (participant?.tenue?.tailleChapeau) {
-      items.push(`Chapeau taille ${participant.tenue.tailleChapeau}`);
+      itemsHTML.push(`<div style="margin-bottom: 8px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
     }
     if (participant?.tenue?.tailleChaussures) {
-      items.push(`Chaussures taille ${participant.tenue.tailleChaussures}`);
+      itemsHTML.push(`<div style="margin-bottom: 8px;"><span style="font-weight: bold;">• Chaussures:</span> ${participant.tenue.tailleChaussures}</div>`);
     }
 
-    const itemsText = items.length > 0 ? items.join(' / ') : 'Aucun article';
-    const total = contract.tarifLocation + contract.depotGarantie;
+    const itemsText = itemsHTML.length > 0 ? itemsHTML.join('') : '<div>• Aucun article</div>';
 
     return `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Bon de location ${contract.numero}</title>
+          <title>Bon de location Jean Jacques Cérémonies</title>
           <style>
             @page {
               size: A5;
-              margin: 10mm;
+              margin: 0;
+            }
+
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
             }
 
             body {
-              font-family: 'Helvetica', Arial, sans-serif;
+              font-family: Helvetica, Arial, sans-serif;
               font-size: 11px;
               line-height: 1.4;
-              margin: 0;
-              padding: 0;
-              color: #333;
+              padding: 10mm 10mm 10mm 10mm;
+              width: 148mm;
+              height: 210mm;
+              position: relative;
             }
 
             .header {
               text-align: center;
-              margin-bottom: 20px;
-              padding-bottom: 15px;
+              margin-bottom: 15px;
+              padding-bottom: 10px;
               border-bottom: 1px solid #000;
             }
 
             .header h1 {
               font-size: 18px;
               font-weight: bold;
-              margin: 0 0 5px 0;
+              margin-bottom: 5px;
             }
 
             .header .subtitle {
-              font-size: 9px;
+              font-size: 8px;
               margin: 2px 0;
+            }
+
+            .header .subtitle.small {
+              font-size: 7px;
             }
 
             .header .contact {
@@ -95,68 +121,59 @@ export class BackendPDFService {
               margin: 5px 0;
             }
 
-            .content {
-              margin-bottom: 20px;
-            }
-
             .reservation-number {
               font-size: 11px;
               font-weight: bold;
-              margin-bottom: 15px;
+              margin-bottom: 13px;
             }
 
             .client-info {
-              margin-bottom: 15px;
+              margin-bottom: 13px;
+              font-size: 11px;
+              display: flex;
+              justify-content: space-between;
             }
 
             .client-info .label {
               font-weight: bold;
-              display: inline;
             }
 
             .participant-section {
-              margin-bottom: 15px;
-            }
-
-            .participant-name {
               font-size: 11px;
               font-weight: bold;
               margin-bottom: 8px;
             }
 
-            .items-text {
+            .items-section {
               font-size: 11px;
-              margin-bottom: 15px;
-              word-wrap: break-word;
+              margin-bottom: 13px;
             }
 
-            .dates-prices {
+            .dates-row {
+              font-size: 9px;
+              font-weight: bold;
+              margin-bottom: 10px;
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-bottom: 15px;
             }
 
-            .dates {
+            .prices-row {
+              font-size: 11px;
               font-weight: bold;
-            }
-
-            .prices {
+              margin-bottom: 11px;
               display: flex;
               justify-content: space-between;
-              width: 100%;
-              font-weight: bold;
-              margin-bottom: 15px;
             }
 
             .detachable-section {
               position: absolute;
-              bottom: 35mm;
-              left: 0;
-              right: 0;
+              bottom: 10mm;
+              left: 10mm;
+              right: 10mm;
+              height: 35mm;
               border-top: 2px dashed #000;
               padding-top: 8px;
-              height: 35mm;
             }
 
             .vertical-separator {
@@ -169,23 +186,25 @@ export class BackendPDFService {
 
             .left-vertical-text {
               position: absolute;
-              left: 15mm;
-              top: 5px;
+              font-size: 11px;
               transform: rotate(-90deg);
               transform-origin: left bottom;
-              font-size: 11px;
             }
 
             .left-vertical-text.bold {
               font-weight: bold;
+              left: 15mm;
+              top: 5px;
             }
 
             .left-vertical-text.date {
               left: 23mm;
+              top: 5px;
             }
 
             .left-vertical-text.chapeau {
               left: calc(66.67% - 8mm);
+              top: 5px;
             }
 
             .right-section {
@@ -220,42 +239,42 @@ export class BackendPDFService {
             <h1>JEAN JACQUES CÉRÉMONIES</h1>
             <div class="subtitle">Fondé en 1867</div>
             <div class="subtitle">www.jjloc.fr</div>
-            <div class="subtitle">3 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)</div>
+            <div class="subtitle">2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)</div>
             <div class="contact">01 43 54 25 56</div>
-            <div class="subtitle">Ouvert du mardi au samedi de 9h à 18h sans interruption</div>
-            <div class="subtitle">Fermé dimanche et lundi</div>
+            <div class="subtitle small">Ouvert du mardi au samedi de 9h à 18h sans interruption</div>
+            <div class="subtitle small">Fermé dimanche et lundi</div>
+            <div class="subtitle small">RC PARIS 90B 16427</div>
           </div>
 
-          <div class="content">
-            <div class="reservation-number">
-              N° Réservation: ${contract.numero}
-            </div>
+          <div class="reservation-number">
+            N° Réservation: ${contract.numero}
+          </div>
 
-            <div class="client-info">
-              <div><span class="label">Téléphone: </span>${contract.client.telephone}</div>
-              <div><span class="label">Email: </span>${contract.client.email || 'Non renseigné'}</div>
-            </div>
+          <div class="client-info">
+            <div><span class="label">Téléphone:</span> ${contract.client.telephone}</div>
+            <div><span class="label">Email:</span> ${contract.client.email || 'Non renseigné'}</div>
+          </div>
 
-            ${showParticipantName && participantName ? `
-              <div class="participant-section">
-                <div class="participant-name">Tenue de ${participantName}:</div>
-              </div>
-            ` : ''}
-
-            <div class="items-text">
-              ${itemsText}
+          ${participantName ? `
+            <div class="participant-section">
+              Tenue de ${participantName}:
             </div>
+          ` : ''}
 
-            <div class="dates-prices">
-              <div class="dates">À prendre le: ${this.formatDate(contract.dateRetrait)}</div>
-              <div class="dates">À rendre le: ${this.formatDate(contract.dateRetour)}</div>
-            </div>
+          <div class="items-section">
+            ${itemsText}
+          </div>
 
-            <div class="prices">
-              <div>Dépôt: ${this.formatPrice(contract.depotGarantie)}</div>
-              <div>Arrhes: ${this.formatPrice(contract.arrhes)}</div>
-              <div>Prix: ${this.formatPrice(total)}</div>
-            </div>
+          <div class="dates-row">
+            <div>À prendre le: ${this.formatDate(contract.dateRetrait)}</div>
+            <div>Événement: ${this.formatDate(contract.dateEvenement)}</div>
+            <div>À rendre le: ${this.formatDate(contract.dateRetour)}</div>
+          </div>
+
+          <div class="prices-row">
+            <div>Prix: ${this.formatPrice(contract.tarifLocation || 0)}</div>
+            <div>Caution: ${this.formatPrice(contract.depotGarantie)}</div>
+            <div>Arrhes: ${this.formatPrice(contract.arrhes)}</div>
           </div>
 
           <div class="detachable-section">
@@ -281,10 +300,9 @@ export class BackendPDFService {
   async generatePDF(contract: RentalContract, type: PDFType, participantIndex?: number): Promise<Buffer> {
     let browser;
     try {
-      // Configuration optimisée pour Heroku
       const config: any = {
         headless: true,
-        timeout: 60000, // 60 secondes
+        timeout: 60000,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -302,54 +320,39 @@ export class BackendPDFService {
         ]
       };
 
-      // Configuration spécifique pour Heroku avec Chrome for Testing
       if (process.env.DYNO) {
-        console.log('🔍 Environment variables pour Chrome:');
-        console.log('CHROME_EXECUTABLE_PATH:', process.env.CHROME_EXECUTABLE_PATH);
-        console.log('GOOGLE_CHROME_BIN:', process.env.GOOGLE_CHROME_BIN);
-        console.log('CHROME_BIN:', process.env.CHROME_BIN);
-        
-        config.executablePath = process.env.CHROME_EXECUTABLE_PATH || 
-                               process.env.GOOGLE_CHROME_BIN || 
+        config.executablePath = process.env.CHROME_EXECUTABLE_PATH ||
+                               process.env.GOOGLE_CHROME_BIN ||
                                process.env.CHROME_BIN ||
                                '/app/.chrome-for-testing/chrome-linux64/chrome';
-        
-        console.log('📍 Chemin Chrome utilisé:', config.executablePath);
       }
-      
-      console.log('🚀 Lancement de Chrome...');
+
       browser = await puppeteer.launch(config);
-
-      console.log('📄 Création d\'une nouvelle page...');
       const page = await browser.newPage();
-      
-      // Configuration de la page
-      await page.setDefaultTimeout(30000);
-      await page.setViewport({ width: 1200, height: 1600 });
-      
-      console.log('📝 Génération du contenu HTML...');
-      const htmlContent = this.generateHTMLContent(contract, type, participantIndex);
 
-      console.log('🔄 Chargement du contenu dans la page...');
-      await page.setContent(htmlContent, { 
-        waitUntil: 'domcontentloaded',
-        timeout: 30000 
+      await page.setDefaultTimeout(30000);
+
+      const htmlContent = this.generateHTMLContent(contract, type, participantIndex);
+      await page.setContent(htmlContent, {
+        waitUntil: 'networkidle0',
+        timeout: 30000
       });
 
       const pdfBuffer = await page.pdf({
         format: 'A5',
         printBackground: true,
+        preferCSSPageSize: true,
         margin: {
-          top: '10mm',
-          right: '10mm',
-          bottom: '10mm',
-          left: '10mm'
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0
         }
       });
 
       return Buffer.from(pdfBuffer);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error('Erreur lors de la génération du PDF:', error);
       throw error;
     } finally {
       if (browser) {

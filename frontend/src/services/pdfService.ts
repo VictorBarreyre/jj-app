@@ -71,12 +71,12 @@ export class PDFService {
     // Pour un groupe avec un participant spécifique
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
       participant = contract.groupDetails.participants[participantIndex];
-      participantName = participant?.nom || '';
+      participantName = participant?.prenom ? `${participant.prenom} ${participant.nom}` : participant?.nom || '';
     }
     // Pour un contrat individuel, utiliser la tenue principale
     else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
       participant = { tenue: contract.tenue };
-      participantName = contract.client.nom;
+      participantName = contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom;
     }
 
     // Téléphone et Email sur la même ligne - A5 (justify-content: space-between)
@@ -489,10 +489,10 @@ export class PDFService {
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0 && participantIndex !== undefined) {
       // Pour un groupe avec participant spécifique
       participant = contract.groupDetails.participants[participantIndex];
-      personName = participant?.nom || '';
+      personName = participant?.prenom ? `${participant.prenom} ${participant.nom}` : participant?.nom || '';
     } else {
       // Pour un client individuel
-      personName = contract.client.nom;
+      personName = contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom;
       participant = { tenue: contract.tenue };
     }
 
@@ -507,7 +507,17 @@ export class PDFService {
     doc.setFont('helvetica', 'bold');
     doc.text(`N° ${contract.numero}`, rightSectionX, currentY);
 
-    // Section détachable droite maintenant vide (texte supprimé)
+    // Nom du participant
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(personName, rightSectionX, currentY + 5);
+
+    // Texte "à ne pas retirer de la housse"
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(102, 102, 102); // #666
+    doc.text('(à ne pas retirer de la housse)', rightSectionX, currentY + 9);
+    doc.setTextColor(0, 0, 0); // Reset to black
 
     // Nom et prénom (texte vertical de haut en bas) - même taille que la partie droite
     doc.setFontSize(11);
