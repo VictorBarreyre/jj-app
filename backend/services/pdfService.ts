@@ -141,7 +141,7 @@ export class BackendPDFService {
             .participant-section {
               font-size: 14px;
               font-weight: bold;
-              margin-bottom: 12px;
+              margin-bottom: 6px;
               margin-top: 18px;
             }
 
