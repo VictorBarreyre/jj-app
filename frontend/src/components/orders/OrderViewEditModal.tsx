@@ -771,23 +771,16 @@ export function OrderViewEditModal({
             )}
           </div>
 
-          {/* Zone de danger - Suppression */}
+          {/* Bouton de suppression */}
           {onDelete && !isEditing && (
-            <div className="border-t border-gray-200 pt-6 mt-6">
-              <div className="bg-red-50 border border-red-200 rounded-lg sm:rounded-xl p-4 sm:p-6">
-                <h3 className="text-base font-semibold text-red-900 mb-2 text-left">Zone de danger</h3>
-                <p className="text-sm text-red-700 mb-4 text-left">
-                  La suppression d'un bon de commande est définitive et irréversible.
-                </p>
-                <Button
-                  onClick={handleDelete}
-                  variant="outline"
-                  className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400 transition-colors duration-200 flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Supprimer ce bon de commande</span>
-                </Button>
-              </div>
+            <div className="border-t border-gray-200 pt-6 mt-6 flex justify-center">
+              <Button
+                onClick={handleDelete}
+                className="bg-red-600 hover:bg-red-700 text-white transition-colors duration-200 flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Supprimer ce bon de commande</span>
+              </Button>
             </div>
           )}
             </div>
