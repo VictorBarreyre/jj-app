@@ -231,38 +231,6 @@ export class PDFService {
     return currentY + 10;
   }
 
-  private static addStockItems(doc: jsPDF, contract: RentalContract, startY: number): number {
-    if (!contract.articlesStock || contract.articlesStock.length === 0) {
-      return startY;
-    }
-
-    let currentY = startY;
-
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('ARTICLES STOCK', 20, currentY);
-    currentY += 8;
-
-    const tableData = contract.articlesStock.map(item => [
-      item.reference,
-      item.taille,
-      item.couleur || '',
-      item.quantiteReservee.toString(),
-      this.formatPrice(item.prix)
-    ]);
-
-    autoTable(doc, {
-      head: [['Référence', 'Taille', 'Couleur', 'Quantité', 'Prix']],
-      body: tableData,
-      startY: currentY,
-      theme: 'grid',
-      headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0] },
-      styles: { fontSize: 9 }
-    });
-
-    currentY = (doc as any).lastAutoTable.finalY + 10;
-    return currentY;
-  }
 
   private static addFinancialInfo(doc: jsPDF, contract: RentalContract, startY: number, _type: PDFType): number {
     let currentY = startY;
@@ -412,10 +380,6 @@ export class PDFService {
     // Afficher les tenues sur la page courante
     currentY = this.addTenueInfo(doc, contract, currentY, type);
 
-    // Stock items
-    if (contract.articlesStock && contract.articlesStock.length > 0) {
-      currentY = this.addStockItems(doc, contract, currentY);
-    }
 
     // Conditions pour le client uniquement
     if (type === 'client' && currentY < 240) {
