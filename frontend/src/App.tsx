@@ -325,7 +325,7 @@ function App() {
   };
 
   const handleRentalSaveDraft = async (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>) => {
-    if (!groupData || !contract) {
+    if (!groupData && !contract) {
       console.warn('Données manquantes pour la sauvegarde du brouillon');
       return;
     }
@@ -334,28 +334,30 @@ function App() {
       // Convertir les données vers le format de contrat avec statut brouillon
       const contractData = {
         dateCreation: new Date(),
-        dateEvenement: contract.dateEvenement || new Date(),
-        dateRetrait: contract.dateRetrait || new Date(),
-        dateRetour: contract.dateRetour || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        dateEvenement: contract?.dateEvenement || new Date(),
+        dateRetrait: contract?.dateRetrait || new Date(),
+        dateRetour: contract?.dateRetour || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         client: {
-          nom: groupData.clients?.[0]?.nom || '',
-          telephone: groupData.telephone || '',
-          email: groupData.email || ''
+          nom: groupData?.clients?.[0]?.nom || '',
+          prenom: groupData?.clients?.[0]?.prenom || '',
+          telephone: groupData?.telephone || '',
+          email: groupData?.email || ''
         },
-        vendeur: groupData.vendeur || 'N/A',
-        tarifLocation: contract.tarifLocation || undefined,
-        depotGarantie: contract.depotGarantie || 400,
-        arrhes: contract.arrhes || 50,
-        paiementArrhes: contract.paiementArrhes,
-        notes: contract.notes || groupData.groupNotes || '',
-        tenue: groupData.clients?.[0]?.tenue || {},
+        vendeur: groupData?.vendeur || 'N/A',
+        tarifLocation: contract?.tarifLocation || undefined,
+        depotGarantie: contract?.depotGarantie || 400,
+        arrhes: contract?.arrhes || 50,
+        paiementArrhes: contract?.paiementArrhes,
+        notes: contract?.notes || groupData?.groupNotes || '',
+        tenue: groupData?.clients?.[0]?.tenue || {},
         status: 'brouillon', // Statut brouillon
         rendu: false,
-        type: groupData.clients?.length && groupData.clients.length > 1 ? 'groupe' : 'individuel',
-        participantCount: groupData.clients?.length || 1,
-        groupDetails: groupData.clients && groupData.clients.length > 1 ? {
+        type: groupData?.clients?.length && groupData.clients.length > 1 ? 'groupe' : 'individuel',
+        participantCount: groupData?.clients?.length || 1,
+        groupDetails: groupData?.clients && groupData.clients.length > 1 ? {
           participants: groupData.clients.map(client => ({
             nom: client.nom,
+            prenom: client.prenom,
             tenue: client.tenue,
             pieces: [], // Sera calculé par le backend
             notes: client.notes

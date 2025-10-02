@@ -47,6 +47,7 @@ export interface RentalContract {
   groupDetails?: {
     participants: Array<{
       nom: string;
+      prenom?: string;
       tenue: TenueMeasurement;
       pieces: string[]; // Liste des pièces de tenue formatées
       notes?: string;

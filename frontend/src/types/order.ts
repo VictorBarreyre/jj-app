@@ -109,6 +109,7 @@ export interface Order {
   groupDetails?: {
     participants: Array<{
       nom: string;
+      prenom?: string;
       pieces: string[]; // Liste des pièces de tenue pour ce participant
       notes?: string;
       rendu?: boolean; // Statut de rendu pour ce participant

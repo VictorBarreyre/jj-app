@@ -5,6 +5,7 @@ import { TenueMeasurement, Vendeur } from './measurement-form';
 export interface GroupClientInfo {
   id?: string; // ID temporaire pour la gestion dans le formulaire
   nom: string;
+  prenom?: string;
   telephone?: string; // Optionnel, peut être au niveau du groupe
   email?: string; // Optionnel, peut être au niveau du groupe
   isExistingClient?: boolean;
@@ -70,6 +71,7 @@ export const generateGroupName = (clients: GroupClientInfo[]): string => {
 export const createEmptyClient = (): GroupClientInfo => ({
   id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
   nom: '',
+  prenom: '',
   isExistingClient: false,
   tenue: {},
   notes: ''

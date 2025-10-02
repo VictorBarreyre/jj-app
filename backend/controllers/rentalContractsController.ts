@@ -207,8 +207,11 @@ export const rentalContractsController = {
       if (!contractData.dateEvenement || !contractData.dateRetrait || !contractData.dateRetour) {
         throw createError('Les dates d\'événement, de retrait et de retour sont requises', 400);
       }
-      
-      if (contractData.tarifLocation < 0 || contractData.depotGarantie < 0 || contractData.arrhes < 0) {
+
+      // Validation des montants (seulement si définis)
+      if ((contractData.tarifLocation !== undefined && contractData.tarifLocation < 0) ||
+          (contractData.depotGarantie !== undefined && contractData.depotGarantie < 0) ||
+          (contractData.arrhes !== undefined && contractData.arrhes < 0)) {
         throw createError('Les montants ne peuvent pas être négatifs', 400);
       }
       

@@ -210,7 +210,7 @@ export class PDFService {
     if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0) {
       contract.groupDetails.participants.forEach((participant, _index) => {
         allParticipants.push({
-          nom: participant.nom,
+          nom: participant.prenom ? `${participant.prenom} ${participant.nom}` : participant.nom,
           tenue: participant.tenue,
           notes: participant.notes
         });
@@ -219,7 +219,7 @@ export class PDFService {
     // Pour contrats individuels : créer un "participant" avec la tenue principale
     else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
       allParticipants.push({
-        nom: contract.client.nom,
+        nom: contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom,
         tenue: contract.tenue,
         notes: contract.notes
       });

@@ -14,6 +14,7 @@ export interface ContractStockItem {
 // Interface pour le client
 export interface ClientInfo {
   nom: string;
+  prenom?: string;
   telephone: string;
   email?: string;
   isExistingClient?: boolean;
@@ -104,6 +105,7 @@ export interface RentalContract {
   groupDetails?: {
     participants: Array<{
       nom: string;
+      prenom?: string;
       tenue: TenueInfo;
       pieces: string[];
       notes?: string;

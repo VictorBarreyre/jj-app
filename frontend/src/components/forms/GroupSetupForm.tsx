@@ -358,7 +358,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
                 )}
               </div>
 
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
                     <User className="w-3 h-3" />
@@ -367,12 +367,24 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
                   <Input
                     value={client.nom}
                     onChange={(e) => updateClient(index, 'nom', e.target.value)}
-                    placeholder="Nom de la personne"
+                    placeholder="Nom"
                     className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
                   />
                   {errors[`client_${index}_nom`] && (
                     <p className="text-red-500 text-xs mt-1">{errors[`client_${index}_nom`]}</p>
                   )}
+                </div>
+                <div>
+                  <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
+                    <User className="w-3 h-3" />
+                    Prénom
+                  </Label>
+                  <Input
+                    value={client.prenom || ''}
+                    onChange={(e) => updateClient(index, 'prenom', e.target.value)}
+                    placeholder="Prénom"
+                    className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+                  />
                 </div>
               </div>
             </div>

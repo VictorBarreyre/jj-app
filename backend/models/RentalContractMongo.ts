@@ -45,6 +45,7 @@ export interface IRentalContractDocument extends Document {
   groupDetails?: {
     participants: Array<{
       nom: string;
+      prenom?: string;
       tenue: TenueInfo;
       pieces: string[];
       notes?: string;

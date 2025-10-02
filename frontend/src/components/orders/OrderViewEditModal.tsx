@@ -437,7 +437,7 @@ export function OrderViewEditModal({
                 <div className="flex flex-wrap gap-2">
                   {order.groupDetails.participants.map((participant, index) => (
                     <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                      {participant.nom}
+                      {participant.prenom ? `${participant.prenom} ${participant.nom}` : participant.nom}
                     </span>
                   ))}
                 </div>
@@ -458,7 +458,7 @@ export function OrderViewEditModal({
                     <div key={index} className="bg-white rounded-lg p-3 text-left border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-semibold text-gray-800 text-left">
-                          {participant.nom}
+                          {participant.prenom ? `${participant.prenom} ${participant.nom}` : participant.nom}
                         </div>
                         {onUpdateParticipantReturn && (
                           <button

@@ -208,7 +208,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
                 }`}
               >
                 <User className="w-4 h-4 inline mr-2" />
-                {client.nom || `Personne ${index + 1}`}
+                {client.prenom ? `${client.prenom} ${client.nom}` : client.nom || `Personne ${index + 1}`}
               </button>
             ))}
           </div>

@@ -29,7 +29,10 @@ export class EmailService {
 
   private generateEmailTemplate(contract: RentalContract): string {
     // Utiliser le nom du premier participant si disponible, sinon le nom du client
-    const nomDestinataire = contract.groupDetails?.participants?.[0]?.nom || contract.client.nom;
+    const firstParticipant = contract.groupDetails?.participants?.[0];
+    const nomDestinataire = firstParticipant
+      ? (firstParticipant.prenom ? `${firstParticipant.prenom} ${firstParticipant.nom}` : firstParticipant.nom)
+      : (contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom);
 
     return `
       <!DOCTYPE html>

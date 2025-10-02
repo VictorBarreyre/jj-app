@@ -412,7 +412,7 @@ export const ThreeStepRentalForm = forwardRef<
                   <div className="flex flex-wrap gap-2">
                     {groupData.clients.map((client, index) => (
                       <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                        {client.nom}
+                        {client.prenom ? `${client.prenom} ${client.nom}` : client.nom}
                       </span>
                     ))}
                   </div>
@@ -479,7 +479,7 @@ export const ThreeStepRentalForm = forwardRef<
                     return (
                       <div key={clientIndex} className="bg-gray-50 rounded-lg p-3 text-left">
                         <div className="font-semibold text-gray-800 text-left mb-2">
-                          {client.nom}
+                          {client.prenom ? `${client.prenom} ${client.nom}` : client.nom}
                         </div>
                         <div className="space-y-1">
                           {pieces.map((piece, index) => (
