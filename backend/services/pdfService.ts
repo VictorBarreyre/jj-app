@@ -85,7 +85,7 @@ export class BackendPDFService {
 
             body {
               font-family: Helvetica, Arial, sans-serif;
-              font-size: 12px;
+              font-size: 13px;
               line-height: 1.5;
               padding: 10mm 10mm 10mm 10mm;
               width: 148mm;
@@ -101,7 +101,7 @@ export class BackendPDFService {
             }
 
             .header h1 {
-              font-size: 20px;
+              font-size: 22px;
               font-weight: bold;
               margin-bottom: 8px;
             }
@@ -122,14 +122,14 @@ export class BackendPDFService {
             }
 
             .reservation-number {
-              font-size: 13px;
+              font-size: 14px;
               font-weight: bold;
               margin-bottom: 16px;
             }
 
             .client-info {
               margin-bottom: 16px;
-              font-size: 12px;
+              font-size: 13px;
               display: flex;
               justify-content: space-between;
             }
@@ -139,19 +139,19 @@ export class BackendPDFService {
             }
 
             .participant-section {
-              font-size: 13px;
+              font-size: 14px;
               font-weight: bold;
-              margin-bottom: 22px;
+              margin-bottom: 12px;
               margin-top: 18px;
             }
 
             .items-section {
-              font-size: 12px;
+              font-size: 13px;
               margin-bottom: 30px;
             }
 
             .dates-row {
-              font-size: 10px;
+              font-size: 11px;
               font-weight: bold;
               margin-bottom: 24px;
               margin-top: 12px;
@@ -161,7 +161,7 @@ export class BackendPDFService {
             }
 
             .prices-row {
-              font-size: 12px;
+              font-size: 13px;
               font-weight: bold;
               margin-bottom: 24px;
               margin-top: 12px;
