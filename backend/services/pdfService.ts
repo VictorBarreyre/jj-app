@@ -165,73 +165,6 @@ export class BackendPDFService {
               display: flex;
               justify-content: space-between;
             }
-
-            .detachable-section {
-              position: absolute;
-              bottom: 10mm;
-              left: 10mm;
-              right: 10mm;
-              height: 35mm;
-              border-top: 2px dashed #000;
-              padding-top: 8px;
-            }
-
-            .vertical-separator {
-              position: absolute;
-              left: 66.67%;
-              top: 3px;
-              bottom: 5px;
-              border-left: 1px dashed #000;
-            }
-
-            .left-vertical-text {
-              position: absolute;
-              font-size: 11px;
-              transform: rotate(-90deg);
-              transform-origin: left bottom;
-            }
-
-            .left-vertical-text.bold {
-              font-weight: bold;
-              left: 15mm;
-              top: 5px;
-            }
-
-            .left-vertical-text.date {
-              left: 23mm;
-              top: 5px;
-            }
-
-            .left-vertical-text.chapeau {
-              left: calc(66.67% - 8mm);
-              top: 5px;
-            }
-
-            .right-section {
-              position: absolute;
-              right: 5mm;
-              top: 8px;
-              width: 40mm;
-              font-size: 11px;
-              font-weight: bold;
-              text-align: left;
-              line-height: 1.3;
-            }
-
-            .client-name {
-              font-size: 10px;
-              margin-top: 3px;
-              font-weight: bold;
-              display: block;
-            }
-
-            .not-remove-text {
-              font-size: 8px;
-              margin-top: 2px;
-              font-weight: normal;
-              color: #666;
-              display: block;
-            }
           </style>
         </head>
         <body>
@@ -277,21 +210,6 @@ export class BackendPDFService {
             <div>Arrhes: ${this.formatPrice(contract.arrhes)}</div>
           </div>
 
-          <div class="detachable-section">
-            <div class="vertical-separator"></div>
-
-            <div class="left-vertical-text bold">${participantName}</div>
-            <div class="left-vertical-text date">Prise: ${this.formatDate(contract.dateRetrait)}</div>
-            ${participant?.tenue?.tailleChapeau ? `
-              <div class="left-vertical-text chapeau">Chapeau: ${participant.tenue.tailleChapeau}</div>
-            ` : ''}
-
-            <div class="right-section">
-              N° ${contract.numero}<br>
-              <span class="client-name">${participantName}</span><br>
-              <span class="not-remove-text">(à ne pas retirer de la housse)</span>
-            </div>
-          </div>
         </body>
       </html>
     `;
