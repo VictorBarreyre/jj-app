@@ -555,22 +555,28 @@ export class PDFService {
     // Section détachable pour vendeur uniquement à position dynamique
     if (type === 'vendeur') {
       this.addVendeurDetachableSection(doc, contract, currentY, participantIndex);
-    } else {
-      // Pour le client, afficher le tableau des tenues et les conditions
-      currentY = this.addTenueInfo(doc, contract, currentY, type);
+    }
 
-      // Stock items pour le client
-      if (contract.articlesStock && contract.articlesStock.length > 0) {
-        currentY = this.addStockItems(doc, contract, currentY);
-      }
+    // Afficher le tableau des tenues pour les deux types (vendeur et client)
+    // Pour vendeur: on crée une nouvelle page pour le tableau détaillé
+    if (type === 'vendeur') {
+      doc.addPage();
+      currentY = 20;
+    }
 
-      // Conditions pour le client
-      if (currentY < 240) { // S'assurer qu'on a la place
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Conditions: Location soumise aux conditions générales disponibles en magasin.', 20, 250);
-        doc.text('Tout retard de retour fera l\'objet d\'une facturation supplémentaire.', 20, 255);
-      }
+    currentY = this.addTenueInfo(doc, contract, currentY, type);
+
+    // Stock items
+    if (contract.articlesStock && contract.articlesStock.length > 0) {
+      currentY = this.addStockItems(doc, contract, currentY);
+    }
+
+    // Conditions pour le client uniquement
+    if (type === 'client' && currentY < 240) {
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Conditions: Location soumise aux conditions générales disponibles en magasin.', 20, 250);
+      doc.text('Tout retard de retour fera l\'objet d\'une facturation supplémentaire.', 20, 255);
     }
 
     // Sauvegarder le PDF
