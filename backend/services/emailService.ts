@@ -37,10 +37,11 @@ export class EmailService {
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .header { background-color: #000000; color: white; padding: 20px; text-align: center; }
-            .header a { color: white; text-decoration: none; }
+            .header a { color: white; text-decoration: underline; }
             .content { padding: 20px; }
+            .content a { color: #000000; }
             .footer { background-color: #f3f4f6; padding: 15px; text-align: center; font-size: 12px; }
-            .highlight { color: #d97706; font-weight: bold; }
+            .highlight { color: #000000; font-weight: bold; }
           </style>
         </head>
         <body>
