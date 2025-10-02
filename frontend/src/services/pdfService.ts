@@ -428,7 +428,7 @@ export class PDFService {
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY + 12);
 
     // Informations de paiement pour le vendeur uniquement
-    if (_type === 'vendeur') {
+    if (type === 'vendeur') {
       currentY += 20;
       doc.setFont('helvetica', 'normal');
 
@@ -558,8 +558,8 @@ export class PDFService {
     }
 
     // Afficher le tableau des tenues pour les deux types (vendeur et client)
-    // Pour vendeur: on crée une nouvelle page pour le tableau détaillé
-    if (type === 'vendeur') {
+    // Créer une nouvelle page pour le tableau détaillé pour les deux types
+    if (type === 'vendeur' || type === 'client') {
       doc.addPage();
       currentY = 20;
     }
