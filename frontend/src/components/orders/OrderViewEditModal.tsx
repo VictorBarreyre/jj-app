@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Edit3, 
-  Save, 
-  User, 
-  Phone, 
-  Mail, 
+import {
+  Edit3,
+  Save,
+  User,
+  Phone,
+  Mail,
   MapPin,
   Calendar,
   Package,
@@ -17,7 +17,8 @@ import {
   FileText,
   X,
   CheckSquare,
-  Square
+  Square,
+  Trash2
 } from 'lucide-react';
 import { Order, OrderItem } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
@@ -33,18 +34,20 @@ interface OrderViewEditModalProps {
   onCancel: () => void;
   onEditOrder?: (order: Order) => void; // Nouvelle prop pour rediriger vers le formulaire
   onUpdateParticipantReturn?: (orderId: string, participantIndex: number, returned: boolean) => Promise<void>;
+  onDelete?: (orderId: string) => Promise<void>; // Nouvelle prop pour supprimer
 }
 
-export function OrderViewEditModal({ 
-  isOpen, 
-  onClose, 
-  order, 
-  isEditing, 
-  onEdit, 
-  onSave, 
+export function OrderViewEditModal({
+  isOpen,
+  onClose,
+  order,
+  isEditing,
+  onEdit,
+  onSave,
   onCancel,
   onEditOrder,
-  onUpdateParticipantReturn
+  onUpdateParticipantReturn,
+  onDelete
 }: OrderViewEditModalProps) {
   const [formData, setFormData] = useState<Partial<Order>>({});
 
@@ -120,6 +123,24 @@ export function OrderViewEditModal({
     if (order && onEditOrder) {
       onClose(); // Fermer la modal
       onEditOrder(order); // Rediriger vers le formulaire
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!order || !onDelete) return;
+
+    const confirmed = window.confirm(
+      `Êtes-vous sûr de vouloir supprimer définitivement le bon de commande #${order.numero} ?\n\nCette action est irréversible.`
+    );
+
+    if (confirmed) {
+      try {
+        await onDelete(order.id);
+        onClose();
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        alert('Erreur lors de la suppression du bon de commande.');
+      }
     }
   };
 
@@ -749,6 +770,26 @@ export function OrderViewEditModal({
               </div>
             )}
           </div>
+
+          {/* Zone de danger - Suppression */}
+          {onDelete && !isEditing && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <div className="bg-red-50 border border-red-200 rounded-lg sm:rounded-xl p-4 sm:p-6">
+                <h3 className="text-base font-semibold text-red-900 mb-2 text-left">Zone de danger</h3>
+                <p className="text-sm text-red-700 mb-4 text-left">
+                  La suppression d'un bon de commande est définitive et irréversible.
+                </p>
+                <Button
+                  onClick={handleDelete}
+                  variant="outline"
+                  className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400 transition-colors duration-200 flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Supprimer ce bon de commande</span>
+                </Button>
+              </div>
+            </div>
+          )}
             </div>
           </div>
         </div>

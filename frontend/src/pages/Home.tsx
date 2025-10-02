@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { OrdersList } from '../components/home/OrdersList';
 import { OrderViewEditModal } from '../components/orders/OrderViewEditModal';
 import { Order } from '@/types/order';
-import { useOrders, useUpdateOrder } from '@/hooks/useOrders';
+import { useOrders, useUpdateOrder, useDeleteOrder } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
 import { User, Users, Plus } from 'lucide-react';
 import { rentalContractApi } from '@/services/rental-contract.api';
@@ -27,6 +27,7 @@ interface TypeTab {
 export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const { data: ordersData, isLoading, error } = useOrders();
   const updateOrderMutation = useUpdateOrder();
+  const deleteOrderMutation = useDeleteOrder();
   const queryClient = useQueryClient();
   const [activeType, setActiveType] = useState<OrderType>('individuel');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -63,7 +64,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
 
   const handleSaveOrder = async (updatedOrder: Partial<Order>) => {
     if (!selectedOrder) return;
-    
+
     try {
       await updateOrderMutation.mutateAsync({
         id: selectedOrder.id,
@@ -73,6 +74,18 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       // La commande sera automatiquement mise à jour grâce à la réactualisation de la query
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      await deleteOrderMutation.mutateAsync(orderId);
+      toast.success('Bon de commande supprimé avec succès');
+      handleCloseModal();
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      toast.error('Erreur lors de la suppression du bon de commande');
       throw error;
     }
   };
@@ -246,6 +259,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
         onCancel={handleCancelEdit}
         onEditOrder={onEditOrder}
         onUpdateParticipantReturn={handleUpdateParticipantReturn}
+        onDelete={handleDeleteOrder}
       />
     </div>
   );
