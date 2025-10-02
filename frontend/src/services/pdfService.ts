@@ -203,7 +203,7 @@ export class PDFService {
   private static addTenueInfo(doc: jsPDF, contract: RentalContract, startY: number, type: PDFType): number {
     let currentY = startY;
 
-    // Créer un tableau unifié pour tous les types de contrats
+    // Créer une liste des participants pour tous les types de contrats
     const allParticipants = [];
 
     // Pour contrats de groupe : utiliser les participants
@@ -226,157 +226,92 @@ export class PDFService {
     }
 
     if (allParticipants.length > 0) {
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('PARTICIPANTS ET TENUES', 20, currentY);
-      currentY += 8;
-
-      // Créer le tableau avec tous les participants
-      const tableData: string[][] = [];
-
-      allParticipants.forEach((participant) => {
-        // Ligne de séparation pour chaque participant (sauf le premier)
-        if (tableData.length > 0) {
-          tableData.push(['', '', '', '', type === 'vendeur' ? '' : '']); // Ligne vide
+      allParticipants.forEach((participant, index) => {
+        // Espacement entre participants
+        if (index > 0) {
+          currentY += 15;
         }
 
-        // Nom du participant en gras (première ligne)
-        tableData.push([
-          `👤 ${participant.nom}`,
-          '',
-          '',
-          '',
-          type === 'vendeur' ? '' : ''
-        ]);
+        // Nom du participant
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Tenue de ${participant.nom}:`, 20, currentY);
+        currentY += 8;
 
         // Articles de la tenue
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+
         if (participant.tenue?.veste) {
-          const taille = participant.tenue.veste.taille || '';
-          const longueurManche = participant.tenue.veste.longueurManche ? ` LM:${participant.tenue.veste.longueurManche}cm` : '';
-          const row = [
-            '  • Veste',
-            participant.tenue.veste.reference || '',
-            `${taille}${longueurManche}`.trim(),
-            participant.tenue.veste.couleur || ''
-          ];
-          if (type === 'vendeur') {
-            row.push(participant.tenue.veste.notes || '');
-          }
-          tableData.push(row);
+          const parts = [
+            participant.tenue.veste.reference,
+            participant.tenue.veste.taille,
+            participant.tenue.veste.couleur,
+            participant.tenue.veste.longueurManche
+          ].filter(p => p).join(' / ');
+          doc.setFont('helvetica', 'bold');
+          doc.text('• Veste:', 25, currentY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(parts, 45, currentY);
+          currentY += 6;
         }
 
         if (participant.tenue?.gilet) {
-          const row = [
-            '  • Gilet',
-            participant.tenue.gilet.reference || '',
-            participant.tenue.gilet.taille || '',
-            participant.tenue.gilet.couleur || ''
-          ];
-          if (type === 'vendeur') {
-            row.push(participant.tenue.gilet.notes || '');
-          }
-          tableData.push(row);
+          const parts = [
+            participant.tenue.gilet.reference,
+            participant.tenue.gilet.taille,
+            participant.tenue.gilet.couleur
+          ].filter(p => p).join(' / ');
+          doc.setFont('helvetica', 'bold');
+          doc.text('• Gilet:', 25, currentY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(parts, 45, currentY);
+          currentY += 6;
         }
 
         if (participant.tenue?.pantalon) {
-          const taille = participant.tenue.pantalon.taille || '';
-          const longueur = participant.tenue.pantalon.longueur ? ` L:${participant.tenue.pantalon.longueur}cm` : '';
-          const row = [
-            '  • Pantalon',
-            participant.tenue.pantalon.reference || '',
-            `${taille}${longueur}`.trim(),
-            participant.tenue.pantalon.couleur || ''
-          ];
-          if (type === 'vendeur') {
-            row.push(participant.tenue.pantalon.notes || '');
-          }
-          tableData.push(row);
+          const parts = [
+            participant.tenue.pantalon.reference,
+            participant.tenue.pantalon.taille,
+            participant.tenue.pantalon.couleur,
+            participant.tenue.pantalon.longueur
+          ].filter(p => p).join(' / ');
+          doc.setFont('helvetica', 'bold');
+          doc.text('• Pantalon:', 25, currentY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(parts, 45, currentY);
+          currentY += 6;
         }
 
         if (participant.tenue?.tailleChapeau) {
-          const row = [
-            '  • Chapeau',
-            '',
-            participant.tenue.tailleChapeau,
-            ''
-          ];
-          if (type === 'vendeur') {
-            row.push('');
-          }
-          tableData.push(row);
+          doc.setFont('helvetica', 'bold');
+          doc.text('• Chapeau:', 25, currentY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(participant.tenue.tailleChapeau, 45, currentY);
+          currentY += 6;
         }
 
         if (participant.tenue?.tailleChaussures) {
-          const row = [
-            '  • Chaussures',
-            '',
-            participant.tenue.tailleChaussures,
-            ''
-          ];
-          if (type === 'vendeur') {
-            row.push('');
-          }
-          tableData.push(row);
+          doc.setFont('helvetica', 'bold');
+          doc.text('• Chaussures:', 25, currentY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(participant.tenue.tailleChaussures, 45, currentY);
+          currentY += 6;
         }
 
-        // Notes du participant si présentes
+        // Notes du participant si présentes et pour vendeur uniquement
         if (type === 'vendeur' && participant.notes) {
-          tableData.push([
-            '  📝 Notes:',
-            participant.notes,
-            '',
-            '',
-            ''
-          ]);
+          currentY += 4;
+          doc.setFont('helvetica', 'bold');
+          doc.text('📝 Notes:', 25, currentY);
+          doc.setFont('helvetica', 'normal');
+          doc.text(participant.notes, 45, currentY);
+          currentY += 6;
         }
       });
-
-      if (tableData.length > 0) {
-        const headers = type === 'vendeur'
-          ? ['Participant/Article', 'Référence', 'Taille', 'Couleur', 'Notes']
-          : ['Participant/Article', 'Référence', 'Taille', 'Couleur'];
-
-        autoTable(doc, {
-          head: [headers],
-          body: tableData,
-          startY: currentY,
-          theme: 'grid',
-          headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0] },
-          styles: {
-            fontSize: 9,
-            cellPadding: 2
-          },
-          columnStyles: type === 'vendeur' ? {
-            0: { cellWidth: 35 },
-            1: { cellWidth: 35 },
-            2: { cellWidth: 20 },
-            3: { cellWidth: 25 },
-            4: { cellWidth: 70 }
-          } : {
-            0: { cellWidth: 40 },
-            1: { cellWidth: 50 },
-            2: { cellWidth: 25 },
-            3: { cellWidth: 30 }
-          },
-          didParseCell: function(data) {
-            // Mettre en gras les noms de participants
-            if (data.cell.text[0] && data.cell.text[0].startsWith('👤')) {
-              data.cell.styles.fontStyle = 'bold';
-              data.cell.styles.fillColor = [240, 240, 240];
-            }
-            // Style pour les lignes vides (séparation)
-            if (data.cell.text[0] === '' && data.row.index > 0) {
-              data.cell.styles.fillColor = [250, 250, 250];
-              data.cell.styles.minCellHeight = 3;
-            }
-          }
-        });
-
-        currentY = (doc as any).lastAutoTable.finalY + 10;
-      }
     }
 
-    return currentY;
+    return currentY + 10;
   }
 
   private static addStockItems(doc: jsPDF, contract: RentalContract, startY: number): number {
