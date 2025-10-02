@@ -258,23 +258,21 @@ export class BackendPDFService {
             </div>
           </div>
 
-          ${type === 'vendeur' ? `
-            <div class="detachable-section">
-              <div class="vertical-separator"></div>
+          <div class="detachable-section">
+            <div class="vertical-separator"></div>
 
-              <div class="left-vertical-text bold">${participantName}</div>
-              <div class="left-vertical-text date">Prise: ${this.formatDate(contract.dateRetrait)}</div>
-              ${participant?.tenue?.tailleChapeau ? `
-                <div class="left-vertical-text chapeau">Chapeau: ${participant.tenue.tailleChapeau}</div>
-              ` : ''}
+            <div class="left-vertical-text bold">${participantName}</div>
+            <div class="left-vertical-text date">Prise: ${this.formatDate(contract.dateRetrait)}</div>
+            ${participant?.tenue?.tailleChapeau ? `
+              <div class="left-vertical-text chapeau">Chapeau: ${participant.tenue.tailleChapeau}</div>
+            ` : ''}
 
-              <div class="right-section">
-                N° ${contract.numero}<br>
-                <span class="client-name">${participantName}</span><br>
-                <span class="not-remove-text">(à ne pas retirer de la housse)</span>
-              </div>
+            <div class="right-section">
+              N° ${contract.numero}<br>
+              <span class="client-name">${participantName}</span><br>
+              <span class="not-remove-text">(à ne pas retirer de la housse)</span>
             </div>
-          ` : ''}
+          </div>
         </body>
       </html>
     `;
