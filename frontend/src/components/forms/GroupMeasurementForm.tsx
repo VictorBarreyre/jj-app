@@ -47,17 +47,16 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
   }, []);
 
 
+  // Auto-sauvegarde désactivée - la sauvegarde se fait uniquement via le bouton
+  // useEffect(() => {
+  //   if (onSave && updatedGroup !== groupData) {
+  //     const timeoutId = setTimeout(() => {
+  //       onSave(updatedGroup);
+  //     }, 500); // Debounce de 500ms pour éviter trop d'appels
 
-  // Auto-sauvegarde des données quand elles changent
-  useEffect(() => {
-    if (onSave && updatedGroup !== groupData) {
-      const timeoutId = setTimeout(() => {
-        onSave(updatedGroup);
-      }, 500); // Debounce de 500ms pour éviter trop d'appels
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [updatedGroup, onSave, groupData]);
+  //     return () => clearTimeout(timeoutId);
+  //   }
+  // }, [updatedGroup, onSave, groupData]);
 
   // Fonction pour vérifier si la veste sélectionnée est un smoking
   const isSmokingSelected = (clientIndex: number) => {
