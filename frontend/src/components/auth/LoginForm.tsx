@@ -7,9 +7,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
+  onSwitchToForgotPassword: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
   const { login, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -117,6 +118,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
             {errors.password && (
               <p className="text-red-500 text-sm">{errors.password}</p>
             )}
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={onSwitchToForgotPassword}
+                className="text-sm text-amber-600 hover:text-amber-700 font-medium"
+                disabled={isLoading}
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
           </div>
 
           {/* Bouton de connexion */}

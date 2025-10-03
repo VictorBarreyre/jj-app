@@ -9,6 +9,8 @@ export interface IUser {
   password: string;
   role: 'vendeur' | 'admin';
   isActive: boolean;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,6 +53,14 @@ const userSchema = new Schema<IUserDocument>({
   isActive: {
     type: Boolean,
     default: true
+  },
+  resetPasswordToken: {
+    type: String,
+    required: false
+  },
+  resetPasswordExpires: {
+    type: Date,
+    required: false
   }
 }, {
   timestamps: true,

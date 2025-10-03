@@ -110,12 +110,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const forgotPassword = async (email: string) => {
+    try {
+      setIsLoading(true);
+      const response = await authService.forgotPassword(email);
+      toast.success(response.message);
+    } catch (error: any) {
+      const message = error.response?.data?.error || 'Erreur lors de l\'envoi de l\'email';
+      toast.error(message);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    try {
+      setIsLoading(true);
+      const response = await authService.resetPassword(token, newPassword);
+      toast.success(response.message);
+    } catch (error: any) {
+      const message = error.response?.data?.error || 'Erreur lors de la réinitialisation du mot de passe';
+      toast.error(message);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     token,
     login,
     register,
     logout,
+    forgotPassword,
+    resetPassword,
     isLoading,
     isAuthenticated: !!user && !!token,
   };

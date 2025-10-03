@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { AuthPage } from './pages/AuthPage'
+import { ResetPasswordForm } from './components/auth/ResetPasswordForm'
 import { Header } from './components/layout/Header'
 import { FloatingLogoutButton } from './components/layout/FloatingLogoutButton'
 import { Home } from './pages/Home'
@@ -424,50 +427,59 @@ function App() {
 
   return (
     <AuthProvider>
-      <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
-          <Header
-            currentView={currentView}
-            onNavigateHome={handleNavigateHome}
-            onNavigateMeasurement={handleNavigateMeasurement}
-            onNavigateStock={handleNavigateStock}
-            ordersCount={0}
-            pendingOrdersCount={0}
-          />
-          
-          <main>
-            {currentView === 'home' && (
-              <Home
-                onCreateNew={handleCreateNew}
-                onViewOrder={handleViewOrder}
-                onEditOrder={handleEditOrder}
+      <Routes>
+        {/* Routes publiques */}
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/reset-password" element={<ResetPasswordForm />} />
+
+        {/* Routes protégées */}
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+              <Header
+                currentView={currentView}
+                onNavigateHome={handleNavigateHome}
+                onNavigateMeasurement={handleNavigateMeasurement}
+                onNavigateStock={handleNavigateStock}
+                ordersCount={0}
+                pendingOrdersCount={0}
               />
-            )}
-            
-            {currentView === 'measurement' && (
-              <MeasurementFormPage 
-                onSubmitComplete={handleRentalSubmitComplete}
-                onSaveDraft={handleRentalSaveDraft}
-                onPrint={handlePrint}
-                isEditMode={editParams.editMode}
-                initialGroup={(() => {
-                  const group = editParams.editMode && selectedOrder ? convertOrderToGroup(selectedOrder) : undefined;
-                  return group;
-                })()}
-                initialContract={(() => {
-                  const contract = editParams.editMode && selectedOrder ? convertOrderToContract(selectedOrder) : undefined;
-                  return contract;
-                })()}
-              />
-            )}
-            
-            {currentView === 'stock' && (
-              <StockManagement />
-            )}
-          </main>
-        </div>
-        <FloatingLogoutButton />
-      </ProtectedRoute>
+
+              <main>
+                {currentView === 'home' && (
+                  <Home
+                    onCreateNew={handleCreateNew}
+                    onViewOrder={handleViewOrder}
+                    onEditOrder={handleEditOrder}
+                  />
+                )}
+
+                {currentView === 'measurement' && (
+                  <MeasurementFormPage
+                    onSubmitComplete={handleRentalSubmitComplete}
+                    onSaveDraft={handleRentalSaveDraft}
+                    onPrint={handlePrint}
+                    isEditMode={editParams.editMode}
+                    initialGroup={(() => {
+                      const group = editParams.editMode && selectedOrder ? convertOrderToGroup(selectedOrder) : undefined;
+                      return group;
+                    })()}
+                    initialContract={(() => {
+                      const contract = editParams.editMode && selectedOrder ? convertOrderToContract(selectedOrder) : undefined;
+                      return contract;
+                    })()}
+                  />
+                )}
+
+                {currentView === 'stock' && (
+                  <StockManagement />
+                )}
+              </main>
+            </div>
+            <FloatingLogoutButton />
+          </ProtectedRoute>
+        } />
+      </Routes>
       <Toaster position="top-right" />
     </AuthProvider>
   )

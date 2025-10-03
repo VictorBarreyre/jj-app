@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { UserModel, CreateUserRequest, LoginRequest, AuthResponse } from '../models/User';
 import { createError } from '../middleware/errorHandler';
+import { emailService } from '../services/emailService';
 
 // Clé secrète JWT (devrait être dans les variables d'environnement)
 const JWT_SECRET: string = process.env.JWT_SECRET || 'votre-cle-secrete-tres-longue-et-complexe';
@@ -139,5 +141,81 @@ export const authController = {
     // Pour un logout simple, on peut juste renvoyer un succès
     // Le client devra supprimer le token de son stockage local
     res.json({ message: 'Déconnexion réussie' });
+  },
+
+  // POST /api/auth/forgot-password
+  forgotPassword: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        throw createError('L\'email est requis', 400);
+      }
+
+      // Chercher l'utilisateur
+      const user = await UserModel.findOne({ email: email.toLowerCase() });
+
+      // Pour des raisons de sécurité, on renvoie toujours le même message même si l'email n'existe pas
+      if (!user) {
+        res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé' });
+        return;
+      }
+
+      // Générer un token de réinitialisation
+      const resetToken = crypto.randomBytes(32).toString('hex');
+
+      // Hash le token avant de le sauvegarder
+      const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+      // Sauvegarder le token et la date d'expiration (1 heure)
+      user.resetPasswordToken = hashedToken;
+      user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 heure
+      await user.save();
+
+      // Envoyer l'email avec le token non hashé
+      await emailService.sendPasswordResetEmail(user.email, resetToken);
+
+      res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé' });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // POST /api/auth/reset-password
+  resetPassword: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        throw createError('Token et nouveau mot de passe sont requis', 400);
+      }
+
+      if (newPassword.length < 6) {
+        throw createError('Le mot de passe doit contenir au moins 6 caractères', 400);
+      }
+
+      // Hash le token reçu pour le comparer
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+      // Chercher l'utilisateur avec ce token et qui n'a pas expiré
+      const user = await UserModel.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: { $gt: Date.now() }
+      });
+
+      if (!user) {
+        throw createError('Token invalide ou expiré', 400);
+      }
+
+      // Mettre à jour le mot de passe
+      user.password = newPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+
+      res.json({ message: 'Mot de passe réinitialisé avec succès' });
+    } catch (error) {
+      next(error);
+    }
   }
 };

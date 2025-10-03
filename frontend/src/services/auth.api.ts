@@ -57,6 +57,18 @@ export const authService = {
     await authAPI.post('/logout');
   },
 
+  // Mot de passe oublié
+  forgotPassword: async (email: string): Promise<{ message: string }> => {
+    const response = await authAPI.post<{ message: string }>('/forgot-password', { email });
+    return response.data;
+  },
+
+  // Réinitialiser le mot de passe
+  resetPassword: async (token: string, newPassword: string): Promise<{ message: string }> => {
+    const response = await authAPI.post<{ message: string }>('/reset-password', { token, newPassword });
+    return response.data;
+  },
+
   // Sauvegarder le token
   setToken: (token: string) => {
     localStorage.setItem('jj_auth_token', token);
