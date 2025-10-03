@@ -509,12 +509,13 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
           </div>
         )}
         
-        {/* Pour les clients individuels, afficher un espace vide à gauche */}
-        {updatedGroup.clients.length === 1 && (
-          <div></div>
+        {!isFormValid && (
+          <p className="text-sm text-red-600 text-center sm:text-left order-last sm:order-first">
+            ⚠️ Veuillez compléter au moins une pièce (référence + taille + longueurs)
+          </p>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto sm:ml-auto">
           {onSave && (
             <Button
               variant="outline"
@@ -524,23 +525,23 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               💾 Sauvegarder brouillon
             </Button>
           )}
-          
+
           {/* Bouton principal dynamique */}
           {currentClientIndex < updatedGroup.clients.length - 1 ? (
             <Button
               onClick={() => setCurrentClientIndex(currentClientIndex + 1)}
               disabled={!isCurrentClientValid}
-              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <User className="w-4 h-4" />
-              Habiller {updatedGroup.clients[currentClientIndex + 1].nom}
+              Habiller {updatedGroup.clients[currentClientIndex + 1].prenom ? `${updatedGroup.clients[currentClientIndex + 1].prenom} ${updatedGroup.clients[currentClientIndex + 1].nom}` : updatedGroup.clients[currentClientIndex + 1].nom}
               <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
             <Button
               onClick={handleSubmit}
               disabled={!isFormValid}
-              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ➡️ Continuer vers le bon de location
             </Button>
@@ -550,7 +551,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
 
       {/* Navigation mobile pour les groupes */}
       {updatedGroup.clients.length > 1 && (
-        <div className="flex sm:hidden justify-between items-center gap-2">
+        <div className="flex sm:hidden justify-between items-center gap-2 mt-4">
           {currentClientIndex > 0 ? (
             <Button
               onClick={() => setCurrentClientIndex(currentClientIndex - 1)}
@@ -562,26 +563,20 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               Précédent
             </Button>
           ) : <div className="flex-1"></div>}
-          
+
           {currentClientIndex < updatedGroup.clients.length - 1 && (
             <Button
               onClick={() => setCurrentClientIndex(currentClientIndex + 1)}
               disabled={!isCurrentClientValid}
               size="sm"
-              className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-1 text-sm"
+              className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-1 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <User className="w-3 h-3" />
-              Habiller {updatedGroup.clients[currentClientIndex + 1].nom}
+              Habiller {updatedGroup.clients[currentClientIndex + 1].prenom ? `${updatedGroup.clients[currentClientIndex + 1].prenom} ${updatedGroup.clients[currentClientIndex + 1].nom}` : updatedGroup.clients[currentClientIndex + 1].nom}
               <ChevronRight className="w-3 h-3" />
             </Button>
           )}
         </div>
-      )}
-
-      {!isFormValid && (
-        <p className="text-sm text-red-600 text-center">
-          ⚠️ Veuillez sélectionner et dimensionner au moins une pièce complète (référence + taille + longueurs) pour chaque personne
-        </p>
       )}
     </div>
   );

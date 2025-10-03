@@ -196,7 +196,6 @@ export const rentalContractsController = {
   // POST /api/contracts
   createContract: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('🔍 Données reçues:', JSON.stringify(req.body, null, 2));
       const contractData: CreateRentalContractData = req.body;
       
       // Validation
@@ -277,11 +276,8 @@ export const rentalContractsController = {
         dateRetrait: new Date(cleanedData.dateRetrait),
         dateRetour: new Date(cleanedData.dateRetour),
       };
-      console.log('💾 Contrat à sauvegarder:', JSON.stringify(contractToSave, null, 2));
-      
       const newContract = new RentalContractModel(contractToSave);
       const savedContract = await newContract.save();
-      console.log('✅ Contrat sauvegardé avec ID:', savedContract._id);
       
       // Créer automatiquement les mouvements de stock si des articles sont spécifiés
       if (savedContract.articlesStock && savedContract.articlesStock.length > 0) {

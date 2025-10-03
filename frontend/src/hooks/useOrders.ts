@@ -3,7 +3,7 @@ import { contractsAPI } from '@/services/api';
 import { RentalContract } from '@/types/rental-contract';
 import toast from 'react-hot-toast';
 
-export const useOrders = (params?: { status?: string; search?: string }) => {
+export const useOrders = (params?: { status?: string; search?: string; page?: number; limit?: number }) => {
   return useQuery({
     queryKey: ['orders', params],
     queryFn: async () => {
@@ -172,7 +172,9 @@ export const useOrders = (params?: { status?: string; search?: string }) => {
             groupDetails: contract.groupDetails
           };
         }),
-        total: response.total
+        total: response.total,
+        page: response.page,
+        totalPages: response.totalPages
       };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes

@@ -267,28 +267,29 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
 
       {/* Actions */}
       <div>
-        <div className="flex flex-col sm:flex-row gap-4 justify-end">
-          <Button 
-            variant="outline" 
-            onClick={handleSave} 
-            className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
-          >
-            💾 Sauvegarder brouillon
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={!isFormValid}
-            className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            {isEditMode ? "💾 Sauvegarder les modifications" : "📤 Créer le bon de location"}
-          </Button>
-          
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+          {!isFormValid && (
+            <p className="text-sm text-red-600 text-left order-last sm:order-first">
+              ⚠️ Veuillez remplir les champs obligatoires
+            </p>
+          )}
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto sm:ml-auto">
+            <Button
+              variant="outline"
+              onClick={handleSave}
+              className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
+            >
+              💾 Sauvegarder brouillon
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid}
+              className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isEditMode ? "💾 Sauvegarder les modifications" : "📤 Créer le bon de location"}
+            </Button>
+          </div>
         </div>
-        {!isFormValid && (
-          <p className="text-sm text-red-600 text-center mt-3">
-            ⚠️ Veuillez remplir les champs obligatoires
-          </p>
-        )}
       </div>
     </div>
     </>

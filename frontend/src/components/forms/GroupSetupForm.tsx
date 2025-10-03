@@ -431,7 +431,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
             <Button
               onClick={handleSubmit}
               disabled={!isFormValid}
-              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px]"
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ➡️ Continuer vers les mesures
             </Button>

@@ -57,6 +57,7 @@ function App() {
     if (order.groupDetails?.participants && order.groupDetails.participants.length > 0) {
       clients = order.groupDetails.participants.map(participant => ({
         nom: participant.nom,
+        prenom: participant.prenom,
         telephone: order.client.telephone, // Le téléphone principal du groupe
         email: order.client.email, // L'email principal du groupe
         tenue: participant.tenue || {}, // Utiliser la tenue sauvegardée
@@ -87,6 +88,7 @@ function App() {
 
       clients = [{
         nom: order.client.nom,
+        prenom: order.client.prenom,
         telephone: order.client.telephone,
         email: order.client.email,
         tenue: tenue,
@@ -224,7 +226,7 @@ function App() {
             })
           } : undefined
         };
-        
+
         const updatedContract = await rentalContractApi.update(editParams.orderId, contractData);
 
         // Proposer de générer le PDF immédiatement
@@ -301,7 +303,7 @@ function App() {
             })
           } : undefined
         };
-        
+
         const createdContract = await rentalContractApi.create(contractData);
 
         // Proposer de générer le PDF immédiatement

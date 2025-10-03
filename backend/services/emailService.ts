@@ -72,11 +72,11 @@ export class EmailService {
 
             <p><strong>Important :</strong></p>
             <ul>
-              <li>Vérifiez soigneusement vos articles à la réception</li>
-              <li>Tout retard fera l'objet d'une facturation supplémentaire</li>
               <li>Il vous faudra payer le solde de la location et la caution lors de la récupération</li>
+              <li>Vérifiez soigneusement vos articles à la réception</li>
               <li>En payant les arrhes vous avez accepté <a href="https://www.jjloc.fr/documentary">les conditions de location</a></li>
-            </ul>
+              <li>Tout retard fera l'objet d'une facturation supplémentaire</li>
+              </ul>
 
             <p>En cas de question, n'hésitez pas à nous contacter au 01 43 54 25 56.</p>
 

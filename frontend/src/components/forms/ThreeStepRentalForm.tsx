@@ -275,19 +275,14 @@ export const ThreeStepRentalForm = forwardRef<
   const stepInfo = getCurrentStepInfo();
 
   // Fonction pour vérifier si on peut naviguer vers une étape
+  // Maintenant toutes les étapes sont accessibles à tout moment
   const canGoToStep = (targetStep: number): boolean => {
-    if (targetStep <= currentStep) return true; // On peut toujours revenir en arrière
-    if (targetStep === 1) return true; // Étape 1 toujours accessible
-    if (targetStep === 2) return groupData !== null; // Étape 2 accessible si on a les données de groupe
-    if (targetStep === 3) return groupData !== null && contractData !== null; // Étape 3 accessible si on a les deux
-    return false;
+    return true; // Navigation libre entre toutes les étapes
   };
 
   // Fonction de navigation entre étapes
   const navigateToStep = (targetStep: number) => {
-    if (canGoToStep(targetStep)) {
-      setCurrentStep(targetStep as 1 | 2 | 3);
-    }
+    setCurrentStep(targetStep as 1 | 2 | 3);
   };
 
   // Gérer la navigation depuis l'extérieur
@@ -348,69 +343,105 @@ export const ThreeStepRentalForm = forwardRef<
           />
         )}
 
-        {currentStep === 2 && groupData && (
+        {currentStep === 2 && (
           <GroupMeasurementForm
-            groupData={groupData}
+            groupData={groupData || {
+              groupName: '',
+              telephone: '',
+              email: '',
+              dateEssai: new Date(),
+              vendeur: '',
+              clients: [{
+                nom: '',
+                prenom: '',
+                telephone: '',
+                email: '',
+                tenue: {},
+                notes: ''
+              }],
+              groupNotes: '',
+              status: 'brouillon'
+            }}
             onSubmit={handleMeasurementSubmit}
             onSave={handleMeasurementSave}
           />
         )}
 
-        {currentStep === 3 && contractData && groupData && (
-          <div>
+        {currentStep === 3 && (() => {
+          // Utiliser groupData ou des valeurs par défaut
+          const currentGroupData = groupData || {
+            groupName: '',
+            telephone: '',
+            email: '',
+            dateEssai: new Date(),
+            vendeur: '',
+            clients: [{
+              nom: '',
+              prenom: '',
+              telephone: '',
+              email: '',
+              tenue: {},
+              notes: ''
+            }],
+            groupNotes: '',
+            status: 'brouillon' as const
+          };
 
-            {/* Résumé des étapes précédentes */}
-            <div className="mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-4 text-left text-lg">
-                📋 Résumé {groupData.clients.length > 1 ? 'du groupe de location' : 'de la prise de mesure'}
-              </h3>
+          return (
+            <div>
+
+              {/* Résumé des étapes précédentes */}
+              <div className="mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+                <h3 className="font-bold text-gray-900 mb-4 text-left text-lg">
+                  📋 Résumé {currentGroupData.clients.length > 1 ? 'du groupe de location' : 'de la prise de mesure'}
+                </h3>
               
               {/* Informations principales - alignées à gauche */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                {groupData.groupName && (
+                {currentGroupData.groupName && (
                   <div className="text-left">
                     <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                      {groupData.clients.length > 1 ? 'Groupe' : 'Client'}
+                      {currentGroupData.clients.length > 1 ? 'Groupe' : 'Client'}
                     </span>
-                    <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.groupName}</p>
+                    <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.groupName}</p>
                   </div>
                 )}
-                
+
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    {groupData.clients.length > 1 ? 'Participants' : 'Téléphone'}
+                    {currentGroupData.clients.length > 1 ? 'Participants' : 'Téléphone'}
                   </span>
                   <p className="font-medium text-gray-900 text-xs sm:text-sm">
-                    {groupData.clients.length > 1 
-                      ? `${groupData.clients.length} personne${groupData.clients.length > 1 ? 's' : ''}` 
-                      : groupData.telephone
+                    {currentGroupData.clients.length > 1
+                      ? `${currentGroupData.clients.length} personne${currentGroupData.clients.length > 1 ? 's' : ''}`
+                      : currentGroupData.telephone
                     }
                   </p>
                 </div>
-                
+
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Vendeur
                   </span>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.vendeur}</p>
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.vendeur}</p>
                 </div>
-                
+
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                     Date événement
                   </span>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.dateEssai.toLocaleDateString('fr-FR')}</p>
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.dateEssai.toLocaleDateString('fr-FR')}</p>
                 </div>
               </div>
-              
+
               {/* Participants détaillés pour les groupes */}
-              {groupData.clients.length > 1 && (
+              {currentGroupData.clients.length > 1 && (
                 <div className="pt-3 border-t border-gray-300">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                     Liste des participants
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {groupData.clients.map((client, index) => (
+                    {currentGroupData.clients.map((client, index) => (
                       <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                         {client.prenom ? `${client.prenom} ${client.nom}` : client.nom}
                       </span>
@@ -418,14 +449,14 @@ export const ThreeStepRentalForm = forwardRef<
                   </div>
                 </div>
               )}
-              
+
               {/* Pièces de tenue réservées */}
               <div className="pt-3 border-t border-gray-300 mt-3">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                   Pièces de tenue réservées
                 </span>
                 <div className="space-y-4">
-                  {groupData.clients.map((client, clientIndex) => {
+                  {currentGroupData.clients.map((client, clientIndex) => {
                     const pieces = [];
 
                     // Veste
@@ -438,18 +469,18 @@ export const ThreeStepRentalForm = forwardRef<
                       pieces.push({ text: `Veste: ${parts.join(' / ')}`, notes });
                     }
 
-                    // Gilet
-                    if (client.tenue.gilet) {
-                      const reference = client.tenue.gilet.reference || '';
+                    // Gilet (ne pas afficher si sans gilet)
+                    if (client.tenue.gilet && client.tenue.gilet.reference && client.tenue.gilet.reference.trim() !== '') {
+                      const reference = client.tenue.gilet.reference;
                       const taille = client.tenue.gilet.taille || '';
                       const notes = client.tenue.gilet.notes || '';
                       const parts = [reference, taille].filter(part => part);
                       pieces.push({ text: `Gilet: ${parts.join(' / ')}`, notes });
                     }
 
-                    // Pantalon
-                    if (client.tenue.pantalon) {
-                      const reference = client.tenue.pantalon.reference || '';
+                    // Pantalon (ne pas afficher si sans pantalon)
+                    if (client.tenue.pantalon && client.tenue.pantalon.reference && client.tenue.pantalon.reference.trim() !== '') {
+                      const reference = client.tenue.pantalon.reference;
                       const taille = client.tenue.pantalon.taille || '';
                       const longueur = client.tenue.pantalon.longueur || '';
                       const notes = client.tenue.pantalon.notes || '';
@@ -508,21 +539,21 @@ export const ThreeStepRentalForm = forwardRef<
               </div>
               
               {/* Contact supplémentaire pour les groupes */}
-              {groupData.clients.length > 1 && groupData.telephone && (
+              {currentGroupData.clients.length > 1 && currentGroupData.telephone && (
                 <div className="pt-3 border-t border-gray-300 mt-3">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="text-left">
                       <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                         Téléphone du groupe
                       </span>
-                      <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.telephone}</p>
+                      <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.telephone}</p>
                     </div>
-                    {groupData.email && (
+                    {currentGroupData.email && (
                       <div className="text-left">
                         <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                           Email du groupe
                         </span>
-                        <p className="font-medium text-gray-900 text-xs sm:text-sm">{groupData.email}</p>
+                        <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.email}</p>
                       </div>
                     )}
                   </div>
@@ -539,7 +570,8 @@ export const ThreeStepRentalForm = forwardRef<
               isEditMode={isEditMode}
             />
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );

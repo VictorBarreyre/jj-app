@@ -25,7 +25,8 @@ interface TypeTab {
 }
 
 export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
-  const { data: ordersData, isLoading, error } = useOrders();
+  const [page, setPage] = useState(1);
+  const { data: ordersData, isLoading, error } = useOrders({ page, limit: 20 });
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
   const queryClient = useQueryClient();
@@ -33,9 +34,26 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
 
-  const orders = ordersData?.orders || [];
+  const orders = allOrders;
 
+  // Mettre à jour allOrders quand de nouvelles données arrivent
+  React.useEffect(() => {
+    if (ordersData?.orders) {
+      if (page === 1) {
+        setAllOrders(ordersData.orders);
+      } else {
+        setAllOrders(prev => [...prev, ...ordersData.orders]);
+      }
+    }
+  }, [ordersData, page]);
+
+  const handleLoadMore = () => {
+    if (ordersData && ordersData.page < ordersData.totalPages) {
+      setPage(prev => prev + 1);
+    }
+  };
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
@@ -245,6 +263,20 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
             hideHeader={true}
             activeType={activeType}
           />
+
+          {/* Bouton Voir plus */}
+          {ordersData && ordersData.page < ordersData.totalPages && (
+            <div className="p-6 border-t border-gray-200 flex justify-center">
+              <Button
+                onClick={handleLoadMore}
+                disabled={isLoading}
+                variant="outline"
+                className="px-6 py-3 text-amber-600 border-amber-300 hover:bg-amber-50 hover:border-amber-400 rounded-xl transition-all shadow-sm"
+              >
+                {isLoading ? 'Chargement...' : 'Voir plus de commandes'}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

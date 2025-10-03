@@ -50,6 +50,8 @@ export interface MeasurementsResponse {
 export interface ContractsResponse {
   contracts: RentalContract[];
   total: number;
+  page: number;
+  totalPages: number;
   numbering: {
     year: number;
     lastNumber: number;
@@ -96,7 +98,7 @@ export const measurementsAPI = {
 
 // Rental Contracts API
 export const contractsAPI = {
-  getAll: async (params?: { status?: string; search?: string; dateStart?: string; dateEnd?: string }): Promise<ContractsResponse> => {
+  getAll: async (params?: { status?: string; search?: string; dateStart?: string; dateEnd?: string; page?: number; limit?: number }): Promise<ContractsResponse> => {
     const response: AxiosResponse<ContractsResponse> = await api.get('/contracts', { params });
     return response.data;
   },
