@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { RentalContract } from '../types/rental-contract';
+import { formatReference } from '../utils/formatters';
 
 export type PDFType = 'vendeur' | 'client';
 
@@ -116,7 +117,7 @@ export class PDFService {
       const items = [];
 
       if (participant.tenue?.veste) {
-        const reference = participant.tenue.veste.reference || '';
+        const reference = formatReference(participant.tenue.veste.reference || '');
         const taille = participant.tenue.veste.taille || '';
         const couleur = participant.tenue.veste.couleur || '';
         const longueurManche = participant.tenue.veste.longueurManche || '';
@@ -124,14 +125,14 @@ export class PDFService {
         items.push(`Veste:  ${parts.join(' / ')}`);
       }
       if (participant.tenue?.gilet) {
-        const reference = participant.tenue.gilet.reference || '';
+        const reference = formatReference(participant.tenue.gilet.reference || '');
         const taille = participant.tenue.gilet.taille || '';
         const couleur = participant.tenue.gilet.couleur || '';
         const parts = [reference, taille, couleur].filter(part => part);
         items.push(`Gilet:  ${parts.join(' / ')}`);
       }
       if (participant.tenue?.pantalon) {
-        const reference = participant.tenue.pantalon.reference || '';
+        const reference = formatReference(participant.tenue.pantalon.reference || '');
         const taille = participant.tenue.pantalon.taille || '';
         const couleur = participant.tenue.pantalon.couleur || '';
         const longueur = participant.tenue.pantalon.longueur || '';

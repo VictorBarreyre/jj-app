@@ -237,14 +237,21 @@ export const useDeleteOrder = () => {
 
 export const useSaveDraft = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (contractData: any) => {
+    mutationFn: ({ id, data }: { id?: string; data: any }) => {
       // Forcer le statut brouillon
       const draftData = {
-        ...contractData,
+        ...data,
         status: 'brouillon'
       };
+
+      // Si on a un ID, on met à jour le brouillon existant
+      if (id) {
+        return contractsAPI.update(id, draftData);
+      }
+
+      // Sinon, on crée un nouveau brouillon
       return contractsAPI.create(draftData);
     },
     onSuccess: () => {

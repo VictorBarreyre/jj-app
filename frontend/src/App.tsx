@@ -331,6 +331,9 @@ function App() {
     }
 
     try {
+      // Vérifier si on est en mode édition d'un brouillon existant
+      const existingDraftId = editParams.editMode && editParams.orderId ? editParams.orderId : undefined;
+
       // Convertir les données vers le format de contrat avec statut brouillon
       const contractData = {
         dateCreation: new Date(),
@@ -365,7 +368,8 @@ function App() {
         } : undefined
       };
 
-      await saveDraftMutation.mutateAsync(contractData);
+      // Passer l'ID si on modifie un brouillon existant
+      await saveDraftMutation.mutateAsync({ id: existingDraftId, data: contractData });
     } catch (error) {
       console.error('Erreur lors de la sauvegarde du brouillon:', error);
     }

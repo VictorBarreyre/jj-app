@@ -15,6 +15,15 @@ export class BackendPDFService {
     return `${price.toFixed(2)} €`;
   }
 
+  private formatReference(reference: string): string {
+    if (!reference) return '';
+    // Remplacer les tirets par des espaces et capitaliser la première lettre
+    return reference
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
   private generateHTMLContent(contract: RentalContract, type: PDFType, participantIndex?: number): string {
     // Déterminer le participant
     let participant = null;
@@ -32,7 +41,7 @@ export class BackendPDFService {
     const itemsHTML = [];
     if (participant?.tenue?.veste) {
       const parts = [
-        participant.tenue.veste.reference,
+        this.formatReference(participant.tenue.veste.reference),
         participant.tenue.veste.taille,
         participant.tenue.veste.couleur,
         participant.tenue.veste.longueurManche
@@ -41,7 +50,7 @@ export class BackendPDFService {
     }
     if (participant?.tenue?.gilet) {
       const parts = [
-        participant.tenue.gilet.reference,
+        this.formatReference(participant.tenue.gilet.reference),
         participant.tenue.gilet.taille,
         participant.tenue.gilet.couleur
       ].filter(p => p).join(' / ');
@@ -49,7 +58,7 @@ export class BackendPDFService {
     }
     if (participant?.tenue?.pantalon) {
       const parts = [
-        participant.tenue.pantalon.reference,
+        this.formatReference(participant.tenue.pantalon.reference),
         participant.tenue.pantalon.taille,
         participant.tenue.pantalon.couleur,
         participant.tenue.pantalon.longueur

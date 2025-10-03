@@ -23,6 +23,7 @@ import {
 import { Order, OrderItem } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
 import { EmailButton } from '@/components/ui/EmailButton';
+import { formatReference } from '@/utils/formatters';
 
 interface OrderViewEditModalProps {
   isOpen: boolean;
@@ -507,7 +508,7 @@ export function OrderViewEditModal({
 
                           // Générer les pièces à partir de participant.tenue
                           if (participant.tenue?.veste) {
-                            const reference = participant.tenue.veste.reference || '';
+                            const reference = formatReference(participant.tenue.veste.reference || '');
                             const taille = participant.tenue.veste.taille || '';
                             const couleur = participant.tenue.veste.couleur || '';
                             const longueurManche = participant.tenue.veste.longueurManche || '';
@@ -515,14 +516,14 @@ export function OrderViewEditModal({
                             pieces.push(`Veste: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.gilet) {
-                            const reference = participant.tenue.gilet.reference || '';
+                            const reference = formatReference(participant.tenue.gilet.reference || '');
                             const taille = participant.tenue.gilet.taille || '';
                             const couleur = participant.tenue.gilet.couleur || '';
                             const parts = [reference, taille, couleur].filter(part => part);
                             pieces.push(`Gilet: ${parts.join(' / ')}`);
                           }
                           if (participant.tenue?.pantalon) {
-                            const reference = participant.tenue.pantalon.reference || '';
+                            const reference = formatReference(participant.tenue.pantalon.reference || '');
                             const taille = participant.tenue.pantalon.taille || '';
                             const couleur = participant.tenue.pantalon.couleur || '';
                             const longueur = participant.tenue.pantalon.longueur || '';
@@ -668,7 +669,7 @@ export function OrderViewEditModal({
 
                             // Générer les pièces à partir de virtualParticipant.tenue
                             if (virtualParticipant.tenue?.veste) {
-                              const reference = virtualParticipant.tenue.veste.reference || '';
+                              const reference = formatReference(virtualParticipant.tenue.veste.reference || '');
                               const taille = virtualParticipant.tenue.veste.taille || '';
                               const couleur = virtualParticipant.tenue.veste.couleur || '';
                               const longueurManche = virtualParticipant.tenue.veste.longueurManche || '';
@@ -676,14 +677,14 @@ export function OrderViewEditModal({
                               pieces.push(`Veste: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.gilet) {
-                              const reference = virtualParticipant.tenue.gilet.reference || '';
+                              const reference = formatReference(virtualParticipant.tenue.gilet.reference || '');
                               const taille = virtualParticipant.tenue.gilet.taille || '';
                               const couleur = virtualParticipant.tenue.gilet.couleur || '';
                               const parts = [reference, taille, couleur].filter(part => part);
                               pieces.push(`Gilet: ${parts.join(' / ')}`);
                             }
                             if (virtualParticipant.tenue?.pantalon) {
-                              const reference = virtualParticipant.tenue.pantalon.reference || '';
+                              const reference = formatReference(virtualParticipant.tenue.pantalon.reference || '');
                               const taille = virtualParticipant.tenue.pantalon.taille || '';
                               const couleur = virtualParticipant.tenue.pantalon.couleur || '';
                               const longueur = virtualParticipant.tenue.pantalon.longueur || '';
@@ -776,9 +777,10 @@ export function OrderViewEditModal({
             <div className="border-t border-gray-200 pt-6 mt-6 flex justify-center">
               <Button
                 onClick={handleDelete}
-                className="bg-red-600 hover:bg-red-700 text-white transition-colors duration-200 flex items-center gap-2"
+                variant="ghost"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors duration-200 flex items-center gap-2 text-sm"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
                 <span>Supprimer ce bon de commande</span>
               </Button>
             </div>
