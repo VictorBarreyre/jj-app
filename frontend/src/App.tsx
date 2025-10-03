@@ -216,6 +216,7 @@ function App() {
               
               return {
                 nom: client.nom,
+                prenom: client.prenom,
                 tenue: client.tenue,
                 pieces: pieces,
                 notes: client.notes
@@ -292,6 +293,7 @@ function App() {
               
               return {
                 nom: client.nom,
+                prenom: client.prenom,
                 tenue: client.tenue,
                 pieces: pieces,
                 notes: client.notes

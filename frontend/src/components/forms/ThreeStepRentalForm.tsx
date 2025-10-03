@@ -427,55 +427,59 @@ export const ThreeStepRentalForm = forwardRef<
                 <div className="space-y-4">
                   {groupData.clients.map((client, clientIndex) => {
                     const pieces = [];
-                    
+
                     // Veste
                     if (client.tenue.veste) {
                       const reference = client.tenue.veste.reference || '';
                       const taille = client.tenue.veste.taille || '';
                       const longueurManche = client.tenue.veste.longueurManche || '';
+                      const notes = client.tenue.veste.notes || '';
                       const parts = [reference, taille, longueurManche].filter(part => part);
-                      pieces.push(`Veste: ${parts.join(' / ')}`);
+                      pieces.push({ text: `Veste: ${parts.join(' / ')}`, notes });
                     }
-                    
+
                     // Gilet
                     if (client.tenue.gilet) {
                       const reference = client.tenue.gilet.reference || '';
                       const taille = client.tenue.gilet.taille || '';
+                      const notes = client.tenue.gilet.notes || '';
                       const parts = [reference, taille].filter(part => part);
-                      pieces.push(`Gilet: ${parts.join(' / ')}`);
+                      pieces.push({ text: `Gilet: ${parts.join(' / ')}`, notes });
                     }
-                    
+
                     // Pantalon
                     if (client.tenue.pantalon) {
                       const reference = client.tenue.pantalon.reference || '';
                       const taille = client.tenue.pantalon.taille || '';
                       const longueur = client.tenue.pantalon.longueur || '';
+                      const notes = client.tenue.pantalon.notes || '';
                       const parts = [reference, taille, longueur].filter(part => part);
-                      pieces.push(`Pantalon: ${parts.join(' / ')}`);
+                      pieces.push({ text: `Pantalon: ${parts.join(' / ')}`, notes });
                     }
-                    
+
                     // Ceinture
                     if (client.tenue.ceinture) {
                       const reference = client.tenue.ceinture.reference || '';
                       const taille = client.tenue.ceinture.taille || '';
+                      const notes = client.tenue.ceinture.notes || '';
                       const parts = [reference, taille].filter(part => part);
-                      pieces.push(`Ceinture: ${parts.join(' / ')}`);
+                      pieces.push({ text: `Ceinture: ${parts.join(' / ')}`, notes });
                     }
-                    
+
                     // Chapeau
                     if (client.tenue.tailleChapeau) {
-                      pieces.push(`Chapeau: ${client.tenue.tailleChapeau}`);
+                      pieces.push({ text: `Chapeau: ${client.tenue.tailleChapeau}`, notes: '' });
                     }
-                    
+
                     // Chaussures
                     if (client.tenue.tailleChaussures) {
-                      pieces.push(`Chaussures: ${client.tenue.tailleChaussures}`);
+                      pieces.push({ text: `Chaussures: ${client.tenue.tailleChaussures}`, notes: '' });
                     }
-                    
+
                     if (pieces.length === 0) {
-                      pieces.push('Aucune pièce sélectionnée');
+                      pieces.push({ text: 'Aucune pièce sélectionnée', notes: '' });
                     }
-                    
+
                     return (
                       <div key={clientIndex} className="bg-gray-50 rounded-lg p-3 text-left">
                         <div className="font-semibold text-gray-800 text-left mb-2">
@@ -484,7 +488,11 @@ export const ThreeStepRentalForm = forwardRef<
                         <div className="space-y-1">
                           {pieces.map((piece, index) => (
                             <div key={index} className="text-sm text-gray-700 text-left pl-3">
-                              <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                              <span className="text-amber-600 font-medium">•</span>
+                              <span className="ml-2">
+                                {piece.text}
+                                {piece.notes && <span className="text-gray-500 italic ml-2">({piece.notes})</span>}
+                              </span>
                             </div>
                           ))}
                         </div>

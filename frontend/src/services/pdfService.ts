@@ -121,23 +121,29 @@ export class PDFService {
         const taille = participant.tenue.veste.taille || '';
         const couleur = participant.tenue.veste.couleur || '';
         const longueurManche = participant.tenue.veste.longueurManche || '';
+        const notes = participant.tenue.veste.notes || '';
         const parts = [reference, taille, couleur, longueurManche].filter(part => part);
-        items.push(`Veste:  ${parts.join(' / ')}`);
+        const itemText = `Veste:  ${parts.join(' / ')}`;
+        items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.gilet) {
         const reference = formatReference(participant.tenue.gilet.reference || '');
         const taille = participant.tenue.gilet.taille || '';
         const couleur = participant.tenue.gilet.couleur || '';
+        const notes = participant.tenue.gilet.notes || '';
         const parts = [reference, taille, couleur].filter(part => part);
-        items.push(`Gilet:  ${parts.join(' / ')}`);
+        const itemText = `Gilet:  ${parts.join(' / ')}`;
+        items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.pantalon) {
         const reference = formatReference(participant.tenue.pantalon.reference || '');
         const taille = participant.tenue.pantalon.taille || '';
         const couleur = participant.tenue.pantalon.couleur || '';
         const longueur = participant.tenue.pantalon.longueur || '';
+        const notes = participant.tenue.pantalon.notes || '';
         const parts = [reference, taille, couleur, longueur].filter(part => part);
-        items.push(`Pantalon:  ${parts.join(' / ')}`);
+        const itemText = `Pantalon:  ${parts.join(' / ')}`;
+        items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.tailleChapeau) {
         items.push(`Chapeau:  ${participant.tenue.tailleChapeau}`);
@@ -149,29 +155,57 @@ export class PDFService {
       if (items.length > 0) {
         // Afficher chaque article sur une ligne séparée avec puce
         items.forEach((item: string) => {
+          // Extraire les notes entre parenthèses à la fin
+          const noteMatch = item.match(/\(([^)]+)\)$/);
+          const itemWithoutNote = noteMatch ? item.replace(/\s*\([^)]+\)$/, '') : item;
+          const note = noteMatch ? noteMatch[1] : null;
+
           // Séparer la catégorie (avant le :) du reste
-          const colonIndex = item.indexOf(':');
+          const colonIndex = itemWithoutNote.indexOf(':');
           if (colonIndex !== -1) {
-            const category = item.substring(0, colonIndex + 1); // "Veste:", "Gilet:", etc.
-            const details = item.substring(colonIndex + 1); // Le reste après le ":"
-            
+            const category = itemWithoutNote.substring(0, colonIndex + 1); // "Veste:", "Gilet:", etc.
+            const details = itemWithoutNote.substring(colonIndex + 1); // Le reste après le ":"
+
             // Afficher la puce et la catégorie en gras
             doc.setFont('helvetica', 'bold');
             const bulletAndCategory = `• ${category}`;
             doc.text(bulletAndCategory, 10, currentY);
-            
+
             // Calculer la largeur du texte en gras pour positionner le texte normal
             const bulletCategoryWidth = doc.getTextWidth(bulletAndCategory);
-            
+
             // Afficher les détails en normal
             doc.setFont('helvetica', 'normal');
             doc.text(details, 10 + bulletCategoryWidth, currentY);
+            currentY += 8;
+
+            // Afficher la note en italique et plus petit si présente
+            if (note) {
+              doc.setFontSize(8);
+              doc.setFont('helvetica', 'italic');
+              doc.setTextColor(102, 102, 102); // Gris
+              doc.text(`  ${note}`, 15, currentY);
+              doc.setTextColor(0, 0, 0); // Reset to black
+              doc.setFontSize(11); // Reset font size
+              currentY += 6;
+            }
           } else {
             // Cas où il n'y a pas de ":" (fallback)
             doc.setFont('helvetica', 'normal');
-            doc.text(`• ${item}`, 10, currentY);
+            doc.text(`• ${itemWithoutNote}`, 10, currentY);
+            currentY += 8;
+
+            // Afficher la note si présente
+            if (note) {
+              doc.setFontSize(8);
+              doc.setFont('helvetica', 'italic');
+              doc.setTextColor(102, 102, 102);
+              doc.text(`  ${note}`, 15, currentY);
+              doc.setTextColor(0, 0, 0);
+              doc.setFontSize(11);
+              currentY += 6;
+            }
           }
-          currentY += 8;
         });
       } else {
         doc.setFont('helvetica', 'normal');

@@ -513,14 +513,16 @@ export function OrderViewEditModal({
                             const couleur = participant.tenue.veste.couleur || '';
                             const longueurManche = participant.tenue.veste.longueurManche || '';
                             const parts = [reference, taille, couleur, longueurManche].filter(part => part);
-                            pieces.push(`Veste: ${parts.join(' / ')}`);
+                            const notes = participant.tenue.veste.notes || '';
+                            pieces.push({ text: `Veste: ${parts.join(' / ')}`, notes });
                           }
                           if (participant.tenue?.gilet) {
                             const reference = formatReference(participant.tenue.gilet.reference || '');
                             const taille = participant.tenue.gilet.taille || '';
                             const couleur = participant.tenue.gilet.couleur || '';
                             const parts = [reference, taille, couleur].filter(part => part);
-                            pieces.push(`Gilet: ${parts.join(' / ')}`);
+                            const notes = participant.tenue.gilet.notes || '';
+                            pieces.push({ text: `Gilet: ${parts.join(' / ')}`, notes });
                           }
                           if (participant.tenue?.pantalon) {
                             const reference = formatReference(participant.tenue.pantalon.reference || '');
@@ -528,19 +530,24 @@ export function OrderViewEditModal({
                             const couleur = participant.tenue.pantalon.couleur || '';
                             const longueur = participant.tenue.pantalon.longueur || '';
                             const parts = [reference, taille, couleur, longueur].filter(part => part);
-                            pieces.push(`Pantalon: ${parts.join(' / ')}`);
+                            const notes = participant.tenue.pantalon.notes || '';
+                            pieces.push({ text: `Pantalon: ${parts.join(' / ')}`, notes });
                           }
                           if (participant.tenue?.tailleChapeau) {
-                            pieces.push(`Chapeau: ${participant.tenue.tailleChapeau}`);
+                            pieces.push({ text: `Chapeau: ${participant.tenue.tailleChapeau}`, notes: '' });
                           }
                           if (participant.tenue?.tailleChaussures) {
-                            pieces.push(`Chaussures: ${participant.tenue.tailleChaussures}`);
+                            pieces.push({ text: `Chaussures: ${participant.tenue.tailleChaussures}`, notes: '' });
                           }
 
                           return pieces.length > 0 ? (
                             pieces.map((piece, pieceIndex) => (
                               <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
-                                <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                                <span className="text-amber-600 font-medium">•</span>
+                                <span className="ml-2">
+                                  {piece.text}
+                                  {piece.notes && <span className="text-gray-500 italic ml-2">({piece.notes})</span>}
+                                </span>
                               </div>
                             ))
                           ) : (
@@ -674,14 +681,16 @@ export function OrderViewEditModal({
                               const couleur = virtualParticipant.tenue.veste.couleur || '';
                               const longueurManche = virtualParticipant.tenue.veste.longueurManche || '';
                               const parts = [reference, taille, couleur, longueurManche].filter(part => part);
-                              pieces.push(`Veste: ${parts.join(' / ')}`);
+                              const notes = virtualParticipant.tenue.veste.notes || '';
+                              pieces.push({ text: `Veste: ${parts.join(' / ')}`, notes });
                             }
                             if (virtualParticipant.tenue?.gilet) {
                               const reference = formatReference(virtualParticipant.tenue.gilet.reference || '');
                               const taille = virtualParticipant.tenue.gilet.taille || '';
                               const couleur = virtualParticipant.tenue.gilet.couleur || '';
                               const parts = [reference, taille, couleur].filter(part => part);
-                              pieces.push(`Gilet: ${parts.join(' / ')}`);
+                              const notes = virtualParticipant.tenue.gilet.notes || '';
+                              pieces.push({ text: `Gilet: ${parts.join(' / ')}`, notes });
                             }
                             if (virtualParticipant.tenue?.pantalon) {
                               const reference = formatReference(virtualParticipant.tenue.pantalon.reference || '');
@@ -689,19 +698,24 @@ export function OrderViewEditModal({
                               const couleur = virtualParticipant.tenue.pantalon.couleur || '';
                               const longueur = virtualParticipant.tenue.pantalon.longueur || '';
                               const parts = [reference, taille, couleur, longueur].filter(part => part);
-                              pieces.push(`Pantalon: ${parts.join(' / ')}`);
+                              const notes = virtualParticipant.tenue.pantalon.notes || '';
+                              pieces.push({ text: `Pantalon: ${parts.join(' / ')}`, notes });
                             }
                             if (virtualParticipant.tenue?.tailleChapeau) {
-                              pieces.push(`Chapeau: ${virtualParticipant.tenue.tailleChapeau}`);
+                              pieces.push({ text: `Chapeau: ${virtualParticipant.tenue.tailleChapeau}`, notes: '' });
                             }
                             if (virtualParticipant.tenue?.tailleChaussures) {
-                              pieces.push(`Chaussures: ${virtualParticipant.tenue.tailleChaussures}`);
+                              pieces.push({ text: `Chaussures: ${virtualParticipant.tenue.tailleChaussures}`, notes: '' });
                             }
 
                             return pieces.length > 0 ? (
                               pieces.map((piece, pieceIndex) => (
                                 <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
-                                  <span className="text-amber-600 font-medium">•</span> <span className="ml-2">{piece}</span>
+                                  <span className="text-amber-600 font-medium">•</span>
+                                  <span className="ml-2">
+                                    {piece.text}
+                                    {piece.notes && <span className="text-gray-500 italic ml-2">({piece.notes})</span>}
+                                  </span>
                                 </div>
                               ))
                             ) : (

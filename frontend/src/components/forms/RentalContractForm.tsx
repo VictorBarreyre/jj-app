@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RentalContract, PaymentMethod } from '@/types/rental-contract';
 import { TenueMeasurement, Vendeur } from '@/types/measurement-form';
-import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle, MessageSquare } from 'lucide-react';
+import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { calculateDefaultDates } from '@/utils/dateCalculations';
 
@@ -264,24 +264,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           </div>
         </div>
       )}
-
-
-      {/* 5. Notes */}
-      <div className="border-b border-gray-200 pb-8">
-        <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
-          <div className="bg-gradient-to-br from-gray-500 to-gray-600 p-2 rounded-lg shadow-md">
-            <MessageSquare className="w-5 h-5 text-white" />
-          </div>
-          4. Notes
-        </h2>
-        <Textarea
-          value={form.notes || ''}
-          onChange={(e) => updateForm('notes', e.target.value)}
-          placeholder="Notes additionnelles sur le bon de location..."
-          rows={4}
-          className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm resize-none"
-        />
-      </div>
 
       {/* Actions */}
       <div>

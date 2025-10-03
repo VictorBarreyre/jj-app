@@ -46,7 +46,9 @@ export class BackendPDFService {
         participant.tenue.veste.couleur,
         participant.tenue.veste.longueurManche
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Veste:</span> ${parts}</div>`);
+      const notes = participant.tenue.veste.notes || '';
+      const itemText = notes ? `${parts} <span style="font-style: italic; color: #666;">(${notes})</span>` : parts;
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Veste:</span> ${itemText}</div>`);
     }
     if (participant?.tenue?.gilet) {
       const parts = [
@@ -54,7 +56,9 @@ export class BackendPDFService {
         participant.tenue.gilet.taille,
         participant.tenue.gilet.couleur
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Gilet:</span> ${parts}</div>`);
+      const notes = participant.tenue.gilet.notes || '';
+      const itemText = notes ? `${parts} <span style="font-style: italic; color: #666;">(${notes})</span>` : parts;
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Gilet:</span> ${itemText}</div>`);
     }
     if (participant?.tenue?.pantalon) {
       const parts = [
@@ -63,7 +67,9 @@ export class BackendPDFService {
         participant.tenue.pantalon.couleur,
         participant.tenue.pantalon.longueur
       ].filter(p => p).join(' / ');
-      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Pantalon:</span> ${parts}</div>`);
+      const notes = participant.tenue.pantalon.notes || '';
+      const itemText = notes ? `${parts} <span style="font-style: italic; color: #666;">(${notes})</span>` : parts;
+      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Pantalon:</span> ${itemText}</div>`);
     }
     if (participant?.tenue?.tailleChapeau) {
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
