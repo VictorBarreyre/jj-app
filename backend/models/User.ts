@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 // Interface pour les données utilisateur
 export interface IUser {
   nom: string;
-  prenom: string;
+  prenom?: string;
   email: string;
   password: string;
   role: 'vendeur' | 'admin';
@@ -27,7 +27,7 @@ const userSchema = new Schema<IUserDocument>({
   },
   prenom: {
     type: String,
-    required: true,
+    required: false,
     trim: true
   },
   email: {
@@ -94,7 +94,7 @@ export const UserModel = model<IUserDocument>('User', userSchema);
 // Types pour les requêtes
 export interface CreateUserRequest {
   nom: string;
-  prenom: string;
+  prenom?: string;
   email: string;
   password: string;
   role?: 'vendeur' | 'admin';

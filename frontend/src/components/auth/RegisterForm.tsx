@@ -13,7 +13,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
   const { register, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     nom: '',
-    prenom: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -36,10 +35,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
 
     if (!formData.nom.trim()) {
       newErrors.nom = 'Le nom est requis';
-    }
-
-    if (!formData.prenom.trim()) {
-      newErrors.prenom = 'Le prénom est requis';
     }
 
     if (!formData.email) {
@@ -72,7 +67,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
     try {
       await register({
         nom: formData.nom.trim(),
-        prenom: formData.prenom.trim(),
+        prenom: formData.nom.trim(), // Utiliser le nom complet comme prénom également
         email: formData.email,
         password: formData.password,
         role: 'vendeur'
@@ -91,10 +86,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Nom */}
+          {/* Nom complet */}
           <div className="space-y-2">
             <Label htmlFor="nom" className="text-sm font-medium text-gray-700 text-left block pl-3">
-              Nom
+              Nom complet
             </Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -104,36 +99,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
                 type="text"
                 value={formData.nom}
                 onChange={handleChange}
-                placeholder="Votre nom"
+                placeholder="Votre nom complet"
                 className={`pl-10 ${errors.nom ? 'border-red-500' : 'border-gray-300'}`}
                 disabled={isLoading}
               />
             </div>
             {errors.nom && (
               <p className="text-red-500 text-sm">{errors.nom}</p>
-            )}
-          </div>
-
-          {/* Prénom */}
-          <div className="space-y-2">
-            <Label htmlFor="prenom" className="text-sm font-medium text-gray-700 text-left block pl-3">
-              Prénom
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                id="prenom"
-                name="prenom"
-                type="text"
-                value={formData.prenom}
-                onChange={handleChange}
-                placeholder="Votre prénom"
-                className={`pl-10 ${errors.prenom ? 'border-red-500' : 'border-gray-300'}`}
-                disabled={isLoading}
-              />
-            </div>
-            {errors.prenom && (
-              <p className="text-red-500 text-sm">{errors.prenom}</p>
             )}
           </div>
 

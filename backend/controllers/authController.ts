@@ -19,8 +19,8 @@ export const authController = {
       const { nom, prenom, email, password, role }: CreateUserRequest = req.body;
 
       // Validation des données
-      if (!nom || !prenom || !email || !password) {
-        throw createError('Tous les champs sont requis', 400);
+      if (!nom || !email || !password) {
+        throw createError('Le nom, l\'email et le mot de passe sont requis', 400);
       }
 
       if (password.length < 6) {
@@ -34,9 +34,10 @@ export const authController = {
       }
 
       // Créer le nouvel utilisateur
+      // Si le prénom n'est pas fourni, utiliser le nom complet
       const newUser = new UserModel({
         nom: nom.trim(),
-        prenom: prenom.trim(),
+        prenom: prenom ? prenom.trim() : nom.trim(),
         email: email.toLowerCase().trim(),
         password,
         role: role || 'vendeur'
