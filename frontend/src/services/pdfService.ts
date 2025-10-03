@@ -317,35 +317,33 @@ export class PDFService {
       participant = { tenue: contract.tenue };
     }
 
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-
     // Ajouter le numéro de réservation et le texte dans la partie droite
     const rightSectionX = separationX + 5; // Position dans la partie droite
 
     // Numéro de réservation
-    doc.setFontSize(11);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text(`N° ${contract.numero}`, rightSectionX, currentY);
 
     // Nom du participant
-    doc.setFontSize(10);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
     doc.text(personName, rightSectionX, currentY + 5);
 
     // Texte "à ne pas retirer de la housse"
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(102, 102, 102); // #666
     doc.text('(à ne pas retirer de la housse)', rightSectionX, currentY + 9);
     doc.setTextColor(0, 0, 0); // Reset to black
 
-    // Nom et prénom (texte vertical de haut en bas) - même taille que la partie droite
-    doc.setFontSize(11);
+    // Nom et prénom (texte vertical de haut en bas)
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text(personName, leftSectionX, currentY - 2, { angle: -90 });
 
-    // Date de prise (texte vertical de haut en bas) - même taille que la partie droite
+    // Date de prise (texte vertical de haut en bas)
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     const dateRetrait = this.formatDate(contract.dateRetrait);
     doc.text(`Prise: ${dateRetrait}`, leftSectionX + 8, currentY - 2, { angle: -90 });
@@ -353,6 +351,7 @@ export class PDFService {
     // Taille du chapeau si présente (texte vertical au niveau de la jointure)
     const tailleChapeau = participant?.tenue?.tailleChapeau;
     if (tailleChapeau) {
+      doc.setFontSize(8);
       doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 2, { angle: -90 });
     }
 
