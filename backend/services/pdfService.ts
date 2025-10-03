@@ -11,7 +11,10 @@ export class BackendPDFService {
     return dateString.toLocaleDateString('fr-FR');
   }
 
-  private formatPrice(price: number): string {
+  private formatPrice(price?: number): string {
+    if (price === undefined || price === null) {
+      return '0.00 €';
+    }
     return `${price.toFixed(2)} €`;
   }
 

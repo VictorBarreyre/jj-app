@@ -13,7 +13,10 @@ export class PDFService {
     return dateString.toLocaleDateString('fr-FR');
   }
 
-  private static formatPrice(price: number): string {
+  private static formatPrice(price?: number): string {
+    if (price === undefined || price === null) {
+      return '0.00 €';
+    }
     return `${price.toFixed(2)} €`;
   }
 
