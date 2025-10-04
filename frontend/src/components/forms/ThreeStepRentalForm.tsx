@@ -187,9 +187,17 @@ export const ThreeStepRentalForm = forwardRef<
     };
     setGroupData(fullGroupData);
 
-    // Créer un contrat de base avec les infos disponibles
+    // Calculer les dates par défaut
+    const defaultDates = calculateDefaultDates(fullGroupData.dateEssai);
+
+    // Créer un contrat complet avec tous les champs requis
+    const arrhesAmount = contractData?.arrhes || 50;
     const contractForConfirm: any = {
       ...contractData,
+      dateCreation: contractData?.dateCreation || new Date(),
+      dateEvenement: fullGroupData.dateEssai,
+      dateRetrait: contractData?.dateRetrait || defaultDates.dateRetrait,
+      dateRetour: contractData?.dateRetour || defaultDates.dateRetour,
       client: {
         nom: fullGroupData.clients[0]?.nom || '',
         prenom: fullGroupData.clients[0]?.prenom || '',
@@ -197,6 +205,18 @@ export const ThreeStepRentalForm = forwardRef<
         email: fullGroupData.email
       },
       vendeur: fullGroupData.vendeur,
+      tenue: contractData?.tenue || fullGroupData.clients[0]?.tenue || {},
+      tarifLocation: contractData?.tarifLocation || undefined,
+      depotGarantie: contractData?.depotGarantie || 400,
+      arrhes: arrhesAmount,
+      paiementArrhes: contractData?.paiementArrhes ? {
+        ...contractData.paiementArrhes,
+        amount: contractData.paiementArrhes.amount || arrhesAmount
+      } : {
+        date: new Date().toISOString().split('T')[0],
+        amount: arrhesAmount
+      },
+      notes: contractData?.notes || '',
       status: 'confirme', // Forcer le statut à 'confirme'
       rendu: initialRendu
     };
@@ -269,6 +289,7 @@ export const ThreeStepRentalForm = forwardRef<
     // Créer un contrat de base avec toutes les infos disponibles
     const mainClient = updatedGroup.clients[0];
     const defaultDates = calculateDefaultDates(updatedGroup.dateEssai);
+    const arrhesAmount = contractData?.arrhes || 50;
 
     const contractForConfirm: any = {
       ...contractData,
@@ -289,7 +310,14 @@ export const ThreeStepRentalForm = forwardRef<
       notes: updatedGroup.groupNotes || mainClient.notes,
       tarifLocation: contractData?.tarifLocation || undefined,
       depotGarantie: contractData?.depotGarantie || 400,
-      arrhes: contractData?.arrhes || 50,
+      arrhes: arrhesAmount,
+      paiementArrhes: contractData?.paiementArrhes ? {
+        ...contractData.paiementArrhes,
+        amount: contractData.paiementArrhes.amount || arrhesAmount
+      } : {
+        date: new Date().toISOString().split('T')[0],
+        amount: arrhesAmount
+      },
       status: 'confirme', // Forcer le statut à 'confirme'
       rendu: initialRendu
     };
