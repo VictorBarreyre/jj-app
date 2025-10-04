@@ -119,25 +119,35 @@ export const rentalContractsController = {
         const hasMultipleParticipants = contract.participantCount && contract.participantCount > 1;
         const hasGroupDetails = contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants.length > 1;
         const hasMultipleStockItems = contract.articlesStock && contract.articlesStock.length > 3; // Plus de 3 articles = probablement plusieurs personnes
-        const hasGroupKeywords = contract.client.nom.toLowerCase().includes('groupe') || 
+        const hasGroupKeywords = contract.client.nom.toLowerCase().includes('groupe') ||
                                 contract.client.nom.toLowerCase().includes('mariage') ||
                                 contract.client.nom.toLowerCase().includes('ceremonie') ||
                                 contract.client.nom.toLowerCase().includes('personnes');
-        
+
         const shouldBeGroupe = hasMultipleParticipants || hasGroupDetails || hasMultipleStockItems || hasGroupKeywords;
-        
+
         // Si la classification a changé, mettre à jour le type
         // Gérer les cas où contract.type est undefined (défaut = 'individuel')
         const currentType = contract.type || 'individuel';
-        
-        if (shouldBeGroupe && currentType === 'individuel') {
-          return { ...contract, type: 'groupe' };
-        } else if (!shouldBeGroupe && currentType === 'groupe') {
-          return { ...contract, type: 'individuel' };
+
+        // Pour les contrats individuels, créer un participant virtuel dans groupDetails si nécessaire
+        let enrichedContract = { ...contract };
+        if (!shouldBeGroupe && contract.tenue && (!contract.groupDetails?.participants || contract.groupDetails.participants.length === 0)) {
+          enrichedContract.groupDetails = {
+            participants: [{
+              nom: contract.client.nom,
+              prenom: contract.client.prenom,
+              tenue: contract.tenue,
+              pieces: [],
+              notes: contract.notes || ''
+            }]
+          };
         }
-        
-        // Assurer qu'il y a toujours un type défini
-        return { ...contract, type: shouldBeGroupe ? 'groupe' : 'individuel' };
+
+        // Déterminer le type final
+        const finalType = shouldBeGroupe ? 'groupe' : 'individuel';
+
+        return { ...enrichedContract, type: finalType };
       });
       
       res.json({
