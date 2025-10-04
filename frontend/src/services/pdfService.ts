@@ -397,6 +397,15 @@ export class PDFService {
     doc.text('(à ne pas retirer de la housse)', rightSectionX, currentY + 9);
     doc.setTextColor(0, 0, 0); // Reset to black
 
+    // Date de retour
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('À rendre :', rightSectionX, currentY + 15);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    const dateRetour = this.formatDate(contract.dateRetour);
+    doc.text(dateRetour, rightSectionX, currentY + 20);
+
     // Nom et prénom (texte vertical de haut en bas) - remonté
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
