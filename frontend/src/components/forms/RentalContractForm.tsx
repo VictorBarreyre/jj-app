@@ -201,25 +201,25 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           </div>
           2. Tarification
         </h2>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Tarif de location */}
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location (€)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.tarifLocation || ''}
-              onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-            <div className="mt-2">
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.tarifLocation || ''}
+                onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
+                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              />
               <Select
                 value={form.paiementSolde?.method || 'none'}
                 onValueChange={(value) => updatePayment('solde', 'method', value === 'none' ? undefined : value)}
               >
                 <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                  <SelectValue placeholder="Rien (vide)" />
+                  <SelectValue placeholder="Rien" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
                   <SelectItem value="none">Rien (vide)</SelectItem>
@@ -235,15 +235,15 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           {/* Dépôt de garantie */}
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie (€)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.depotGarantie || 0}
-              onChange={(e) => updateForm('depotGarantie', parseFloat(e.target.value) || 0)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-            <div className="mt-2">
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.depotGarantie || 0}
+                onChange={(e) => updateForm('depotGarantie', parseFloat(e.target.value) || 0)}
+                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              />
               <Select
                 value={form.paiementDepotGarantie?.method || 'none'}
                 onValueChange={(value) => updateForm('paiementDepotGarantie', value === 'none' ? undefined : { method: value })}
