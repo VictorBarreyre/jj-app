@@ -201,81 +201,106 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           </div>
           2. Tarification
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location (€)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.tarifLocation || ''}
-              onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-          </div>
-          <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Caution (€)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.depotGarantie || 0}
-              onChange={(e) => updateForm('depotGarantie', parseFloat(e.target.value) || 0)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-          </div>
-          <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Arrhes (€)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.arrhes || 0}
-              onChange={(e) => updateForm('arrhes', parseFloat(e.target.value) || 0)}
-              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Paiement des arrhes */}
-      {(form.arrhes || 0) > 0 && (
-        <div className="border-b border-gray-200 pb-8">
-          <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
-              <CreditCard className="w-5 h-5 text-white" />
-            </div>
-            3. Paiement des arrhes
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div className="space-y-4">
+          {/* Tarif de location */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-end">
             <div>
-              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Payé le</Label>
+              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location (€)</Label>
               <Input
-                type="date"
-                value={form.paiementArrhes?.date ? new Date(form.paiementArrhes.date).toISOString().split('T')[0] : ''}
-                onChange={(e) => updatePayment('arrhes', 'date', e.target.value)}
-                className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.tarifLocation || ''}
+                onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
+                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
               />
             </div>
             <div>
-              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Mode de paiement</Label>
-              <Select 
-                value={form.paiementArrhes?.method || ''} 
-                onValueChange={(value) => updatePayment('arrhes', 'method', value)}
+              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous tarif de location</Label>
+              <Select
+                value={form.paiementSolde?.method || ''}
+                onValueChange={(value) => updatePayment('solde', 'method', value)}
               >
-                <SelectTrigger className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl [&>svg]:ml-3">
-                  <SelectValue placeholder="Sélectionner un mode de paiement" />
+                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                  <SelectValue placeholder="Rien (vide)" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  {paymentMethods.map(method => (
-                    <SelectItem key={method.value} value={method.value}>{method.label}</SelectItem>
-                  ))}
+                  <SelectItem value="">Rien (vide)</SelectItem>
+                  <SelectItem value="carte">Payé en carte</SelectItem>
+                  <SelectItem value="cheque">Payé en chèque</SelectItem>
+                  <SelectItem value="especes">Payé en espèces</SelectItem>
+                  <SelectItem value="virement">Payé en virement</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
+
+          {/* Dépôt de garantie */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-end">
+            <div>
+              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie (€) *</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.depotGarantie || 0}
+                onChange={(e) => updateForm('depotGarantie', parseFloat(e.target.value) || 0)}
+                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              />
+            </div>
+            <div>
+              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous dépôt de garantie</Label>
+              <Select
+                value={form.paiementDepotGarantie?.method || ''}
+                onValueChange={(value) => updateForm('paiementDepotGarantie', { method: value })}
+              >
+                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                  <SelectValue placeholder="Non versée" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="">Non versée</SelectItem>
+                  <SelectItem value="carte">Faite en carte</SelectItem>
+                  <SelectItem value="cheque">Faite en chèque</SelectItem>
+                  <SelectItem value="especes">Faite en espèce</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Arrhes */}
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Arrhes</Label>
+            <Select
+              value={form.paiementArrhes?.method ? `${form.arrhes || 50}-${form.paiementArrhes.method}` : ''}
+              onValueChange={(value) => {
+                if (value === '') {
+                  updateForm('arrhes', 0);
+                  updateForm('paiementArrhes', undefined);
+                } else if (value === 'non-versees') {
+                  updateForm('arrhes', 50);
+                  updateForm('paiementArrhes', undefined);
+                } else {
+                  const [amount, method] = value.split('-');
+                  updateForm('arrhes', parseFloat(amount));
+                  updateForm('paiementArrhes', { method, date: new Date().toISOString().split('T')[0] });
+                }
+              }}
+            >
+              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                <SelectValue placeholder="Vide (rien)" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-gray-300 text-gray-900">
+                <SelectItem value="">Vide (rien)</SelectItem>
+                <SelectItem value="50-carte">50€ en carte</SelectItem>
+                <SelectItem value="50-cheque">50€ en chèque</SelectItem>
+                <SelectItem value="50-especes">50€ en espèces</SelectItem>
+                <SelectItem value="50-virement">50€ en virement</SelectItem>
+                <SelectItem value="non-versees">Non versées</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Actions */}
       <div>

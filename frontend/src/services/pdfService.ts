@@ -236,7 +236,7 @@ export class PDFService {
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 10, currentY);
-    doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
+    doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 138, currentY, { align: 'right' });
     currentY += 11;
 
@@ -287,7 +287,7 @@ export class PDFService {
     doc.setFontSize(10);
 
     doc.text(`Tarif location: ${this.formatPrice(contract.tarifLocation)}`, 20, currentY);
-    doc.text(`Caution: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY + 6);
+    doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 20, currentY + 6);
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY + 12);
 
     // Informations de paiement pour le vendeur uniquement
