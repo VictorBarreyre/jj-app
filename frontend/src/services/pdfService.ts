@@ -339,9 +339,9 @@ export class PDFService {
 
     // Section détachable - maintenant vide (montants supprimés)
 
-    // Ajouter une séparation verticale avec tirets au 2/3 de la zone détachable
+    // Ajouter une séparation verticale avec tirets - décalée vers la gauche pour plus d'espace à droite
     const sectionWidth = 138 - 10; // Largeur utilisable (bords exclus)
-    const separationX = 10 + (sectionWidth * 2 / 3); // Position à 2/3 de la largeur
+    const separationX = 10 + (sectionWidth * 0.5); // Position à la moitié (au lieu de 2/3)
 
     // Ligne verticale en tirets - de haut en bas de la section détachable
     doc.setLineDashPattern([1, 1], 0);
@@ -367,6 +367,18 @@ export class PDFService {
 
     // Ajouter le numéro de réservation et le texte dans la partie droite
     const rightSectionX = separationX + 5; // Position dans la partie droite
+
+    // Informations JJ Cérémonies
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('JJ CÉRÉMONIES', rightSectionX, currentY);
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('2 rue Nicolas Flamel - 75004 Paris', rightSectionX, currentY + 4);
+    doc.text('01 43 54 25 56', rightSectionX, currentY + 8);
+
+    currentY += 13;
 
     // Numéro de réservation
     doc.setFontSize(9);
