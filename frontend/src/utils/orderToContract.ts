@@ -62,7 +62,8 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     groupDetails: order.groupDetails ? {
       participants: order.groupDetails.participants.map(p => ({
         nom: p.nom,
-        tenue: {} as any, // Tenue vide par défaut
+        prenom: p.prenom,
+        tenue: p.tenue || {} as any, // Préserver la tenue du participant
         pieces: p.pieces,
         notes: p.notes
       }))
