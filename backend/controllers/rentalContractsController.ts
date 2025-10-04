@@ -182,20 +182,28 @@ export const rentalContractsController = {
                               contract.client.nom.toLowerCase().includes('personnes');
       
       const shouldBeGroupe = hasMultipleParticipants || hasGroupDetails || hasMultipleStockItems || hasGroupKeywords;
-      
-      // Si la classification a changé, mettre à jour le type
-      // Gérer les cas où contract.type est undefined (défaut = 'individuel')
-      const currentType = contract.type || 'individuel';
-      const reclassifiedContract = { ...contract };
-      
-      if (shouldBeGroupe && currentType === 'individuel') {
-        reclassifiedContract.type = 'groupe';
-      } else if (!shouldBeGroupe && currentType === 'groupe') {
-        reclassifiedContract.type = 'individuel';
-      } else {
-        // Assurer qu'il y a toujours un type défini
-        reclassifiedContract.type = shouldBeGroupe ? 'groupe' : 'individuel';
+
+      // Pour les contrats individuels, créer un participant virtuel dans groupDetails si nécessaire
+      let reclassifiedContract = { ...contract };
+      if (!shouldBeGroupe && contract.tenue && (!contract.groupDetails?.participants || contract.groupDetails.participants.length === 0)) {
+        console.log('🔧 Enrichissement du contrat individuel avec participant virtuel:', {
+          nom: contract.client.nom,
+          prenom: contract.client.prenom,
+          tenue: contract.tenue
+        });
+        reclassifiedContract.groupDetails = {
+          participants: [{
+            nom: contract.client.nom,
+            prenom: contract.client.prenom,
+            tenue: contract.tenue,
+            pieces: [],
+            notes: contract.notes || ''
+          }]
+        };
       }
+
+      // Déterminer le type final
+      reclassifiedContract.type = shouldBeGroupe ? 'groupe' : 'individuel';
       
       res.json(reclassifiedContract);
     } catch (error) {

@@ -53,6 +53,17 @@ export function OrderViewEditModal({
   const [formData, setFormData] = useState<Partial<Order>>({});
 
   useEffect(() => {
+    if (order) {
+      console.log('🔍 OrderViewEditModal - Order chargé:', order);
+      console.log('🔍 OrderViewEditModal - order.type:', order.type);
+      console.log('🔍 OrderViewEditModal - order.tenue:', order.tenue);
+      console.log('🔍 OrderViewEditModal - order.groupDetails:', order.groupDetails);
+      console.log('🔍 OrderViewEditModal - order.groupDetails?.participants:', order.groupDetails?.participants);
+      if (order.tenue) {
+        console.log('🔍 OrderViewEditModal - order.tenue.veste:', order.tenue.veste);
+        console.log('🔍 OrderViewEditModal - order.tenue.pantalon:', order.tenue.pantalon);
+      }
+    }
     if (order && isEditing) {
       setFormData(order);
     }
