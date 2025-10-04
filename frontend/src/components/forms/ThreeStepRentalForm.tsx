@@ -107,7 +107,11 @@ export const ThreeStepRentalForm = forwardRef<
     }
     return null;
   });
-  
+
+  // Mémoriser le statut et le rendu initial pour les préserver lors des sauvegardes
+  const [initialStatus] = useState<string>(() => initialContract?.status || 'brouillon');
+  const [initialRendu] = useState<boolean>(() => initialContract?.rendu || false);
+
   const [formKey, setFormKey] = useState(0);
 
   // Sauvegarde automatique des données
@@ -165,7 +169,14 @@ export const ThreeStepRentalForm = forwardRef<
       status: 'brouillon'
     };
     setGroupData(fullGroupData); // Mettre à jour les données locales pour localStorage
-    onSaveDraft(fullGroupData);
+
+    // Créer un contrat minimal avec le statut et rendu pour les préserver
+    const minimalContract: Partial<RentalContract> = {
+      status: initialStatus as any,
+      rendu: initialRendu
+    };
+
+    onSaveDraft(fullGroupData, minimalContract);
   };
 
   // Étape 2 : Sélection des tenues
@@ -216,7 +227,14 @@ export const ThreeStepRentalForm = forwardRef<
 
   const handleMeasurementSave = (updatedGroup: GroupRentalInfo) => {
     setGroupData(updatedGroup); // Mettre à jour les données locales pour localStorage
-    onSaveDraft(updatedGroup);
+
+    // Créer un contrat minimal avec le statut et rendu pour les préserver
+    const minimalContract: Partial<RentalContract> = {
+      status: initialStatus as any,
+      rendu: initialRendu
+    };
+
+    onSaveDraft(updatedGroup, minimalContract);
   };
 
   // Étape 3 : Bon de location

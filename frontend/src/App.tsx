@@ -361,10 +361,20 @@ function App() {
       // Vérifier si on est en mode édition d'un brouillon existant
       const existingDraftId = editParams.editMode && editParams.orderId ? editParams.orderId : undefined;
 
-      // En mode édition, conserver le statut existant, sinon nouveau brouillon
-      const statusToUse = existingDraftId && selectedOrder
-        ? selectedOrder.status
-        : 'brouillon';
+      // En mode édition, conserver le statut existant
+      // Priorité 1: statut dans le contract passé en paramètre (s'il existe)
+      // Priorité 2: statut dans selectedOrder (état initial)
+      // Priorité 3: 'brouillon' par défaut pour un nouveau contrat
+      let statusToUse: string = 'brouillon';
+      if (existingDraftId) {
+        if (contract?.status) {
+          statusToUse = contract.status;
+        } else if (selectedOrder?.status) {
+          statusToUse = selectedOrder.status;
+        }
+      }
+
+      console.log('🔍 handleRentalSaveDraft - statusToUse:', statusToUse);
 
       // Convertir les données vers le format de contrat
       const contractData = {
@@ -386,7 +396,7 @@ function App() {
         notes: contract?.notes || groupData?.groupNotes || '',
         tenue: groupData?.clients?.[0]?.tenue || {},
         status: statusToUse, // Conserver le statut existant en mode édition
-        rendu: existingDraftId && selectedOrder ? selectedOrder.rendu : false,
+        rendu: contract?.rendu ?? (existingDraftId && selectedOrder ? selectedOrder.rendu : false),
         type: groupData?.clients?.length && groupData.clients.length > 1 ? 'groupe' : 'individuel',
         participantCount: groupData?.clients?.length || 1,
         groupDetails: groupData?.clients && groupData.clients.length > 1 ? {
