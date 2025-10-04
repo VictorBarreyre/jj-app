@@ -390,11 +390,11 @@ export class PDFService {
     doc.setFont('helvetica', 'bold');
     doc.text(personName, leftSectionX, currentY - 2, { angle: -90 });
 
-    // Date de prise (texte vertical de haut en bas)
+    // Date de sortie (texte vertical de haut en bas)
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     const dateRetrait = this.formatDate(contract.dateRetrait);
-    doc.text(`Prise: ${dateRetrait}`, leftSectionX + 8, currentY - 2, { angle: -90 });
+    doc.text(`Sort le: ${dateRetrait}`, leftSectionX + 8, currentY - 2, { angle: -90 });
 
     // Taille du chapeau si présente (texte vertical au niveau de la jointure)
     const tailleChapeau = participant?.tenue?.tailleChapeau;
