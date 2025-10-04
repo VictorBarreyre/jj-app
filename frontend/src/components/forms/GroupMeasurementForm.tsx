@@ -39,6 +39,10 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
   useEffect(() => {
     console.log('🔍 GroupMeasurementForm - groupData reçu:', groupData);
     console.log('🔍 GroupMeasurementForm - clients[0].tenue:', groupData.clients?.[0]?.tenue);
+    console.log('🔍 GroupMeasurementForm - veste.longueurManche:', groupData.clients?.[0]?.tenue?.veste?.longueurManche);
+    console.log('🔍 GroupMeasurementForm - veste.notes:', groupData.clients?.[0]?.tenue?.veste?.notes);
+    console.log('🔍 GroupMeasurementForm - pantalon.longueur:', groupData.clients?.[0]?.tenue?.pantalon?.longueur);
+    console.log('🔍 GroupMeasurementForm - pantalon.notes:', groupData.clients?.[0]?.tenue?.pantalon?.notes);
     setUpdatedGroup(groupData);
   }, [groupData]);
 
