@@ -477,7 +477,7 @@ export function OrderViewEditModal({
                     </span>
                     <div className="space-y-4 pb-4">
                       {order.groupDetails.participants.map((participant, index) => (
-                    <div key={index} className="bg-white rounded-lg p-3 pb-4 pl-4 text-left border border-gray-200">
+                    <div key={index} className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-semibold text-gray-800 text-left">
                           {participant.prenom ? `${participant.nom} ${participant.prenom}` : participant.nom}
@@ -646,7 +646,7 @@ export function OrderViewEditModal({
                       Pièces de tenue réservées & Statut de rendu
                     </span>
                     <div className="space-y-4 pb-4">
-                      <div className="bg-white rounded-lg p-3 pb-4 pl-4 text-left border border-gray-200">
+                      <div className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-semibold text-gray-800 text-left">
                             {virtualParticipant.prenom ? `${virtualParticipant.nom} ${virtualParticipant.prenom}` : virtualParticipant.nom}
