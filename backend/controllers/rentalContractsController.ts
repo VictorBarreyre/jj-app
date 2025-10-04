@@ -186,11 +186,6 @@ export const rentalContractsController = {
       // Pour les contrats individuels, créer un participant virtuel dans groupDetails si nécessaire
       let reclassifiedContract = { ...contract };
       if (!shouldBeGroupe && contract.tenue && (!contract.groupDetails?.participants || contract.groupDetails.participants.length === 0)) {
-        console.log('🔧 Enrichissement du contrat individuel avec participant virtuel:', {
-          nom: contract.client.nom,
-          prenom: contract.client.prenom,
-          tenue: contract.tenue
-        });
         reclassifiedContract.groupDetails = {
           participants: [{
             nom: contract.client.nom,

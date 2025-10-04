@@ -48,12 +48,6 @@ export function DynamicProductSelector({
   const [loadingReferences, setLoadingReferences] = useState(false);
   const [loadingSizes, setLoadingSizes] = useState(false);
 
-  // Debug : afficher les props reçues
-  useEffect(() => {
-    console.log(`🔍 DynamicProductSelector [${category}] - selectedReference:`, selectedReference);
-    console.log(`🔍 DynamicProductSelector [${category}] - selectedSize:`, selectedSize);
-    console.log(`🔍 DynamicProductSelector [${category}] - selectedColor:`, selectedColor);
-  }, [category, selectedReference, selectedSize, selectedColor]);
 
   // Charger les références pour la catégorie
   useEffect(() => {
@@ -62,7 +56,6 @@ export function DynamicProductSelector({
       try {
         const data = await stockAPI.getReferences(category);
         setReferences(data.references || []);
-        console.log(`🔍 DynamicProductSelector [${category}] - references chargées:`, data.references);
       } catch (error) {
         console.error('Erreur lors du chargement des références:', error);
       } finally {
@@ -102,18 +95,6 @@ export function DynamicProductSelector({
     setSizeInfo(null);
   }, [category]);
 
-  // Vérifier si la référence sélectionnée existe dans la liste
-  useEffect(() => {
-    if (selectedReference && references.length > 0) {
-      const refExists = references.find(ref => ref.id === selectedReference);
-      if (!refExists) {
-        console.warn(`⚠️ DynamicProductSelector [${category}] - La référence "${selectedReference}" n'existe pas dans la liste!`);
-        console.log(`🔍 DynamicProductSelector [${category}] - IDs disponibles:`, references.map(r => r.id));
-      } else {
-        console.log(`✅ DynamicProductSelector [${category}] - Référence "${selectedReference}" trouvée:`, refExists);
-      }
-    }
-  }, [category, selectedReference, references]);
 
   // Vérifier si la référence sélectionnée est une ceinture scratch
   const isCeintureScratched = () => {
