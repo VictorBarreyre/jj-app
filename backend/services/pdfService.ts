@@ -259,7 +259,7 @@ export class BackendPDFService {
 
           <div class="prices-row">
             <div>Prix: ${this.formatPrice(contract.tarifLocation || 0)}</div>
-            <div>Caution: ${this.formatPrice(contract.depotGarantie)}</div>
+            <div>Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}</div>
             <div>Arrhes: ${this.formatPrice(contract.arrhes)}</div>
           </div>
 

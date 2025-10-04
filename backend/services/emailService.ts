@@ -72,7 +72,7 @@ export class EmailService {
 
             <p><strong>Important :</strong></p>
             <ul>
-              <li>Il vous faudra payer le solde de la location et la caution lors de la récupération</li>
+              <li>Il vous faudra payer le solde de la location et le dépôt de garantie lors de la récupération</li>
               <li>Vérifiez soigneusement vos articles à la réception</li>
               <li>En payant les arrhes vous avez accepté <a href="https://www.jjloc.fr/documentary">les conditions de location</a></li>
               <li>Tout retard fera l'objet d'une facturation supplémentaire</li>
