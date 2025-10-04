@@ -129,10 +129,8 @@ export class PDFService {
         const couleur = participant.tenue.veste.couleur || '';
         const notes = participant.tenue.veste.notes || '';
 
-        // Inclure les tailles seulement pour le PDF vendeur
-        const parts = type === 'vendeur'
-          ? [reference, participant.tenue.veste.taille || '', couleur, participant.tenue.veste.longueurManche || ''].filter(part => part)
-          : [reference, couleur].filter(part => part);
+        // Frontend PDF : toujours afficher toutes les tailles
+        const parts = [reference, participant.tenue.veste.taille || '', couleur, participant.tenue.veste.longueurManche || ''].filter(part => part);
 
         const itemText = `Veste:  ${parts.join(' / ')}`;
         items.push(notes ? `${itemText} (${notes})` : itemText);
@@ -142,10 +140,8 @@ export class PDFService {
         const couleur = participant.tenue.gilet.couleur || '';
         const notes = participant.tenue.gilet.notes || '';
 
-        // Inclure les tailles seulement pour le PDF vendeur
-        const parts = type === 'vendeur'
-          ? [reference, participant.tenue.gilet.taille || '', couleur].filter(part => part)
-          : [reference, couleur].filter(part => part);
+        // Frontend PDF : toujours afficher toutes les tailles
+        const parts = [reference, participant.tenue.gilet.taille || '', couleur].filter(part => part);
 
         const itemText = `Gilet:  ${parts.join(' / ')}`;
         items.push(notes ? `${itemText} (${notes})` : itemText);
@@ -155,29 +151,19 @@ export class PDFService {
         const couleur = participant.tenue.pantalon.couleur || '';
         const notes = participant.tenue.pantalon.notes || '';
 
-        // Inclure les tailles seulement pour le PDF vendeur
-        const parts = type === 'vendeur'
-          ? [reference, participant.tenue.pantalon.taille || '', couleur, participant.tenue.pantalon.longueur || ''].filter(part => part)
-          : [reference, couleur].filter(part => part);
+        // Frontend PDF : toujours afficher toutes les tailles
+        const parts = [reference, participant.tenue.pantalon.taille || '', couleur, participant.tenue.pantalon.longueur || ''].filter(part => part);
 
         const itemText = `Pantalon:  ${parts.join(' / ')}`;
         items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.tailleChapeau) {
-        // Afficher seulement pour le PDF vendeur
-        if (type === 'vendeur') {
-          items.push(`Chapeau:  ${participant.tenue.tailleChapeau}`);
-        } else {
-          items.push(`Chapeau`);
-        }
+        // Frontend PDF : toujours afficher la taille
+        items.push(`Chapeau:  ${participant.tenue.tailleChapeau}`);
       }
       if (participant.tenue?.tailleChaussures) {
-        // Afficher seulement pour le PDF vendeur
-        if (type === 'vendeur') {
-          items.push(`Chaussures:  ${participant.tenue.tailleChaussures}`);
-        } else {
-          items.push(`Chaussures`);
-        }
+        // Frontend PDF : toujours afficher la pointure
+        items.push(`Chaussures:  ${participant.tenue.tailleChaussures}`);
       }
 
       if (items.length > 0) {
