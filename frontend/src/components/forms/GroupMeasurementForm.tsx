@@ -558,7 +558,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEditMode ? '✅ Confirmer et finaliser' : '➡️ Continuer vers le bon de location'}
+              {isEditMode ? '💾 Sauvegarder les modifications' : '➡️ Continuer vers le bon de location'}
             </Button>
           )}
         </div>

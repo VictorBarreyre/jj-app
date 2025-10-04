@@ -444,7 +444,7 @@ export function GroupSetupForm({ onSubmit, onSave, onConfirm, initialData, isEdi
               disabled={!isFormValid}
               className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEditMode ? '✅ Confirmer et finaliser' : '➡️ Continuer vers les mesures'}
+              {isEditMode ? '💾 Sauvegarder les modifications' : '➡️ Continuer vers les mesures'}
             </Button>
           </div>
         </div>
