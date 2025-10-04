@@ -1,4 +1,5 @@
 import { ProductCategory, VesteReference, GiletReference, PantalonReference, ChapeauReference, ChaussuresReference } from './product-references';
+import { TenueMeasurement } from './measurement-form';
 
 // Interface pour les mesures spécifiques par type de produit
 export interface VesteMeasurements {
@@ -103,13 +104,17 @@ export interface Order {
   status: 'brouillon' | 'livree' | 'rendue' | 'active' | 'delivered' | 'completed' | 'returned' | 'draft' | string;
   type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
-  
+
+  // Tenue et mesures (pour compatibilité avec RentalContract)
+  tenue?: TenueMeasurement;
+
   // Informations supplémentaires pour les groupes
   participantCount?: number; // Nombre de participants dans le groupe
   groupDetails?: {
     participants: Array<{
       nom: string;
       prenom?: string;
+      tenue?: TenueMeasurement; // Ajout de la tenue pour chaque participant
       pieces: string[]; // Liste des pièces de tenue pour ce participant
       notes?: string;
       rendu?: boolean; // Statut de rendu pour ce participant

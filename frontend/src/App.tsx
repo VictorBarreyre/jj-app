@@ -361,7 +361,12 @@ function App() {
       // Vérifier si on est en mode édition d'un brouillon existant
       const existingDraftId = editParams.editMode && editParams.orderId ? editParams.orderId : undefined;
 
-      // Convertir les données vers le format de contrat avec statut brouillon
+      // En mode édition, conserver le statut existant, sinon nouveau brouillon
+      const statusToUse = existingDraftId && selectedOrder
+        ? selectedOrder.status
+        : 'brouillon';
+
+      // Convertir les données vers le format de contrat
       const contractData = {
         dateCreation: new Date(),
         dateEvenement: contract?.dateEvenement || new Date(),
@@ -380,8 +385,8 @@ function App() {
         paiementArrhes: contract?.paiementArrhes,
         notes: contract?.notes || groupData?.groupNotes || '',
         tenue: groupData?.clients?.[0]?.tenue || {},
-        status: 'brouillon', // Statut brouillon
-        rendu: false,
+        status: statusToUse, // Conserver le statut existant en mode édition
+        rendu: existingDraftId && selectedOrder ? selectedOrder.rendu : false,
         type: groupData?.clients?.length && groupData.clients.length > 1 ? 'groupe' : 'individuel',
         participantCount: groupData?.clients?.length || 1,
         groupDetails: groupData?.clients && groupData.clients.length > 1 ? {
