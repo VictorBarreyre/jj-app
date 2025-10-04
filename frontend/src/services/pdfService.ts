@@ -400,19 +400,19 @@ export class PDFService {
     // Nom et prénom (texte vertical de haut en bas) - remonté
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text(personName, leftSectionX, currentY - 12, { angle: -90 });
+    doc.text(personName, leftSectionX, currentY - 14, { angle: -90 });
 
     // Date de sortie (texte vertical de haut en bas) - remonté
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     const dateRetrait = this.formatDate(contract.dateRetrait);
-    doc.text(`Sort le: ${dateRetrait}`, leftSectionX + 8, currentY - 12, { angle: -90 });
+    doc.text(`Sort le: ${dateRetrait}`, leftSectionX + 8, currentY - 14, { angle: -90 });
 
     // Taille du chapeau si présente (texte vertical au niveau de la jointure) - remonté
     const tailleChapeau = participant?.tenue?.tailleChapeau;
     if (tailleChapeau) {
       doc.setFontSize(8);
-      doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 12, { angle: -90 });
+      doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 14, { angle: -90 });
     }
 
     return currentY + 10;
