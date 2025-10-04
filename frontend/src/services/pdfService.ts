@@ -77,7 +77,12 @@ export class PDFService {
       participant = contract.groupDetails.participants[participantIndex];
       participantName = participant?.prenom ? `${participant.prenom} ${participant.nom}` : participant?.nom || '';
     }
-    // Pour un contrat individuel, utiliser la tenue principale
+    // Pour un contrat individuel, vérifier d'abord dans groupDetails.participants (enrichissement backend)
+    else if (contract.groupDetails?.participants && contract.groupDetails.participants.length > 0) {
+      participant = contract.groupDetails.participants[0];
+      participantName = contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom;
+    }
+    // Fallback: utiliser la tenue principale si pas dans groupDetails
     else if (contract.tenue && Object.keys(contract.tenue).length > 0) {
       participant = { tenue: contract.tenue };
       participantName = contract.client.prenom ? `${contract.client.prenom} ${contract.client.nom}` : contract.client.nom;
