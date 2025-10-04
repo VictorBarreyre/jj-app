@@ -21,6 +21,7 @@ interface GroupSetupFormProps {
   onSubmit: (groupData: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => void;
   onSave?: (groupData: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => void;
   initialData?: Partial<GroupRentalInfo>;
+  isEditMode?: boolean;
 }
 
 const VENDEURS: Vendeur[] = ['Sophie', 'Olivier', 'Laurent', 'Alexis', 'Mael'];
@@ -59,7 +60,7 @@ const loadGroupSetupFromStorage = (): Partial<GroupRentalInfo> | null => {
   }
 };
 
-export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupFormProps) {
+export function GroupSetupForm({ onSubmit, onSave, initialData, isEditMode = false }: GroupSetupFormProps) {
   const { user } = useAuth();
   
   const [formData, setFormData] = useState<Partial<GroupRentalInfo>>(() => {
@@ -436,7 +437,7 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
               disabled={!isFormValid}
               className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ➡️ Continuer vers les mesures
+              {isEditMode ? '💾 Sauvegarder les modifications' : '➡️ Continuer vers les mesures'}
             </Button>
           </div>
         </div>

@@ -341,6 +341,7 @@ export const ThreeStepRentalForm = forwardRef<
             onSubmit={handleGroupSetupSubmit}
             onSave={handleGroupSetupSave}
             initialData={initialGroup}
+            isEditMode={isEditMode}
           />
         )}
 
@@ -365,6 +366,7 @@ export const ThreeStepRentalForm = forwardRef<
             }}
             onSubmit={handleMeasurementSubmit}
             onSave={handleMeasurementSave}
+            isEditMode={isEditMode}
           />
         )}
 

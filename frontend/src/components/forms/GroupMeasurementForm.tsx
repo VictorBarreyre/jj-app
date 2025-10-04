@@ -23,12 +23,13 @@ interface GroupMeasurementFormProps {
   groupData: GroupRentalInfo;
   onSubmit: (updatedGroup: GroupRentalInfo) => void;
   onSave?: (updatedGroup: GroupRentalInfo) => void;
+  isEditMode?: boolean;
 }
 
 const TAILLES_CHAUSSURES: TailleChaussure[] = ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '60', '61', '62'];
 
-export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasurementFormProps) {
+export function GroupMeasurementForm({ groupData, onSubmit, onSave, isEditMode = false }: GroupMeasurementFormProps) {
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
   const [vesteReferences, setVesteReferences] = useState<any[]>([]);
@@ -543,7 +544,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave }: GroupMeasu
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ➡️ Continuer vers le bon de location
+              {isEditMode ? '💾 Sauvegarder les modifications' : '➡️ Continuer vers le bon de location'}
             </Button>
           )}
         </div>
