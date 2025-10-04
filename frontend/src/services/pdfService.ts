@@ -192,7 +192,7 @@ export class PDFService {
               doc.setFontSize(9);
               doc.setFont('helvetica', 'italic');
               doc.setTextColor(102, 102, 102); // Gris
-              doc.text(` (${note})`, 10 + bulletCategoryWidth + detailsWidth, currentY);
+              doc.text(`  (${note})`, 10 + bulletCategoryWidth + detailsWidth + 3, currentY);
               doc.setTextColor(0, 0, 0); // Reset to black
               doc.setFontSize(11); // Reset font size
             }
@@ -208,7 +208,7 @@ export class PDFService {
               doc.setFontSize(9);
               doc.setFont('helvetica', 'italic');
               doc.setTextColor(102, 102, 102);
-              doc.text(` (${note})`, 10 + itemWidth, currentY);
+              doc.text(`  (${note})`, 10 + itemWidth + 3, currentY);
               doc.setTextColor(0, 0, 0);
               doc.setFontSize(11);
             }
