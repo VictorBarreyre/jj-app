@@ -53,6 +53,7 @@ export interface TenueMeasurement {
 // Interface pour le client (formulaire de mesure)
 export interface MeasurementClientInfo {
   nom: string;
+  prenom?: string;
   telephone: string;
   email?: string;
   isExistingClient?: boolean;

@@ -64,6 +64,9 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
   
   const [formData, setFormData] = useState<Partial<GroupRentalInfo>>(() => {
     const savedData = loadGroupSetupFromStorage();
+    // Si initialData est fourni (mode édition), ne pas utiliser savedData
+    const useInitialData = initialData && Object.keys(initialData).length > 0;
+
     const baseData = {
       groupName: '',
       telephone: '',
@@ -72,15 +75,15 @@ export function GroupSetupForm({ onSubmit, onSave, initialData }: GroupSetupForm
       vendeur: user?.prenom as Vendeur,
       clients: [createEmptyClient()],
       groupNotes: '',
-      ...initialData,
-      ...savedData, // Les données sauvegardées prennent priorité
+      ...(useInitialData ? {} : savedData), // Utiliser savedData uniquement si pas en mode édition
+      ...initialData, // initialData prend priorité en mode édition
     };
-    
+
     // Le vendeur connecté prend toujours la priorité sur les données sauvegardées
     if (user?.prenom) {
       baseData.vendeur = user.prenom as Vendeur;
     }
-    
+
     return baseData;
   });
 

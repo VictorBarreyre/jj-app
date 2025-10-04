@@ -51,6 +51,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       dateRetour: defaultDates.dateRetour, // Mardi après l'événement
       client: {
         nom: '',
+        prenom: '',
         telephone: '',
         email: ''
       },

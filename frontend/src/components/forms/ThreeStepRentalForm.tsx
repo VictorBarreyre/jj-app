@@ -185,6 +185,7 @@ export const ThreeStepRentalForm = forwardRef<
       
       client: {
         nom: updatedGroup.clients.length === 1 ? mainClient.nom : updatedGroup.groupName,
+        prenom: updatedGroup.clients.length === 1 ? mainClient.prenom : '',
         telephone: updatedGroup.telephone,
         email: updatedGroup.email,
         isExistingClient: mainClient.isExistingClient,
