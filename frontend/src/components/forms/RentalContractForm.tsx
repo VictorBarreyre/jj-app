@@ -204,7 +204,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Tarif de location */}
           <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location (€)</Label>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location</Label>
             <Input
               type="number"
               step="0.01"
@@ -234,7 +234,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
 
           {/* Dépôt de garantie */}
           <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie (€)</Label>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie</Label>
             <Input
               type="number"
               step="0.01"
