@@ -185,34 +185,34 @@ export class PDFService {
             // Afficher les détails en normal
             doc.setFont('helvetica', 'normal');
             doc.text(details, 10 + bulletCategoryWidth, currentY);
-            currentY += 8;
 
-            // Afficher la note en italique et plus petit si présente
+            // Afficher la note sur la même ligne en italique si présente
             if (note) {
-              doc.setFontSize(8);
+              const detailsWidth = doc.getTextWidth(details);
+              doc.setFontSize(9);
               doc.setFont('helvetica', 'italic');
               doc.setTextColor(102, 102, 102); // Gris
-              doc.text(`  ${note}`, 15, currentY);
+              doc.text(` (${note})`, 10 + bulletCategoryWidth + detailsWidth, currentY);
               doc.setTextColor(0, 0, 0); // Reset to black
               doc.setFontSize(11); // Reset font size
-              currentY += 6;
             }
+            currentY += 8;
           } else {
             // Cas où il n'y a pas de ":" (fallback)
             doc.setFont('helvetica', 'normal');
             doc.text(`• ${itemWithoutNote}`, 10, currentY);
-            currentY += 8;
 
-            // Afficher la note si présente
+            // Afficher la note sur la même ligne si présente
             if (note) {
-              doc.setFontSize(8);
+              const itemWidth = doc.getTextWidth(`• ${itemWithoutNote}`);
+              doc.setFontSize(9);
               doc.setFont('helvetica', 'italic');
               doc.setTextColor(102, 102, 102);
-              doc.text(`  ${note}`, 15, currentY);
+              doc.text(` (${note})`, 10 + itemWidth, currentY);
               doc.setTextColor(0, 0, 0);
               doc.setFontSize(11);
-              currentY += 6;
             }
+            currentY += 8;
           }
         });
       } else {
