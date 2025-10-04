@@ -218,14 +218,14 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <div>
               <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous tarif de location</Label>
               <Select
-                value={form.paiementSolde?.method || ''}
-                onValueChange={(value) => updatePayment('solde', 'method', value)}
+                value={form.paiementSolde?.method || 'none'}
+                onValueChange={(value) => updatePayment('solde', 'method', value === 'none' ? undefined : value)}
               >
                 <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                   <SelectValue placeholder="Rien (vide)" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="">Rien (vide)</SelectItem>
+                  <SelectItem value="none">Rien (vide)</SelectItem>
                   <SelectItem value="carte">Payé en carte</SelectItem>
                   <SelectItem value="cheque">Payé en chèque</SelectItem>
                   <SelectItem value="especes">Payé en espèces</SelectItem>
@@ -251,14 +251,14 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <div>
               <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous dépôt de garantie</Label>
               <Select
-                value={form.paiementDepotGarantie?.method || ''}
-                onValueChange={(value) => updateForm('paiementDepotGarantie', { method: value })}
+                value={form.paiementDepotGarantie?.method || 'none'}
+                onValueChange={(value) => updateForm('paiementDepotGarantie', value === 'none' ? undefined : { method: value })}
               >
                 <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                   <SelectValue placeholder="Non versée" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="">Non versée</SelectItem>
+                  <SelectItem value="none">Non versée</SelectItem>
                   <SelectItem value="carte">Faite en carte</SelectItem>
                   <SelectItem value="cheque">Faite en chèque</SelectItem>
                   <SelectItem value="especes">Faite en espèce</SelectItem>
@@ -271,9 +271,9 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Arrhes</Label>
             <Select
-              value={form.paiementArrhes?.method ? `${form.arrhes || 50}-${form.paiementArrhes.method}` : ''}
+              value={form.paiementArrhes?.method ? `${form.arrhes || 50}-${form.paiementArrhes.method}` : 'none'}
               onValueChange={(value) => {
-                if (value === '') {
+                if (value === 'none') {
                   updateForm('arrhes', 0);
                   updateForm('paiementArrhes', undefined);
                 } else if (value === 'non-versees') {
@@ -290,7 +290,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
                 <SelectValue placeholder="Vide (rien)" />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-300 text-gray-900">
-                <SelectItem value="">Vide (rien)</SelectItem>
+                <SelectItem value="none">Vide (rien)</SelectItem>
                 <SelectItem value="50-carte">50€ en carte</SelectItem>
                 <SelectItem value="50-cheque">50€ en chèque</SelectItem>
                 <SelectItem value="50-especes">50€ en espèces</SelectItem>
