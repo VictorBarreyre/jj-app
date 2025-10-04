@@ -164,6 +164,7 @@ export const ThreeStepRentalForm = forwardRef<
       ...group,
       status: 'brouillon'
     };
+    setGroupData(fullGroupData); // Mettre à jour les données locales pour localStorage
     onSaveDraft(fullGroupData);
   };
 
@@ -229,6 +230,7 @@ export const ThreeStepRentalForm = forwardRef<
 
   const handleContractSave = (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
     if (groupData) {
+      setContractData(contract); // Mettre à jour les données locales pour localStorage
       onSaveDraft(groupData, contract);
     }
   };

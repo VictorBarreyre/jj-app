@@ -34,6 +34,13 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, isEditMode =
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
   const [vesteReferences, setVesteReferences] = useState<any[]>([]);
 
+  // Mettre à jour updatedGroup quand groupData change (important en mode édition)
+  useEffect(() => {
+    console.log('🔍 GroupMeasurementForm - groupData reçu:', groupData);
+    console.log('🔍 GroupMeasurementForm - clients[0].tenue:', groupData.clients?.[0]?.tenue);
+    setUpdatedGroup(groupData);
+  }, [groupData]);
+
   // Charger les références de veste au montage
   useEffect(() => {
     const fetchVesteReferences = async () => {
@@ -540,7 +547,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, isEditMode =
             </Button>
           ) : (
             <Button
-              onClick={handleSubmit}
+              onClick={isEditMode ? handleSave : handleSubmit}
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >

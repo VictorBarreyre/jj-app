@@ -54,6 +54,10 @@ function App() {
 
   // Fonction pour convertir Order vers GroupRentalInfo (pour les étapes 1 et 2)
   const convertOrderToGroup = (order: Order): Partial<GroupRentalInfo> => {
+    console.log('🔍 convertOrderToGroup - order:', order);
+    console.log('🔍 convertOrderToGroup - order.tenue:', order.tenue);
+    console.log('🔍 convertOrderToGroup - order.groupDetails:', order.groupDetails);
+
     let clients = [];
 
     // Si on a des groupDetails sauvegardés, les utiliser pour reconstituer les participants
@@ -69,25 +73,33 @@ function App() {
         clientId: `group-${participant.nom.toLowerCase().replace(/\s+/g, '-')}`
       }));
     } else {
-      // Fallback : convertir les items en tenue combinée (ancien comportement)
-      const tenue: any = {};
-      order.items?.forEach(item => {
-        const category = item.category;
-        if (category === 'veste' || category === 'gilet' || category === 'pantalon' || category === 'ceinture') {
-          tenue[category] = {
-            reference: item.reference,
-            taille: item.measurements?.taille || item.measurements?.pointure || '50',
-            longueur: item.measurements?.longueur,
-            longueurManche: item.measurements?.manches,
-            couleur: item.measurements?.couleur || '',
-            notes: item.notes || ''
-          };
-        } else if (category === 'chapeau') {
-          tenue.tailleChapeau = item.measurements?.taille || '56';
-        } else if (category === 'chaussures') {
-          tenue.tailleChaussures = item.measurements?.pointure || item.measurements?.taille || '42';
-        }
-      });
+      // Fallback : utiliser la tenue sauvegardée dans le contrat ou reconstruire depuis items
+      let tenue: any = {};
+
+      // Priorité 1 : utiliser la tenue directement si elle existe
+      if (order.tenue && Object.keys(order.tenue).length > 0) {
+        tenue = order.tenue;
+      }
+      // Priorité 2 : reconstruire depuis items (ancien comportement)
+      else if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          const category = item.category;
+          if (category === 'veste' || category === 'gilet' || category === 'pantalon' || category === 'ceinture') {
+            tenue[category] = {
+              reference: item.reference,
+              taille: item.measurements?.taille || item.measurements?.pointure || '50',
+              longueur: item.measurements?.longueur,
+              longueurManche: item.measurements?.manches,
+              couleur: item.measurements?.couleur || '',
+              notes: item.notes || ''
+            };
+          } else if (category === 'chapeau') {
+            tenue.tailleChapeau = item.measurements?.taille || '56';
+          } else if (category === 'chaussures') {
+            tenue.tailleChaussures = item.measurements?.pointure || item.measurements?.taille || '42';
+          }
+        });
+      }
 
       clients = [{
         nom: order.client.nom,
@@ -101,7 +113,7 @@ function App() {
       }];
     }
 
-    return {
+    const result = {
       groupName: order.type === 'groupe' ? `Groupe ${order.client.nom}` : order.client.nom,
       telephone: order.client.telephone || '',
       email: order.client.email || '',
@@ -111,6 +123,10 @@ function App() {
       groupNotes: order.notes || '',
       status: 'brouillon'
     };
+
+    console.log('🔍 convertOrderToGroup - result.clients[0].tenue:', result.clients?.[0]?.tenue);
+
+    return result;
   };
 
   // Fonction pour convertir Order vers RentalContract (pour l'étape 3)

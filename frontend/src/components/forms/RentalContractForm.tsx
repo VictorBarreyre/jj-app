@@ -294,7 +294,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               💾 Sauvegarder brouillon
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={isEditMode ? handleSave : handleSubmit}
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
