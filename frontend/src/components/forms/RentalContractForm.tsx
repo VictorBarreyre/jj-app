@@ -203,68 +203,68 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
         </h2>
         <div className="space-y-4">
           {/* Tarif de location */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-end">
-            <div>
-              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location (€)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={form.tarifLocation || ''}
-                onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-              />
-            </div>
-            <div>
-              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous tarif de location</Label>
-              <Select
-                value={form.paiementSolde?.method || 'none'}
-                onValueChange={(value) => updatePayment('solde', 'method', value === 'none' ? undefined : value)}
-              >
-                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                  <SelectValue placeholder="Rien (vide)" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="none">Rien (vide)</SelectItem>
-                  <SelectItem value="carte">Payé en carte</SelectItem>
-                  <SelectItem value="cheque">Payé en chèque</SelectItem>
-                  <SelectItem value="especes">Payé en espèces</SelectItem>
-                  <SelectItem value="virement">Payé en virement</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location (€)</Label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.tarifLocation || ''}
+              onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
+          </div>
+
+          {/* Sous tarif de location */}
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous tarif de location</Label>
+            <Select
+              value={form.paiementSolde?.method || 'none'}
+              onValueChange={(value) => updatePayment('solde', 'method', value === 'none' ? undefined : value)}
+            >
+              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                <SelectValue placeholder="Rien (vide)" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-gray-300 text-gray-900">
+                <SelectItem value="none">Rien (vide)</SelectItem>
+                <SelectItem value="carte">Payé en carte</SelectItem>
+                <SelectItem value="cheque">Payé en chèque</SelectItem>
+                <SelectItem value="especes">Payé en espèces</SelectItem>
+                <SelectItem value="virement">Payé en virement</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Dépôt de garantie */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 items-end">
-            <div>
-              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie (€) *</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={form.depotGarantie || 0}
-                onChange={(e) => updateForm('depotGarantie', parseFloat(e.target.value) || 0)}
-                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-              />
-            </div>
-            <div>
-              <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous dépôt de garantie</Label>
-              <Select
-                value={form.paiementDepotGarantie?.method || 'none'}
-                onValueChange={(value) => updateForm('paiementDepotGarantie', value === 'none' ? undefined : { method: value })}
-              >
-                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                  <SelectValue placeholder="Non versée" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="none">Non versée</SelectItem>
-                  <SelectItem value="carte">Faite en carte</SelectItem>
-                  <SelectItem value="cheque">Faite en chèque</SelectItem>
-                  <SelectItem value="especes">Faite en espèce</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Dépôt de garantie (€) *</Label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.depotGarantie || 0}
+              onChange={(e) => updateForm('depotGarantie', parseFloat(e.target.value) || 0)}
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
+          </div>
+
+          {/* Sous dépôt de garantie */}
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Sous dépôt de garantie</Label>
+            <Select
+              value={form.paiementDepotGarantie?.method || 'none'}
+              onValueChange={(value) => updateForm('paiementDepotGarantie', value === 'none' ? undefined : { method: value })}
+            >
+              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                <SelectValue placeholder="Non versée" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-gray-300 text-gray-900">
+                <SelectItem value="none">Non versée</SelectItem>
+                <SelectItem value="carte">Faite en carte</SelectItem>
+                <SelectItem value="cheque">Faite en chèque</SelectItem>
+                <SelectItem value="especes">Faite en espèce</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Arrhes */}
