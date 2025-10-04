@@ -39,11 +39,11 @@ interface RentalContractFormProps {
 
 export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData, isEditMode = false }: RentalContractFormProps) {
   const { user } = useAuth();
-  
+
   const [form, setForm] = useState<Partial<RentalContract>>(() => {
     const today = new Date();
     const defaultDates = calculateDefaultDates(today);
-    
+
     const defaultValues = {
       dateCreation: new Date(),
       dateEvenement: today,
@@ -66,14 +66,25 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       },
       status: 'brouillon'
     };
-    
-    return {
+
+    console.log('🔍 RentalContractForm - initialData.client:', initialData?.client);
+
+    const mergedData = {
       ...defaultValues,
       ...initialData,
+      // Fusionner le client correctement pour ne pas perdre le prénom
+      client: {
+        ...defaultValues.client,
+        ...(initialData?.client || {})
+      },
       // Force les nouvelles valeurs par défaut si elles ne sont pas définies dans initialData
       depotGarantie: initialData?.depotGarantie ?? 400,
       arrhes: initialData?.arrhes ?? 50
     };
+
+    console.log('🔍 RentalContractForm - merged client:', mergedData.client);
+
+    return mergedData;
   });
 
   const paymentMethods: { value: PaymentMethod; label: string }[] = [

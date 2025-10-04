@@ -197,7 +197,9 @@ export const rentalContractsController = {
   createContract: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const contractData: CreateRentalContractData = req.body;
-      
+
+      console.log('📥 Backend CREATE - contractData.client:', contractData.client);
+
       // Validation
       if (!contractData.client?.nom || !contractData.client?.telephone) {
         throw createError('Le nom et téléphone du client sont requis', 400);
@@ -276,6 +278,8 @@ export const rentalContractsController = {
         dateRetrait: new Date(cleanedData.dateRetrait),
         dateRetour: new Date(cleanedData.dateRetour),
       };
+
+      console.log('💾 Avant sauvegarde MongoDB - contractToSave.client:', contractToSave.client);
       const newContract = new RentalContractModel(contractToSave);
       const savedContract = await newContract.save();
       
@@ -329,7 +333,9 @@ export const rentalContractsController = {
     try {
       const { id } = req.params;
       const updateData: UpdateRentalContractData = req.body;
-      
+
+      console.log('📥 Backend UPDATE - updateData.client:', updateData.client);
+
       const updatedContract = await RentalContractModel.findByIdAndUpdate(
         id,
         { ...updateData, updatedAt: new Date() },

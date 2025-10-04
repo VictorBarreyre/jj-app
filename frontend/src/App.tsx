@@ -172,6 +172,8 @@ function App() {
 
   const handleRentalSubmitComplete = async (groupData: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => {
     try {
+      console.log('🔍 handleRentalSubmitComplete - contract.client:', contract.client);
+
       if (editParams.editMode && editParams.orderId) {
         // Mode édition : mettre à jour la commande existante
         const contractData = {
@@ -230,6 +232,7 @@ function App() {
           } : undefined
         };
 
+        console.log('📤 Envoi au backend (UPDATE) - contractData.client:', contractData.client);
         const updatedContract = await rentalContractApi.update(editParams.orderId, contractData);
 
         // Proposer de générer le PDF immédiatement
@@ -307,6 +310,7 @@ function App() {
           } : undefined
         };
 
+        console.log('📤 Envoi au backend (CREATE) - contractData.client:', contractData.client);
         const createdContract = await rentalContractApi.create(contractData);
 
         // Proposer de générer le PDF immédiatement
