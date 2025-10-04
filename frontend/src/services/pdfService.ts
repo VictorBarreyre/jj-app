@@ -58,7 +58,7 @@ export class PDFService {
     doc.line(10, 52, 138, 52);
   }
 
-  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number, type?: PDFType): number {
+  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number): number {
     let currentY = startY;
 
     // Numéro de réservation - A5
@@ -418,7 +418,7 @@ export class PDFService {
 
     // Informations simplifiées - plus d'espace après l'en-tête A5
     let currentY = 60;
-    currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex, type);
+    currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
 
     // Section détachable pour vendeur uniquement à position dynamique
     if (type === 'vendeur') {
