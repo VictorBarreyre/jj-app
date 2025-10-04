@@ -58,7 +58,7 @@ export class PDFService {
     doc.line(10, 52, 138, 52);
   }
 
-  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number): number {
+  private static addSimplifiedInfo(doc: jsPDF, contract: RentalContract, startY: number, participantIndex?: number, type?: PDFType): number {
     let currentY = startY;
 
     // Numéro de réservation - A5
@@ -126,38 +126,58 @@ export class PDFService {
 
       if (participant.tenue?.veste) {
         const reference = formatReference(participant.tenue.veste.reference || '');
-        const taille = participant.tenue.veste.taille || '';
         const couleur = participant.tenue.veste.couleur || '';
-        const longueurManche = participant.tenue.veste.longueurManche || '';
         const notes = participant.tenue.veste.notes || '';
-        const parts = [reference, taille, couleur, longueurManche].filter(part => part);
+
+        // Inclure les tailles seulement pour le PDF vendeur
+        const parts = type === 'vendeur'
+          ? [reference, participant.tenue.veste.taille || '', couleur, participant.tenue.veste.longueurManche || ''].filter(part => part)
+          : [reference, couleur].filter(part => part);
+
         const itemText = `Veste:  ${parts.join(' / ')}`;
         items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.gilet) {
         const reference = formatReference(participant.tenue.gilet.reference || '');
-        const taille = participant.tenue.gilet.taille || '';
         const couleur = participant.tenue.gilet.couleur || '';
         const notes = participant.tenue.gilet.notes || '';
-        const parts = [reference, taille, couleur].filter(part => part);
+
+        // Inclure les tailles seulement pour le PDF vendeur
+        const parts = type === 'vendeur'
+          ? [reference, participant.tenue.gilet.taille || '', couleur].filter(part => part)
+          : [reference, couleur].filter(part => part);
+
         const itemText = `Gilet:  ${parts.join(' / ')}`;
         items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.pantalon) {
         const reference = formatReference(participant.tenue.pantalon.reference || '');
-        const taille = participant.tenue.pantalon.taille || '';
         const couleur = participant.tenue.pantalon.couleur || '';
-        const longueur = participant.tenue.pantalon.longueur || '';
         const notes = participant.tenue.pantalon.notes || '';
-        const parts = [reference, taille, couleur, longueur].filter(part => part);
+
+        // Inclure les tailles seulement pour le PDF vendeur
+        const parts = type === 'vendeur'
+          ? [reference, participant.tenue.pantalon.taille || '', couleur, participant.tenue.pantalon.longueur || ''].filter(part => part)
+          : [reference, couleur].filter(part => part);
+
         const itemText = `Pantalon:  ${parts.join(' / ')}`;
         items.push(notes ? `${itemText} (${notes})` : itemText);
       }
       if (participant.tenue?.tailleChapeau) {
-        items.push(`Chapeau:  ${participant.tenue.tailleChapeau}`);
+        // Afficher seulement pour le PDF vendeur
+        if (type === 'vendeur') {
+          items.push(`Chapeau:  ${participant.tenue.tailleChapeau}`);
+        } else {
+          items.push(`Chapeau`);
+        }
       }
       if (participant.tenue?.tailleChaussures) {
-        items.push(`Chaussures:  ${participant.tenue.tailleChaussures}`);
+        // Afficher seulement pour le PDF vendeur
+        if (type === 'vendeur') {
+          items.push(`Chaussures:  ${participant.tenue.tailleChaussures}`);
+        } else {
+          items.push(`Chaussures`);
+        }
       }
 
       if (items.length > 0) {
@@ -412,7 +432,7 @@ export class PDFService {
 
     // Informations simplifiées - plus d'espace après l'en-tête A5
     let currentY = 60;
-    currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex);
+    currentY = this.addSimplifiedInfo(doc, contract, currentY, participantIndex, type);
 
     // Section détachable pour vendeur uniquement à position dynamique
     if (type === 'vendeur') {
