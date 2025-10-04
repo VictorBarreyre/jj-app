@@ -43,42 +43,71 @@ export class BackendPDFService {
     // Construire la liste des vêtements
     const itemsHTML = [];
     if (participant?.tenue?.veste) {
-      const parts = [
-        this.formatReference(participant.tenue.veste.reference),
-        participant.tenue.veste.taille,
-        participant.tenue.veste.couleur,
-        participant.tenue.veste.longueurManche
-      ].filter(p => p).join(' / ');
+      // Inclure les tailles seulement pour le PDF vendeur
+      const parts = type === 'vendeur'
+        ? [
+            this.formatReference(participant.tenue.veste.reference),
+            participant.tenue.veste.taille,
+            participant.tenue.veste.couleur,
+            participant.tenue.veste.longueurManche
+          ].filter(p => p)
+        : [
+            this.formatReference(participant.tenue.veste.reference),
+            participant.tenue.veste.couleur
+          ].filter(p => p);
+      const joined = parts.join(' / ');
       const notes = participant.tenue.veste.notes || '';
-      const itemText = notes ? `${parts} <span style="font-style: italic; color: #666;">(${notes})</span>` : parts;
+      const itemText = notes ? `${joined} <span style="font-style: italic; color: #666;">(${notes})</span>` : joined;
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Veste:</span> ${itemText}</div>`);
     }
     if (participant?.tenue?.gilet) {
-      const parts = [
-        this.formatReference(participant.tenue.gilet.reference),
-        participant.tenue.gilet.taille,
-        participant.tenue.gilet.couleur
-      ].filter(p => p).join(' / ');
+      // Inclure les tailles seulement pour le PDF vendeur
+      const parts = type === 'vendeur'
+        ? [
+            this.formatReference(participant.tenue.gilet.reference),
+            participant.tenue.gilet.taille,
+            participant.tenue.gilet.couleur
+          ].filter(p => p)
+        : [
+            this.formatReference(participant.tenue.gilet.reference),
+            participant.tenue.gilet.couleur
+          ].filter(p => p);
+      const joined = parts.join(' / ');
       const notes = participant.tenue.gilet.notes || '';
-      const itemText = notes ? `${parts} <span style="font-style: italic; color: #666;">(${notes})</span>` : parts;
+      const itemText = notes ? `${joined} <span style="font-style: italic; color: #666;">(${notes})</span>` : joined;
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Gilet:</span> ${itemText}</div>`);
     }
     if (participant?.tenue?.pantalon) {
-      const parts = [
-        this.formatReference(participant.tenue.pantalon.reference),
-        participant.tenue.pantalon.taille,
-        participant.tenue.pantalon.couleur,
-        participant.tenue.pantalon.longueur
-      ].filter(p => p).join(' / ');
+      // Inclure les tailles seulement pour le PDF vendeur
+      const parts = type === 'vendeur'
+        ? [
+            this.formatReference(participant.tenue.pantalon.reference),
+            participant.tenue.pantalon.taille,
+            participant.tenue.pantalon.couleur,
+            participant.tenue.pantalon.longueur
+          ].filter(p => p)
+        : [
+            this.formatReference(participant.tenue.pantalon.reference),
+            participant.tenue.pantalon.couleur
+          ].filter(p => p);
+      const joined = parts.join(' / ');
       const notes = participant.tenue.pantalon.notes || '';
-      const itemText = notes ? `${parts} <span style="font-style: italic; color: #666;">(${notes})</span>` : parts;
+      const itemText = notes ? `${joined} <span style="font-style: italic; color: #666;">(${notes})</span>` : joined;
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Pantalon:</span> ${itemText}</div>`);
     }
     if (participant?.tenue?.tailleChapeau) {
-      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chapeau:</span> ${participant.tenue.tailleChapeau}</div>`);
+      // Afficher la taille seulement pour le PDF vendeur
+      const text = type === 'vendeur' ? participant.tenue.tailleChapeau : '';
+      if (text || type === 'client') {
+        itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chapeau${type === 'vendeur' ? ':' : ''}</span> ${text}</div>`);
+      }
     }
     if (participant?.tenue?.tailleChaussures) {
-      itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chaussures:</span> ${participant.tenue.tailleChaussures}</div>`);
+      // Afficher la taille seulement pour le PDF vendeur
+      const text = type === 'vendeur' ? participant.tenue.tailleChaussures : '';
+      if (text || type === 'client') {
+        itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chaussures${type === 'vendeur' ? ':' : ''}</span> ${text}</div>`);
+      }
     }
 
     const itemsText = itemsHTML.length > 0 ? itemsHTML.join('') : '<div>• Aucun article</div>';
