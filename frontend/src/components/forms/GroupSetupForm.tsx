@@ -20,6 +20,7 @@ import {
 interface GroupSetupFormProps {
   onSubmit: (groupData: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => void;
   onSave?: (groupData: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => void;
+  onConfirm?: (groupData: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => void;
   initialData?: Partial<GroupRentalInfo>;
   isEditMode?: boolean;
 }
@@ -60,7 +61,7 @@ const loadGroupSetupFromStorage = (): Partial<GroupRentalInfo> | null => {
   }
 };
 
-export function GroupSetupForm({ onSubmit, onSave, initialData, isEditMode = false }: GroupSetupFormProps) {
+export function GroupSetupForm({ onSubmit, onSave, onConfirm, initialData, isEditMode = false }: GroupSetupFormProps) {
   const { user } = useAuth();
   
   const [formData, setFormData] = useState<Partial<GroupRentalInfo>>(() => {
@@ -201,6 +202,12 @@ export function GroupSetupForm({ onSubmit, onSave, initialData, isEditMode = fal
   const handleSave = () => {
     if (onSave) {
       onSave(formData as Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>);
+    }
+  };
+
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm(formData as Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>);
     }
   };
 
@@ -433,11 +440,11 @@ export function GroupSetupForm({ onSubmit, onSave, initialData, isEditMode = fal
               </Button>
             )}
             <Button
-              onClick={isEditMode ? handleSave : handleSubmit}
+              onClick={isEditMode ? handleConfirm : handleSubmit}
               disabled={!isFormValid}
               className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEditMode ? '💾 Sauvegarder les modifications' : '➡️ Continuer vers les mesures'}
+              {isEditMode ? '✅ Confirmer et finaliser' : '➡️ Continuer vers les mesures'}
             </Button>
           </div>
         </div>

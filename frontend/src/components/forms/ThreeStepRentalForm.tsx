@@ -179,6 +179,31 @@ export const ThreeStepRentalForm = forwardRef<
     onSaveDraft(fullGroupData, minimalContract);
   };
 
+  // Fonction pour confirmer en mode édition à l'étape 1
+  const handleGroupSetupConfirm = (group: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => {
+    const fullGroupData: GroupRentalInfo = {
+      ...group,
+      status: 'brouillon'
+    };
+    setGroupData(fullGroupData);
+
+    // Créer un contrat de base avec les infos disponibles
+    const contractForConfirm: any = {
+      ...contractData,
+      client: {
+        nom: fullGroupData.clients[0]?.nom || '',
+        prenom: fullGroupData.clients[0]?.prenom || '',
+        telephone: fullGroupData.telephone,
+        email: fullGroupData.email
+      },
+      vendeur: fullGroupData.vendeur,
+      status: 'confirme', // Forcer le statut à 'confirme'
+      rendu: initialRendu
+    };
+
+    onSubmitComplete(fullGroupData, contractForConfirm);
+  };
+
   // Étape 2 : Sélection des tenues
   const handleMeasurementSubmit = (updatedGroup: GroupRentalInfo) => {
     setGroupData(updatedGroup);
@@ -235,6 +260,41 @@ export const ThreeStepRentalForm = forwardRef<
     };
 
     onSaveDraft(updatedGroup, minimalContract);
+  };
+
+  // Fonction pour confirmer en mode édition à l'étape 2
+  const handleMeasurementConfirm = (updatedGroup: GroupRentalInfo) => {
+    setGroupData(updatedGroup);
+
+    // Créer un contrat de base avec toutes les infos disponibles
+    const mainClient = updatedGroup.clients[0];
+    const defaultDates = calculateDefaultDates(updatedGroup.dateEssai);
+
+    const contractForConfirm: any = {
+      ...contractData,
+      dateCreation: contractData?.dateCreation || new Date(),
+      dateEvenement: updatedGroup.dateEssai,
+      dateRetrait: contractData?.dateRetrait || defaultDates.dateRetrait,
+      dateRetour: contractData?.dateRetour || defaultDates.dateRetour,
+      client: {
+        nom: updatedGroup.clients.length === 1 ? mainClient.nom : updatedGroup.groupName,
+        prenom: updatedGroup.clients.length === 1 ? mainClient.prenom : '',
+        telephone: updatedGroup.telephone,
+        email: updatedGroup.email,
+        isExistingClient: mainClient.isExistingClient,
+        clientId: mainClient.clientId
+      },
+      vendeur: updatedGroup.vendeur,
+      tenue: mainClient.tenue,
+      notes: updatedGroup.groupNotes || mainClient.notes,
+      tarifLocation: contractData?.tarifLocation || undefined,
+      depotGarantie: contractData?.depotGarantie || 400,
+      arrhes: contractData?.arrhes || 50,
+      status: 'confirme', // Forcer le statut à 'confirme'
+      rendu: initialRendu
+    };
+
+    onSubmitComplete(updatedGroup, contractForConfirm);
   };
 
   // Étape 3 : Bon de location
@@ -360,6 +420,7 @@ export const ThreeStepRentalForm = forwardRef<
             key={formKey}
             onSubmit={handleGroupSetupSubmit}
             onSave={handleGroupSetupSave}
+            onConfirm={handleGroupSetupConfirm}
             initialData={initialGroup}
             isEditMode={isEditMode}
           />
@@ -386,6 +447,7 @@ export const ThreeStepRentalForm = forwardRef<
             }}
             onSubmit={handleMeasurementSubmit}
             onSave={handleMeasurementSave}
+            onConfirm={handleMeasurementConfirm}
             isEditMode={isEditMode}
           />
         )}
