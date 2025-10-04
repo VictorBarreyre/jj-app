@@ -219,10 +219,10 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
                 onValueChange={(value) => updatePayment('solde', 'method', value === 'none' ? undefined : value)}
               >
                 <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                  <SelectValue placeholder="Rien (vide)" />
+                  <SelectValue placeholder="Moyen de paiement" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-300 text-gray-900">
-                  <SelectItem value="none">Rien (vide)</SelectItem>
+                  <SelectItem value="none">Moyen de paiement</SelectItem>
                   <SelectItem value="carte">Payé en carte</SelectItem>
                   <SelectItem value="cheque">Payé en chèque</SelectItem>
                   <SelectItem value="especes">Payé en espèces</SelectItem>
@@ -281,10 +281,10 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               }}
             >
               <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                <SelectValue placeholder="Vide (rien)" />
+                <SelectValue placeholder="Moyen de paiement" />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-300 text-gray-900">
-                <SelectItem value="none">Vide (rien)</SelectItem>
+                <SelectItem value="none">Moyen de paiement</SelectItem>
                 <SelectItem value="50-carte">50€ en carte</SelectItem>
                 <SelectItem value="50-cheque">50€ en chèque</SelectItem>
                 <SelectItem value="50-especes">50€ en espèces</SelectItem>
