@@ -341,7 +341,7 @@ export class PDFService {
 
     // Ajouter une séparation verticale avec tirets - décalée vers la gauche pour plus d'espace à droite
     const sectionWidth = 138 - 10; // Largeur utilisable (bords exclus)
-    const separationX = 10 + (sectionWidth * 0.5); // Position à la moitié (au lieu de 2/3)
+    const separationX = 10 + (sectionWidth * 0.55); // Position à 55% de la largeur
 
     // Ligne verticale en tirets - de haut en bas de la section détachable
     doc.setLineDashPattern([1, 1], 0);
@@ -397,22 +397,22 @@ export class PDFService {
     doc.text('(à ne pas retirer de la housse)', rightSectionX, currentY + 9);
     doc.setTextColor(0, 0, 0); // Reset to black
 
-    // Nom et prénom (texte vertical de haut en bas)
+    // Nom et prénom (texte vertical de haut en bas) - remonté
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text(personName, leftSectionX, currentY - 2, { angle: -90 });
+    doc.text(personName, leftSectionX, currentY - 10, { angle: -90 });
 
-    // Date de sortie (texte vertical de haut en bas)
+    // Date de sortie (texte vertical de haut en bas) - remonté
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     const dateRetrait = this.formatDate(contract.dateRetrait);
-    doc.text(`Sort le: ${dateRetrait}`, leftSectionX + 8, currentY - 2, { angle: -90 });
+    doc.text(`Sort le: ${dateRetrait}`, leftSectionX + 8, currentY - 10, { angle: -90 });
 
-    // Taille du chapeau si présente (texte vertical au niveau de la jointure)
+    // Taille du chapeau si présente (texte vertical au niveau de la jointure) - remonté
     const tailleChapeau = participant?.tenue?.tailleChapeau;
     if (tailleChapeau) {
       doc.setFontSize(8);
-      doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 2, { angle: -90 });
+      doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 10, { angle: -90 });
     }
 
     return currentY + 10;
