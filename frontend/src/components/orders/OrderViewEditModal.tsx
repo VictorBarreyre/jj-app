@@ -475,7 +475,7 @@ export function OrderViewEditModal({
                     <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                       Pièces de tenue réservées & Statut de rendu
                     </span>
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-4">
                       {order.groupDetails.participants.map((participant, index) => (
                     <div key={index} className="bg-white rounded-lg p-3 text-left border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
@@ -645,7 +645,7 @@ export function OrderViewEditModal({
                     <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                       Pièces de tenue réservées & Statut de rendu
                     </span>
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-4">
                       <div className="bg-white rounded-lg p-3 text-left border border-gray-200">
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-semibold text-gray-800 text-left">
