@@ -194,49 +194,51 @@ function App() {
         // Mode édition : mettre à jour la commande existante
         const contractData = {
           ...contract,
+          // Filtrer les articlesStock vides (ceux sans reference)
+          articlesStock: contract.articlesStock?.filter(item => item.reference && item.reference.trim() !== '') || [],
           status: 'confirme' as const,
           isGroup: groupData.clients.length > 1,
           participantCount: groupData.clients.length,
           groupDetails: groupData.clients.length > 1 ? {
             participants: groupData.clients.map(client => {
               const pieces = [];
-              
+
               // Veste
               if (client.tenue.veste) {
                 const taille = client.tenue.veste.taille ? ` - Taille ${client.tenue.veste.taille}` : ' - Taille non spécifiée';
                 const longueurManche = client.tenue.veste.longueurManche ? ` - LM ${client.tenue.veste.longueurManche}cm` : '';
                 pieces.push(`Veste ${client.tenue.veste.reference}${taille}${longueurManche}`);
               }
-              
+
               // Gilet
               if (client.tenue.gilet) {
                 const taille = client.tenue.gilet.taille ? ` - Taille ${client.tenue.gilet.taille}` : ' - Taille non spécifiée';
                 pieces.push(`Gilet ${client.tenue.gilet.reference}${taille}`);
               }
-              
+
               // Pantalon
               if (client.tenue.pantalon) {
                 const taille = client.tenue.pantalon.taille ? ` - Taille ${client.tenue.pantalon.taille}` : ' - Taille non spécifiée';
                 const longueur = client.tenue.pantalon.longueur ? ` - Longueur ${client.tenue.pantalon.longueur}cm` : '';
                 pieces.push(`Pantalon ${client.tenue.pantalon.reference}${taille}${longueur}`);
               }
-              
+
               // Ceinture
               if (client.tenue.ceinture) {
                 const taille = client.tenue.ceinture.taille ? ` - Taille ${client.tenue.ceinture.taille}` : ' - Taille non spécifiée';
                 pieces.push(`Ceinture ${client.tenue.ceinture.reference}${taille}`);
               }
-              
+
               // Chapeau
               if (client.tenue.tailleChapeau) {
                 pieces.push(`Chapeau - Taille ${client.tenue.tailleChapeau}`);
               }
-              
+
               // Chaussures
               if (client.tenue.tailleChaussures) {
                 pieces.push(`Chaussures - Pointure ${client.tenue.tailleChaussures}`);
               }
-              
+
               return {
                 nom: client.nom,
                 prenom: client.prenom,
@@ -393,6 +395,8 @@ function App() {
         depotGarantie: contract?.depotGarantie || 400,
         arrhes: contract?.arrhes || 50,
         paiementArrhes: contract?.paiementArrhes,
+        // Filtrer les articlesStock vides (ceux sans reference)
+        articlesStock: contract?.articlesStock?.filter(item => item.reference && item.reference.trim() !== '') || [],
         notes: contract?.notes || groupData?.groupNotes || '',
         tenue: groupData?.clients?.[0]?.tenue || {},
         status: statusToUse, // Conserver le statut existant en mode édition
