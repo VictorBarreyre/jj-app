@@ -573,6 +573,7 @@ export function OrderViewEditModal({
               else if (order.type === 'individuel' && (order.items?.length > 0 || order.articlesStock?.length > 0 || order.tenue)) {
                 const virtualParticipant = {
                   nom: order.client.nom,
+                  prenom: order.client.prenom,
                   tenue: {},
                   rendu: order.rendu || false
                 };
@@ -648,7 +649,7 @@ export function OrderViewEditModal({
                       <div className="bg-white rounded-lg p-3 text-left border border-gray-200">
                         <div className="flex items-center justify-between mb-2">
                           <div className="font-semibold text-gray-800 text-left">
-                            {virtualParticipant.nom}
+                            {virtualParticipant.prenom ? `${virtualParticipant.prenom} ${virtualParticipant.nom}` : virtualParticipant.nom}
                           </div>
                           {onUpdateParticipantReturn && (
                             <button
