@@ -56,7 +56,8 @@ export class BackendPDFService {
             participant.tenue.veste.couleur
           ].filter(p => p);
       const joined = parts.join(' / ');
-      const notes = participant.tenue.veste.notes || '';
+      // Inclure les notes seulement pour le PDF vendeur
+      const notes = type === 'vendeur' ? (participant.tenue.veste.notes || '') : '';
       const itemText = notes ? `${joined} <span style="font-style: italic; color: #666;">(${notes})</span>` : joined;
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Veste:</span> ${itemText}</div>`);
     }
@@ -73,7 +74,8 @@ export class BackendPDFService {
             participant.tenue.gilet.couleur
           ].filter(p => p);
       const joined = parts.join(' / ');
-      const notes = participant.tenue.gilet.notes || '';
+      // Inclure les notes seulement pour le PDF vendeur
+      const notes = type === 'vendeur' ? (participant.tenue.gilet.notes || '') : '';
       const itemText = notes ? `${joined} <span style="font-style: italic; color: #666;">(${notes})</span>` : joined;
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Gilet:</span> ${itemText}</div>`);
     }
@@ -91,7 +93,8 @@ export class BackendPDFService {
             participant.tenue.pantalon.couleur
           ].filter(p => p);
       const joined = parts.join(' / ');
-      const notes = participant.tenue.pantalon.notes || '';
+      // Inclure les notes seulement pour le PDF vendeur
+      const notes = type === 'vendeur' ? (participant.tenue.pantalon.notes || '') : '';
       const itemText = notes ? `${joined} <span style="font-style: italic; color: #666;">(${notes})</span>` : joined;
       itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Pantalon:</span> ${itemText}</div>`);
     }
