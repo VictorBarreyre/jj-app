@@ -241,28 +241,46 @@ export const useSaveDraft = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id?: string; data: any }) => {
-      // Si on crée un nouveau brouillon, forcer le statut à 'brouillon'
-      // Si on met à jour un existant, conserver le statut fourni dans data
+    mutationFn: ({ id, data, forceDraft }: { id?: string; data: any; forceDraft?: boolean }) => {
+      // Déterminer le statut final
+      let finalStatus = data.status || 'brouillon';
+
+      if (forceDraft) {
+        // Si forceDraft est true, toujours mettre 'brouillon'
+        finalStatus = 'brouillon';
+      } else if (!id) {
+        // Si c'est une création (pas d'ID), c'est forcément un brouillon
+        finalStatus = 'brouillon';
+      }
+      // Sinon, conserver le statut fourni dans data
+
       const draftData = {
         ...data,
-        status: id ? (data.status || 'brouillon') : 'brouillon'
+        status: finalStatus
       };
 
-      // Si on a un ID, on met à jour le brouillon existant
+      // Si on a un ID, on met à jour le contrat existant
       if (id) {
         return contractsAPI.update(id, draftData);
       }
 
-      // Sinon, on crée un nouveau brouillon
+      // Sinon, on crée un nouveau contrat
       return contractsAPI.create(draftData);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      toast.success('Brouillon sauvegardé avec succès');
+
+      // Message adapté selon le contexte
+      if (variables.forceDraft) {
+        toast.success('Brouillon sauvegardé avec succès');
+      } else if (variables.id) {
+        toast.success('Modifications sauvegardées avec succès');
+      } else {
+        toast.success('Brouillon créé avec succès');
+      }
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.error || 'Erreur lors de la sauvegarde du brouillon');
+      toast.error(error.response?.data?.error || 'Erreur lors de la sauvegarde');
     },
   });
 };

@@ -353,30 +353,30 @@ function App() {
     }
   };
 
-  const handleRentalSaveDraft = async (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>) => {
+  const handleRentalSaveDraft = async (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>, forceDraft?: boolean) => {
     if (!groupData && !contract) {
-      console.warn('Données manquantes pour la sauvegarde du brouillon');
+      console.warn('Données manquantes pour la sauvegarde');
       return;
     }
 
     try {
-      // Vérifier si on est en mode édition d'un brouillon existant
+      // Vérifier si on est en mode édition
       const existingDraftId = editParams.editMode && editParams.orderId ? editParams.orderId : undefined;
 
-      // En mode édition, conserver le statut existant
-      // Priorité 1: statut dans le contract passé en paramètre (s'il existe)
-      // Priorité 2: statut dans selectedOrder (état initial)
-      // Priorité 3: 'brouillon' par défaut pour un nouveau contrat
-      let statusToUse: string = 'brouillon';
-      if (existingDraftId) {
-        if (contract?.status) {
-          statusToUse = contract.status;
-        } else if (selectedOrder?.status) {
-          statusToUse = selectedOrder.status;
-        }
+      // Déterminer le statut à utiliser
+      let statusToUse: string;
+      if (forceDraft) {
+        // Si forceDraft est true, toujours utiliser 'brouillon'
+        statusToUse = 'brouillon';
+      } else if (existingDraftId) {
+        // En mode édition sans forceDraft, conserver le statut existant
+        statusToUse = contract?.status || selectedOrder?.status || 'brouillon';
+      } else {
+        // Nouvelle création sans forceDraft
+        statusToUse = 'brouillon';
       }
 
-      console.log('🔍 handleRentalSaveDraft - statusToUse:', statusToUse);
+      console.log('🔍 handleRentalSaveDraft - forceDraft:', forceDraft, 'statusToUse:', statusToUse);
 
       // Convertir les données vers le format de contrat
       const contractData = {
@@ -395,11 +395,13 @@ function App() {
         depotGarantie: contract?.depotGarantie || 400,
         arrhes: contract?.arrhes || 50,
         paiementArrhes: contract?.paiementArrhes,
+        paiementSolde: contract?.paiementSolde,
+        paiementDepotGarantie: contract?.paiementDepotGarantie,
         // Filtrer les articlesStock vides (ceux sans reference)
         articlesStock: contract?.articlesStock?.filter(item => item.reference && item.reference.trim() !== '') || [],
         notes: contract?.notes || groupData?.groupNotes || '',
         tenue: groupData?.clients?.[0]?.tenue || {},
-        status: statusToUse, // Conserver le statut existant en mode édition
+        status: statusToUse,
         rendu: contract?.rendu ?? (existingDraftId && selectedOrder ? selectedOrder.rendu : false),
         type: groupData?.clients?.length && groupData.clients.length > 1 ? 'groupe' : 'individuel',
         participantCount: groupData?.clients?.length || 1,
@@ -414,10 +416,10 @@ function App() {
         } : undefined
       };
 
-      // Passer l'ID si on modifie un brouillon existant
-      await saveDraftMutation.mutateAsync({ id: existingDraftId, data: contractData });
+      // Passer l'ID et forceDraft au mutation
+      await saveDraftMutation.mutateAsync({ id: existingDraftId, data: contractData, forceDraft });
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du brouillon:', error);
+      console.error('Erreur lors de la sauvegarde:', error);
     }
   };
 

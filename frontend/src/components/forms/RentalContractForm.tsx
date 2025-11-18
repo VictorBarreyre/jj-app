@@ -30,7 +30,7 @@ const dateInputStyles = `
 
 interface RentalContractFormProps {
   onSubmit: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
-  onSaveDraft: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
+  onSaveDraft: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, forceDraft?: boolean) => void;
   onAutoSave?: (contract: Partial<RentalContract>) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
   initialData?: Partial<RentalContract>;
@@ -143,8 +143,14 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     onSubmit(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>);
   };
 
-  const handleSave = () => {
-    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>);
+  const handleSaveDraft = () => {
+    // Forcer le statut à 'brouillon'
+    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, true);
+  };
+
+  const handleSaveModifications = () => {
+    // Conserver le statut actuel
+    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, false);
   };
 
   const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait && form.dateRetour;
@@ -304,13 +310,13 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto sm:ml-auto">
             <Button
               variant="outline"
-              onClick={handleSave}
+              onClick={handleSaveDraft}
               className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
             >
               💾 Sauvegarder le brouillon
             </Button>
             <Button
-              onClick={isEditMode ? handleSave : handleSubmit}
+              onClick={isEditMode ? handleSaveModifications : handleSubmit}
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
