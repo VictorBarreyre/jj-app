@@ -127,14 +127,14 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     description: 'Jaquette bordeaux distinguée'
   },
   {
-    id: 'jaquette-jola',
-    name: 'Jaquette Jola',
+    id: 'jaquette-flanelle',
+    name: 'Jaquette flanelle',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
     colors: ['noir'],
     basePrice: 160,
-    description: 'Jaquette Jola premium'
+    description: 'Jaquette flanelle premium'
   },
   {
     id: 'jaquette-ff-clair',
@@ -346,14 +346,14 @@ export const PRODUCT_CATALOG: ProductReference[] = [
 
   // PANTALONS
   {
-    id: 'pantalon-sp',
-    name: 'Pantalon SP',
+    id: 'pantalon-raye',
+    name: 'Pantalon rayé',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
-    colors: ['SP'],
+    colors: ['rayé'],
     basePrice: 60,
-    description: 'Pantalon SP classique'
+    description: 'Pantalon rayé classique'
   },
   {
     id: 'pantalon-bleu',

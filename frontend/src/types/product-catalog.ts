@@ -7,7 +7,7 @@ export const VESTE_CATALOG = {
     'Jaquette Bleue',
     'Jaquette Bleue Clair',
     'Jaquette BORDEAUX',
-    'Jaquette JOLA',
+    'Jaquette flanelle',
     'Jaquette FF Clair'
   ] as const,
   
@@ -44,7 +44,7 @@ export const GILET_CATALOG = [
 
 // Catalogue organisé des références pantalons
 export const PANTALON_CATALOG = [
-  'SP',
+  'Rayé',
   'Bleu',
   'Bleu clair',
   'Uni foncé',
