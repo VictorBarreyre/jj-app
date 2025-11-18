@@ -347,20 +347,26 @@ export const rentalContractsController = {
       const { id } = req.params;
       const updateData: UpdateRentalContractData = req.body;
 
+      console.log('📥 Backend UPDATE - Receiving update for contract:', id);
       console.log('📥 Backend UPDATE - updateData.client:', updateData.client);
+      console.log('📥 Backend UPDATE - updateData.paiementArrhes:', updateData.paiementArrhes);
+      console.log('📥 Backend UPDATE - updateData.paiementSolde:', updateData.paiementSolde);
+      console.log('📥 Backend UPDATE - updateData.paiementDepotGarantie:', updateData.paiementDepotGarantie);
 
       const updatedContract = await RentalContractModel.findByIdAndUpdate(
         id,
         { ...updateData, updatedAt: new Date() },
         { new: true, runValidators: true }
       );
-      
+
       if (!updatedContract) {
         throw createError('Bon de location non trouvé', 404);
       }
-      
+
       res.json(updatedContract);
     } catch (error) {
+      console.error('❌ Erreur lors de la mise à jour du contrat:', error);
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
       next(error);
     }
   },
