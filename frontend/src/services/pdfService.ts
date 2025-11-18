@@ -244,6 +244,29 @@ export class PDFService {
     doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 10, currentY);
     doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 138, currentY, { align: 'right' });
+    currentY += 8;
+
+    // Moyens de paiement - plus petit et en normal
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+
+    // Moyen de paiement du solde (tarif location)
+    const paiementSoldeText = contract.paiementSolde?.method
+      ? `Payé en ${contract.paiementSolde.method}`
+      : 'Non payé';
+    doc.text(paiementSoldeText, 10, currentY);
+
+    // Moyen de paiement du dépôt de garantie
+    const paiementDepotText = contract.paiementDepotGarantie?.method
+      ? `Fait en ${contract.paiementDepotGarantie.method}`
+      : 'Non versé';
+    doc.text(paiementDepotText, 74, currentY, { align: 'center' });
+
+    // Moyen de paiement des arrhes
+    const paiementArrhesText = contract.paiementArrhes?.method
+      ? `Payées en ${contract.paiementArrhes.method}`
+      : 'Non versées';
+    doc.text(paiementArrhesText, 138, currentY, { align: 'right' });
     currentY += 11;
 
     return currentY;
