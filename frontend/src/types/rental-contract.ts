@@ -71,7 +71,7 @@ export interface RentalContract {
   // Métadonnées
   createdAt: Date;
   updatedAt: Date;
-  status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule';
+  status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule' | 'livree';
 }
 
 // Interface pour la création d'un bon de location

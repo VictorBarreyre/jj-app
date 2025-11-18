@@ -35,7 +35,7 @@ export interface IRentalContractDocument extends Document {
   dateRendu?: Date;
   
   // Statut
-  status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule';
+  status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule' | 'livree';
   
   // Type d'événement
   type: 'individuel' | 'groupe';
@@ -148,9 +148,9 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
   dateRendu: { type: Date },
   
   // Statut
-  status: { 
-    type: String, 
-    enum: ['brouillon', 'confirme', 'retire', 'rendu', 'annule'],
+  status: {
+    type: String,
+    enum: ['brouillon', 'confirme', 'retire', 'rendu', 'annule', 'livree'],
     default: 'brouillon'
   },
   
