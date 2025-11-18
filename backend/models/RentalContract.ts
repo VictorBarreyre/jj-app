@@ -95,7 +95,7 @@ export interface RentalContract {
   dateRendu?: string;
   
   // Statut
-  status: 'brouillon' | 'confirme' | 'retire' | 'rendu' | 'annule' | 'livree';
+  status: 'brouillon' | 'confirme' | 'rendu' | 'livree';
   
   // Type d'événement
   type: 'individuel' | 'groupe';

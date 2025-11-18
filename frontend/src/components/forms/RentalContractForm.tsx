@@ -309,13 +309,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           )}
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto sm:ml-auto">
             <Button
-              variant="outline"
-              onClick={handleSaveDraft}
-              className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
-            >
-              💾 Sauvegarder le brouillon
-            </Button>
-            <Button
               onClick={isEditMode ? handleSaveModifications : handleSubmit}
               disabled={!isFormValid}
               className="px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"

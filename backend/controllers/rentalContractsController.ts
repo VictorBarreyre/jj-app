@@ -499,8 +499,8 @@ export const rentalContractsController = {
         // Créer automatiquement les mouvements de retour
         await createStockMovements(contract, 'retour');
       } else if (!allReturned && contract.status === 'rendu') {
-        // Si ce n'est plus le cas que tous ont rendu, revenir au statut "retire" (équivalent à "livré")
-        contract.status = 'retire';
+        // Si ce n'est plus le cas que tous ont rendu, revenir au statut "livree"
+        contract.status = 'livree';
         contract.rendu = false;
         contract.dateRendu = undefined;
       }

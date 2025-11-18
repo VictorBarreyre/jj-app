@@ -274,7 +274,7 @@ export const useSaveDraft = () => {
       if (variables.forceStatus === 'brouillon') {
         toast.success('Brouillon sauvegardé avec succès');
       } else if (variables.forceStatus === 'livree') {
-        toast.success('Commande livrée avec succès');
+        toast.success('Modifications sauvegardées avec succès');
       } else if (variables.id) {
         toast.success('Modifications sauvegardées avec succès');
       } else {

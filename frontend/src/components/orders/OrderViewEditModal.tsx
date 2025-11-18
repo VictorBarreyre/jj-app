@@ -51,6 +51,14 @@ export function OrderViewEditModal({
   onDelete
 }: OrderViewEditModalProps) {
   const [formData, setFormData] = useState<Partial<Order>>({});
+  const [displayOrder, setDisplayOrder] = useState<Order | null>(order);
+
+  // Synchroniser displayOrder avec order UNIQUEMENT au premier affichage
+  useEffect(() => {
+    if (order && !displayOrder) {
+      setDisplayOrder(order);
+    }
+  }, [order]);
 
   useEffect(() => {
     if (order && isEditing) {
@@ -79,7 +87,37 @@ export function OrderViewEditModal({
     };
   }, [isOpen, onClose]);
 
-  if (!order) return null;
+  if (!displayOrder) return null;
+
+  // Handler local pour la mise à jour optimiste
+  const handleLocalParticipantReturn = async (orderId: string, participantIndex: number, returned: boolean) => {
+    console.log('🔄 handleLocalParticipantReturn appelé:', { orderId, participantIndex, returned });
+
+    // Mise à jour locale immédiate
+    if (displayOrder.type === 'groupe' && displayOrder.groupDetails?.participants) {
+      const updatedParticipants = displayOrder.groupDetails.participants.map((p, idx) =>
+        idx === participantIndex ? { ...p, rendu: returned } : p
+      );
+      const newDisplayOrder = {
+        ...displayOrder,
+        groupDetails: {
+          ...displayOrder.groupDetails,
+          participants: updatedParticipants
+        }
+      };
+      console.log('✅ Nouveau displayOrder (groupe):', newDisplayOrder);
+      setDisplayOrder(newDisplayOrder);
+    } else if (displayOrder.type === 'individuel' && participantIndex === 0) {
+      const newDisplayOrder = { ...displayOrder, rendu: returned };
+      console.log('✅ Nouveau displayOrder (individuel):', newDisplayOrder);
+      setDisplayOrder(newDisplayOrder);
+    }
+
+    // Appeler le handler parent
+    if (onUpdateParticipantReturn) {
+      await onUpdateParticipantReturn(orderId, participantIndex, returned);
+    }
+  };
 
   const getStatusColor = (status: Order['status']) => {
     switch (status) {
@@ -131,12 +169,12 @@ export function OrderViewEditModal({
     if (!order || !onDelete) return;
 
     const confirmed = window.confirm(
-      `Êtes-vous sûr de vouloir supprimer définitivement le bon de commande #${order.numero} ?\n\nCette action est irréversible.`
+      `Êtes-vous sûr de vouloir supprimer définitivement le bon de commande #${displayOrder.numero} ?\n\nCette action est irréversible.`
     );
 
     if (confirmed) {
       try {
-        await onDelete(order.id);
+        await onDelete(displayOrder.id);
         onClose();
       } catch (error) {
         console.error('Erreur lors de la suppression:', error);
@@ -145,12 +183,13 @@ export function OrderViewEditModal({
     }
   };
 
+
   const handleDeleteItem = async (itemId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
     
     try {
       // Supprimer l'article de la liste locale
-      const updatedItems = formData.items?.filter(item => item.id !== itemId) || order.items.filter(item => item.id !== itemId);
+      const updatedItems = formData.items?.filter(item => item.id !== itemId) || displayOrder.items.filter(item => item.id !== itemId);
       setFormData(prev => ({
         ...prev,
         items: updatedItems
@@ -183,9 +222,9 @@ export function OrderViewEditModal({
               <div className="flex items-start sm:items-center justify-between pl-2 sm:pl-4">
                 {/* Titre avec statut */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900 truncate text-left">Commande #{order.numero}</h2>
-                  <Badge className={`${getStatusColor(order.status)} border text-xs sm:text-sm font-semibold self-start`}>
-                    {getStatusLabel(order.status)}
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900 truncate text-left">Commande #{displayOrder.numero}</h2>
+                  <Badge className={`${getStatusColor(displayOrder.status)} border text-xs sm:text-sm font-semibold self-start`}>
+                    {getStatusLabel(displayOrder.status)}
                   </Badge>
                 </div>
                 
@@ -205,12 +244,12 @@ export function OrderViewEditModal({
               {/* Métadonnées sous le titre avec boutons d'action */}
               <div className="mt-3 sm:mt-4 pl-2 sm:pl-4 flex justify-between items-end">
                 <div className="text-xs sm:text-xs text-gray-500 space-y-1 text-left">
-                  <div className="text-left">Créée le {formatDate(order.dateCreation)}</div>
-                  {order.updatedAt && (
-                    <div className="text-left">Modifiée le {formatDate(order.updatedAt)}</div>
+                  <div className="text-left">Créée le {formatDate(displayOrder.dateCreation)}</div>
+                  {displayOrder.updatedAt && (
+                    <div className="text-left">Modifiée le {formatDate(displayOrder.updatedAt)}</div>
                   )}
-                  {order.createdBy && (
-                    <div className="text-left">Par {order.createdBy}</div>
+                  {displayOrder.createdBy && (
+                    <div className="text-left">Par {displayOrder.createdBy}</div>
                   )}
                 </div>
                 
@@ -293,7 +332,7 @@ export function OrderViewEditModal({
                   />
                 ) : (
                   <div className="text-left">
-                    <span className="text-base font-medium text-gray-900 text-left">{order.client.nom} {order.client.prenom || ''}</span>
+                    <span className="text-base font-medium text-gray-900 text-left">{displayOrder.client.nom} {displayOrder.client.prenom || ''}</span>
                   </div>
                 )}
               </div>
@@ -313,7 +352,7 @@ export function OrderViewEditModal({
                 ) : (
                   <div className="flex items-start gap-2 text-left">
                     <Phone className="w-4 h-4 text-gray-500 mt-0.5" />
-                    <span className="text-base text-gray-900 text-left">{order.client.telephone || 'Non renseigné'}</span>
+                    <span className="text-base text-gray-900 text-left">{displayOrder.client.telephone || 'Non renseigné'}</span>
                   </div>
                 )}
               </div>
@@ -333,7 +372,7 @@ export function OrderViewEditModal({
                 ) : (
                   <div className="flex items-start gap-2 text-left">
                     <Mail className="w-4 h-4 text-gray-500 mt-0.5" />
-                    <span className="text-base text-gray-900 text-left">{order.client.email || 'Non renseigné'}</span>
+                    <span className="text-base text-gray-900 text-left">{displayOrder.client.email || 'Non renseigné'}</span>
                   </div>
                 )}
               </div>
@@ -360,8 +399,8 @@ export function OrderViewEditModal({
                   <div className="flex items-start gap-2 text-left">
                     <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                     <span className="text-base text-gray-900 text-left">
-                      {order.client.adresse?.rue ? 
-                        `${order.client.adresse.rue}, ${order.client.adresse.ville} ${order.client.adresse.codePostal}` :
+                      {displayOrder.client.adresse?.rue ? 
+                        `${displayOrder.client.adresse.rue}, ${displayOrder.client.adresse.ville} ${displayOrder.client.adresse.codePostal}` :
                         'Non renseignée'
                       }
                     </span>
@@ -382,14 +421,14 @@ export function OrderViewEditModal({
                 <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Date de création
                 </label>
-                <span className="text-base text-gray-900 block text-left">{formatDate(order.dateCreation)}</span>
+                <span className="text-base text-gray-900 block text-left">{formatDate(displayOrder.dateCreation)}</span>
               </div>
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Date de l'événement
                 </label>
                 <span className="text-base text-gray-900 block text-left">
-                  {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
+                  {displayOrder.dateLivraison ? formatDate(displayOrder.dateLivraison) : 'Non définie'}
                 </span>
               </div>
               <div className="text-left">
@@ -397,7 +436,7 @@ export function OrderViewEditModal({
                   Date de livraison
                 </label>
                 <span className="text-base text-gray-900 block text-left">
-                  {order.dateLivraison ? formatDate(new Date(new Date(order.dateLivraison).getTime() - 24 * 60 * 60 * 1000)) : 'Veille de l\'événement'}
+                  {displayOrder.dateLivraison ? formatDate(new Date(new Date(displayOrder.dateLivraison).getTime() - 24 * 60 * 60 * 1000)) : 'Veille de l\'événement'}
                 </span>
               </div>
             </div>
@@ -414,21 +453,21 @@ export function OrderViewEditModal({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                  {order.type === 'groupe' ? 'Groupe' : 'Client'}
+                  {displayOrder.type === 'groupe' ? 'Groupe' : 'Client'}
                 </span>
                 <p className="font-semibold text-gray-900 text-sm">
-                  {order.type === 'groupe' ? `Groupe ${order.client.nom}` : `${order.client.nom} ${order.client.prenom || ''}`}
+                  {displayOrder.type === 'groupe' ? `Groupe ${displayOrder.client.nom}` : `${displayOrder.client.nom} ${displayOrder.client.prenom || ''}`}
                 </p>
               </div>
               
               <div className="text-left">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                  {order.type === 'groupe' ? 'Participants' : 'Téléphone'}
+                  {displayOrder.type === 'groupe' ? 'Participants' : 'Téléphone'}
                 </span>
                 <p className="font-semibold text-gray-900 text-sm">
-                  {order.type === 'groupe' 
-                    ? `${order.participantCount || 1} personne${(order.participantCount || 1) > 1 ? 's' : ''}` 
-                    : order.client.telephone || 'Non renseigné'
+                  {displayOrder.type === 'groupe' 
+                    ? `${displayOrder.participantCount || 1} personne${(displayOrder.participantCount || 1) > 1 ? 's' : ''}` 
+                    : displayOrder.client.telephone || 'Non renseigné'
                   }
                 </p>
               </div>
@@ -437,7 +476,7 @@ export function OrderViewEditModal({
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Vendeur
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{order.createdBy || 'Non renseigné'}</p>
+                <p className="font-semibold text-gray-900 text-sm">{displayOrder.createdBy || 'Non renseigné'}</p>
               </div>
               
               <div className="text-left">
@@ -445,19 +484,19 @@ export function OrderViewEditModal({
                   Date événement
                 </span>
                 <p className="font-semibold text-gray-900 text-sm">
-                  {order.dateLivraison ? formatDate(order.dateLivraison) : 'Non définie'}
+                  {displayOrder.dateLivraison ? formatDate(displayOrder.dateLivraison) : 'Non définie'}
                 </p>
               </div>
             </div>
             
             {/* Participants pour les groupes */}
-            {order.type === 'groupe' && order.groupDetails?.participants && order.groupDetails.participants.length > 1 && (
+            {displayOrder.type === 'groupe' && displayOrder.groupDetails?.participants && displayOrder.groupDetails.participants.length > 1 && (
               <div className="pt-3 border-t border-gray-300">
                 <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                   Liste des participants
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {order.groupDetails.participants.map((participant, index) => (
+                  {displayOrder.groupDetails.participants.map((participant, index) => (
                     <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                       {participant.prenom ? `${participant.nom} ${participant.prenom}` : participant.nom}
                     </span>
@@ -469,14 +508,14 @@ export function OrderViewEditModal({
             {/* Détails des tenues avec statut de rendu */}
             {(() => {
               // Pour les groupes, utiliser les participants existants
-              if (order.groupDetails?.participants && order.groupDetails.participants.length > 0) {
+              if (displayOrder.groupDetails?.participants && displayOrder.groupDetails.participants.length > 0) {
                 return (
                   <div className="pt-3 border-t border-gray-300 mt-3">
                     <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                       Pièces de tenue réservées & Statut de rendu
                     </span>
                     <div className="space-y-4 pb-4">
-                      {order.groupDetails.participants.map((participant, index) => (
+                      {displayOrder.groupDetails.participants.map((participant, index) => (
                     <div key={index} className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-semibold text-gray-800 text-left">
@@ -487,7 +526,7 @@ export function OrderViewEditModal({
                             onClick={() => {
                               const currentState = participant.rendu || false;
                               const newState = !currentState;
-                              onUpdateParticipantReturn(order.id, index, newState);
+                              handleLocalParticipantReturn(displayOrder.id, index, newState);
                             }}
                             className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
                           >
@@ -570,21 +609,21 @@ export function OrderViewEditModal({
                 }
 
               // Pour les commandes individuelles, créer un participant virtuel
-              else if (order.type === 'individuel' && (order.items?.length > 0 || order.articlesStock?.length > 0 || order.tenue)) {
+              else if (displayOrder.type === 'individuel' && (displayOrder.items?.length > 0 || displayOrder.articlesStock?.length > 0 || displayOrder.tenue)) {
                 const virtualParticipant = {
-                  nom: order.client.nom,
-                  prenom: order.client.prenom,
+                  nom: displayOrder.client.nom,
+                  prenom: displayOrder.client.prenom,
                   tenue: {},
-                  rendu: order.rendu || false
+                  rendu: displayOrder.rendu || false
                 };
 
-                // Construire la tenue à partir de order.tenue ou order.items ou order.articlesStock
-                if (order.tenue) {
-                  // Utiliser directement order.tenue s'il existe
-                  virtualParticipant.tenue = { ...order.tenue };
-                } else if (order.items && order.items.length > 0) {
-                  // Construire à partir de order.items
-                  order.items.forEach(item => {
+                // Construire la tenue à partir de displayOrder.tenue ou displayOrder.items ou displayOrder.articlesStock
+                if (displayOrder.tenue) {
+                  // Utiliser directement displayOrder.tenue s'il existe
+                  virtualParticipant.tenue = { ...displayOrder.tenue };
+                } else if (displayOrder.items && displayOrder.items.length > 0) {
+                  // Construire à partir de displayOrder.items
+                  displayOrder.items.forEach(item => {
                     if (item.category === 'veste') {
                       virtualParticipant.tenue.veste = {
                         reference: item.reference,
@@ -611,9 +650,9 @@ export function OrderViewEditModal({
                       virtualParticipant.tenue.tailleChaussures = item.measurements?.pointure || item.measurements?.taille || '';
                     }
                   });
-                } else if (order.articlesStock && order.articlesStock.length > 0) {
-                  // Construire à partir de order.articlesStock
-                  order.articlesStock.forEach(item => {
+                } else if (displayOrder.articlesStock && displayOrder.articlesStock.length > 0) {
+                  // Construire à partir de displayOrder.articlesStock
+                  displayOrder.articlesStock.forEach(item => {
                     if (item.reference && item.reference.includes('jaquette') || item.reference && item.reference.includes('veste')) {
                       virtualParticipant.tenue.veste = {
                         reference: item.reference,
@@ -656,7 +695,7 @@ export function OrderViewEditModal({
                               onClick={() => {
                                 const currentState = virtualParticipant.rendu || false;
                                 const newState = !currentState;
-                                onUpdateParticipantReturn(order.id, 0, newState);
+                                handleLocalParticipantReturn(displayOrder.id, 0, newState);
                               }}
                               className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
                             >
@@ -738,29 +777,29 @@ export function OrderViewEditModal({
 
 
           {/* Tarification */}
-          {((order.sousTotal && order.sousTotal > 0) || (order.tva && order.tva > 0) || (order.total && order.total > 0)) && (
+          {((displayOrder.sousTotal && displayOrder.sousTotal > 0) || (displayOrder.tva && displayOrder.tva > 0) || (displayOrder.total && displayOrder.total > 0)) && (
             <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
               <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
                 <Euro className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
                 Tarification
               </h2>
               <div className="space-y-3">
-                {order.sousTotal && order.sousTotal > 0 && (
+                {displayOrder.sousTotal && displayOrder.sousTotal > 0 && (
                   <div className="flex justify-between text-left">
                     <span className="text-gray-700 text-left">Sous-total:</span>
-                    <span className="font-medium text-right">{formatPrice(order.sousTotal)}</span>
+                    <span className="font-medium text-right">{formatPrice(displayOrder.sousTotal)}</span>
                   </div>
                 )}
-                {order.tva && order.tva > 0 && (
+                {displayOrder.tva && displayOrder.tva > 0 && (
                   <div className="flex justify-between text-left">
                     <span className="text-gray-700 text-left">TVA:</span>
-                    <span className="font-medium text-right">{formatPrice(order.tva)}</span>
+                    <span className="font-medium text-right">{formatPrice(displayOrder.tva)}</span>
                   </div>
                 )}
-                {order.total && order.total > 0 && (
+                {displayOrder.total && displayOrder.total > 0 && (
                   <div className="flex justify-between border-t border-gray-200 pt-2 text-left">
                     <span className="font-semibold text-gray-900 text-left">Total:</span>
-                    <span className="font-bold text-base text-amber-600 text-right">{formatPrice(order.total)}</span>
+                    <span className="font-bold text-base text-amber-600 text-right">{formatPrice(displayOrder.total)}</span>
                   </div>
                 )}
               </div>
@@ -782,7 +821,7 @@ export function OrderViewEditModal({
               />
             ) : (
               <div className="text-base text-gray-900 whitespace-pre-wrap text-left">
-                {order.notes || 'Aucune note'}
+                {displayOrder.notes || 'Aucune note'}
               </div>
             )}
           </div>
