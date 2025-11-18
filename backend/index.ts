@@ -8,7 +8,6 @@ import { measurementsRouter } from './routes/measurements';
 import { contractsRouter } from './routes/contracts';
 import { stockRouter } from './routes/stock';
 import authRouter from './routes/auth';
-import { migrationRouter } from './routes/migration';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -43,7 +42,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/measurements', measurementsRouter);
 app.use('/api/contracts', contractsRouter);
 app.use('/api/stock', stockRouter);
-app.use('/api/migration', migrationRouter);
 
 // Error handling
 app.use(errorHandler);
