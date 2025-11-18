@@ -213,8 +213,16 @@ export class BackendPDFService {
             .prices-row {
               font-size: 13px;
               font-weight: bold;
-              margin-bottom: 28px;
+              margin-bottom: 8px;
               margin-top: 16px;
+              display: flex;
+              justify-content: space-between;
+            }
+
+            .payment-methods-row {
+              font-size: 10px;
+              font-weight: normal;
+              margin-bottom: 28px;
               display: flex;
               justify-content: space-between;
             }
@@ -261,6 +269,12 @@ export class BackendPDFService {
             <div>Prix: ${this.formatPrice(contract.tarifLocation || 0)}</div>
             <div>Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}</div>
             <div>Arrhes: ${this.formatPrice(contract.arrhes)}</div>
+          </div>
+
+          <div class="payment-methods-row">
+            <div>${contract.paiementSolde?.method ? `Payé en ${contract.paiementSolde.method}` : 'Non payé'}</div>
+            <div>${contract.paiementDepotGarantie?.method ? `Fait en ${contract.paiementDepotGarantie.method}` : 'Non versé'}</div>
+            <div>${contract.paiementArrhes?.method ? `Payées en ${contract.paiementArrhes.method}` : 'Non versées'}</div>
           </div>
 
         </body>
