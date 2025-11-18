@@ -264,34 +264,31 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           {/* Arrhes */}
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Arrhes</Label>
-            <Select
-              value={form.paiementArrhes?.method ? `${form.arrhes || 50}-${form.paiementArrhes.method}` : 'none'}
-              onValueChange={(value) => {
-                if (value === 'none') {
-                  updateForm('arrhes', 0);
-                  updateForm('paiementArrhes', undefined);
-                } else if (value === 'non-versees') {
-                  updateForm('arrhes', 50);
-                  updateForm('paiementArrhes', undefined);
-                } else {
-                  const [amount, method] = value.split('-');
-                  updateForm('arrhes', parseFloat(amount));
-                  updateForm('paiementArrhes', { method, date: new Date().toISOString().split('T')[0] });
-                }
-              }}
-            >
-              <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                <SelectValue placeholder="Moyen de paiement" />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-gray-300 text-gray-900">
-                <SelectItem value="none">Moyen de paiement</SelectItem>
-                <SelectItem value="50-carte">50€ en carte</SelectItem>
-                <SelectItem value="50-cheque">50€ en chèque</SelectItem>
-                <SelectItem value="50-especes">50€ en espèces</SelectItem>
-                <SelectItem value="50-virement">50€ en virement</SelectItem>
-                <SelectItem value="non-versees">Non versées</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.arrhes || 0}
+              onChange={(e) => updateForm('arrhes', parseFloat(e.target.value) || 0)}
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
+            <div className="mt-2">
+              <Select
+                value={form.paiementArrhes?.method || 'none'}
+                onValueChange={(value) => updateForm('paiementArrhes', value === 'none' ? undefined : { method: value, date: new Date().toISOString().split('T')[0] })}
+              >
+                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                  <SelectValue placeholder="Non versées" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="none">Non versées</SelectItem>
+                  <SelectItem value="carte">Payées en carte</SelectItem>
+                  <SelectItem value="cheque">Payées en chèque</SelectItem>
+                  <SelectItem value="especes">Payées en espèces</SelectItem>
+                  <SelectItem value="virement">Payées en virement</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
