@@ -16,7 +16,7 @@ const STORAGE_KEYS = {
 
 interface ThreeStepRentalFormProps {
   onSubmitComplete: (group: GroupRentalInfo, contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
-  onSaveDraft: (group?: GroupRentalInfo, contract?: Partial<RentalContract>, forceDraft?: boolean) => void;
+  onSaveDraft: (group?: GroupRentalInfo, contract?: Partial<RentalContract>, forceStatus?: 'brouillon' | 'livree' | null) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
   onStepChange?: (step: number, title: string, description: string, canGoToStep: (step: number) => boolean) => void;
   onStepNavigate?: (targetStep: number) => void;
@@ -334,10 +334,10 @@ export const ThreeStepRentalForm = forwardRef<
     }
   };
 
-  const handleContractSave = (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, forceDraft?: boolean) => {
+  const handleContractSave = (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, forceStatus?: 'brouillon' | 'livree' | null) => {
     if (groupData) {
       setContractData(contract); // Mettre à jour les données locales pour localStorage
-      onSaveDraft(groupData, contract, forceDraft);
+      onSaveDraft(groupData, contract, forceStatus);
     }
   };
 

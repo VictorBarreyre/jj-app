@@ -353,7 +353,7 @@ function App() {
     }
   };
 
-  const handleRentalSaveDraft = async (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>, forceDraft?: boolean) => {
+  const handleRentalSaveDraft = async (groupData?: GroupRentalInfo, contract?: Partial<RentalContract>, forceStatus?: 'brouillon' | 'livree' | null) => {
     if (!groupData && !contract) {
       console.warn('Données manquantes pour la sauvegarde');
       return;
@@ -365,18 +365,18 @@ function App() {
 
       // Déterminer le statut à utiliser
       let statusToUse: string;
-      if (forceDraft) {
-        // Si forceDraft est true, toujours utiliser 'brouillon'
-        statusToUse = 'brouillon';
+      if (forceStatus) {
+        // Si forceStatus est défini, l'utiliser ('brouillon' ou 'livree')
+        statusToUse = forceStatus;
       } else if (existingDraftId) {
-        // En mode édition sans forceDraft, conserver le statut existant
+        // En mode édition sans forceStatus, conserver le statut existant
         statusToUse = contract?.status || selectedOrder?.status || 'brouillon';
       } else {
-        // Nouvelle création sans forceDraft
+        // Nouvelle création sans forceStatus
         statusToUse = 'brouillon';
       }
 
-      console.log('🔍 handleRentalSaveDraft - forceDraft:', forceDraft, 'statusToUse:', statusToUse);
+      console.log('🔍 handleRentalSaveDraft - forceStatus:', forceStatus, 'statusToUse:', statusToUse);
 
       // Convertir les données vers le format de contrat
       const contractData = {
@@ -416,8 +416,8 @@ function App() {
         } : undefined
       };
 
-      // Passer l'ID et forceDraft au mutation
-      await saveDraftMutation.mutateAsync({ id: existingDraftId, data: contractData, forceDraft });
+      // Passer l'ID et forceStatus au mutation
+      await saveDraftMutation.mutateAsync({ id: existingDraftId, data: contractData, forceStatus });
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
     }

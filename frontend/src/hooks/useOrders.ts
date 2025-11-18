@@ -241,13 +241,13 @@ export const useSaveDraft = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data, forceDraft }: { id?: string; data: any; forceDraft?: boolean }) => {
+    mutationFn: ({ id, data, forceStatus }: { id?: string; data: any; forceStatus?: 'brouillon' | 'livree' | null }) => {
       // Déterminer le statut final
       let finalStatus = data.status || 'brouillon';
 
-      if (forceDraft) {
-        // Si forceDraft est true, toujours mettre 'brouillon'
-        finalStatus = 'brouillon';
+      if (forceStatus) {
+        // Si forceStatus est défini, l'utiliser ('brouillon' ou 'livree')
+        finalStatus = forceStatus;
       } else if (!id) {
         // Si c'est une création (pas d'ID), c'est forcément un brouillon
         finalStatus = 'brouillon';
@@ -271,8 +271,10 @@ export const useSaveDraft = () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
 
       // Message adapté selon le contexte
-      if (variables.forceDraft) {
+      if (variables.forceStatus === 'brouillon') {
         toast.success('Brouillon sauvegardé avec succès');
+      } else if (variables.forceStatus === 'livree') {
+        toast.success('Commande livrée avec succès');
       } else if (variables.id) {
         toast.success('Modifications sauvegardées avec succès');
       } else {

@@ -30,7 +30,7 @@ const dateInputStyles = `
 
 interface RentalContractFormProps {
   onSubmit: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>) => void;
-  onSaveDraft: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, forceDraft?: boolean) => void;
+  onSaveDraft: (contract: Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, forceStatus?: 'brouillon' | 'livree' | null) => void;
   onAutoSave?: (contract: Partial<RentalContract>) => void;
   onPrint?: (contractId: string, type: 'jj' | 'client') => void;
   initialData?: Partial<RentalContract>;
@@ -145,12 +145,12 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
 
   const handleSaveDraft = () => {
     // Forcer le statut à 'brouillon'
-    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, true);
+    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, 'brouillon');
   };
 
   const handleSaveModifications = () => {
-    // Conserver le statut actuel
-    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, false);
+    // Forcer le statut à 'livree'
+    onSaveDraft(form as Omit<RentalContract, 'id' | 'numero' | 'createdAt' | 'updatedAt'>, 'livree');
   };
 
   const isFormValid = form.client?.nom && form.client?.telephone && form.dateEvenement && form.dateRetrait && form.dateRetour;
