@@ -131,8 +131,8 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     });
   };
 
-  const updatePayment = (type: 'arrhes' | 'solde', field: string, value: any) => {
-    const paymentField = type === 'arrhes' ? 'paiementArrhes' : 'paiementSolde';
+  const updatePayment = (type: 'arrhes' | 'solde' | 'depotGarantie', field: string, value: any) => {
+    const paymentField = type === 'arrhes' ? 'paiementArrhes' : type === 'solde' ? 'paiementSolde' : 'paiementDepotGarantie';
     setForm(prev => ({
       ...prev,
       [paymentField]: { ...prev[paymentField], [field]: value }
@@ -246,7 +246,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <div className="mt-2">
               <Select
                 value={form.paiementDepotGarantie?.method || 'none'}
-                onValueChange={(value) => updateForm('paiementDepotGarantie', value === 'none' ? undefined : { method: value })}
+                onValueChange={(value) => updatePayment('depotGarantie', 'method', value === 'none' ? undefined : value)}
               >
                 <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                   <SelectValue placeholder="Non versée" />
@@ -307,7 +307,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               onClick={handleSave}
               className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
             >
-              💾 Sauvegarder brouillon
+              💾 Sauvegarder le brouillon
             </Button>
             <Button
               onClick={isEditMode ? handleSave : handleSubmit}

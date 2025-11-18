@@ -242,10 +242,11 @@ export const useSaveDraft = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id?: string; data: any }) => {
-      // Forcer le statut brouillon
+      // Si on crée un nouveau brouillon, forcer le statut à 'brouillon'
+      // Si on met à jour un existant, conserver le statut fourni dans data
       const draftData = {
         ...data,
-        status: 'brouillon'
+        status: id ? (data.status || 'brouillon') : 'brouillon'
       };
 
       // Si on a un ID, on met à jour le brouillon existant
