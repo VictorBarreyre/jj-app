@@ -535,7 +535,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
               onClick={handleSave}
               className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
             >
-              💾 Sauvegarder brouillon
+              💾 Sauvegarder le brouillon
             </Button>
           )}
 

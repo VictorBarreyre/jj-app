@@ -436,7 +436,7 @@ export function GroupSetupForm({ onSubmit, onSave, onConfirm, initialData, isEdi
                 onClick={handleSave}
                 className="w-full sm:w-auto px-6 py-3 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm min-h-[48px]"
               >
-                💾 Sauvegarder brouillon
+                💾 Sauvegarder le brouillon
               </Button>
             )}
             <Button
