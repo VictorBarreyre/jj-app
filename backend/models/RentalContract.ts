@@ -88,7 +88,8 @@ export interface RentalContract {
   // Paiements
   paiementArrhes?: PaymentInfo;
   paiementSolde?: PaymentInfo;
-  
+  paiementDepotGarantie?: PaymentInfo;
+
   // Retour
   rendu: boolean;
   dateRendu?: string;

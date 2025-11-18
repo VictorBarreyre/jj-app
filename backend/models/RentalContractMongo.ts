@@ -28,7 +28,8 @@ export interface IRentalContractDocument extends Document {
   // Paiements
   paiementArrhes?: PaymentInfo;
   paiementSolde?: PaymentInfo;
-  
+  paiementDepotGarantie?: PaymentInfo;
+
   // Retour
   rendu: boolean;
   dateRendu?: Date;
@@ -140,7 +141,8 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
   // Paiements
   paiementArrhes: paymentInfoSchema,
   paiementSolde: paymentInfoSchema,
-  
+  paiementDepotGarantie: paymentInfoSchema,
+
   // Retour
   rendu: { type: Boolean, default: false },
   dateRendu: { type: Date },
