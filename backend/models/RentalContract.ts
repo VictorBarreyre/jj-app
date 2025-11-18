@@ -57,7 +57,7 @@ export interface TenueInfo {
 export interface PaymentInfo {
   date?: string;
   method?: PaymentMethod;
-  amount: number;
+  amount?: number;
 }
 
 // Interface pour le bon de location

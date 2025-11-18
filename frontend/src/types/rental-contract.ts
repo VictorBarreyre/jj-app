@@ -17,7 +17,7 @@ export type PaymentMethod = 'especes' | 'carte' | 'virement' | 'cheque' | 'autre
 export interface PaymentInfo {
   date?: Date;
   method?: PaymentMethod;
-  amount: number;
+  amount?: number;
 }
 
 // Interface pour le bon de location complet

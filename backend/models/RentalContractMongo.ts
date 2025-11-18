@@ -102,11 +102,11 @@ const contractStockItemSchema = new Schema<ContractStockItem>({
 // Schéma pour les informations de paiement
 const paymentInfoSchema = new Schema<PaymentInfo>({
   date: { type: String },
-  method: { 
-    type: String, 
+  method: {
+    type: String,
     enum: ['especes', 'carte', 'virement', 'cheque', 'autre'] as PaymentMethod[]
   },
-  amount: { type: Number, required: true }
+  amount: { type: Number, required: false }
 });
 
 // Schéma principal pour les contrats de location
