@@ -96,8 +96,16 @@ export const ThreeStepRentalForm = forwardRef<
   });
   
   const [contractData, setContractData] = useState<Partial<RentalContract> | null>(() => {
+    // En mode édition, prioriser initialContract sur localStorage
+    if (isEditMode && initialContract) {
+      console.log('🔍 ThreeStepRentalForm - Initializing with initialContract in edit mode');
+      return initialContract;
+    }
+    
+    // Sinon, utiliser les données sauvegardées
     const savedData = loadFromStorage<Partial<RentalContract>>(STORAGE_KEYS.CONTRACT_DATA);
     if (savedData) {
+      console.log('🔍 ThreeStepRentalForm - Initializing with saved localStorage data');
       // Appliquer les nouvelles valeurs par défaut si elles ne sont pas définies
       return {
         ...savedData,
@@ -105,11 +113,11 @@ export const ThreeStepRentalForm = forwardRef<
         arrhes: savedData.arrhes ?? 50
       };
     }
+    console.log('🔍 ThreeStepRentalForm - No initial data found');
     return null;
   });
 
-  // Mémoriser le statut et le rendu initial pour les préserver lors des sauvegardes
-  const [initialStatus] = useState<string>(() => initialContract?.status || 'brouillon');
+  // Mémoriser le rendu initial pour le préserver lors des sauvegardes
   const [initialRendu] = useState<boolean>(() => initialContract?.rendu || false);
 
   const [formKey, setFormKey] = useState(0);
@@ -134,6 +142,9 @@ export const ThreeStepRentalForm = forwardRef<
 
   // Gestion des données initiales (mode édition)
   useEffect(() => {
+    console.log('🔍 ThreeStepRentalForm - initialContract received:', initialContract);
+    console.log('🔍 ThreeStepRentalForm - initialContract.paiementArrhes:', initialContract?.paiementArrhes);
+    
     if (initialContract || initialGroup) {
       
       if (initialGroup) {
@@ -142,7 +153,8 @@ export const ThreeStepRentalForm = forwardRef<
         setCurrentStep(1);
       }
       
-      if (initialContract) {
+      if (initialContract && (!isEditMode || !contractData)) {
+        console.log('🔍 ThreeStepRentalForm - Setting contractData from initialContract');
         setContractData(initialContract);
       }
       
@@ -170,13 +182,13 @@ export const ThreeStepRentalForm = forwardRef<
     };
     setGroupData(fullGroupData); // Mettre à jour les données locales pour localStorage
 
-    // Créer un contrat minimal avec le statut et rendu pour les préserver
+    // Créer un contrat minimal avec le statut forcé à 'brouillon'
     const minimalContract: Partial<RentalContract> = {
-      status: initialStatus as any,
+      status: 'brouillon',
       rendu: initialRendu
     };
 
-    onSaveDraft(fullGroupData, minimalContract);
+    onSaveDraft(fullGroupData, minimalContract, 'brouillon');
   };
 
   // Fonction pour confirmer en mode édition à l'étape 1
@@ -217,11 +229,11 @@ export const ThreeStepRentalForm = forwardRef<
         amount: arrhesAmount
       },
       notes: contractData?.notes || '',
-      status: 'confirme', // Forcer le statut à 'confirme'
+      status: 'livree', // Forcer le statut à 'livree'
       rendu: initialRendu
     };
 
-    onSubmitComplete(fullGroupData, contractForConfirm);
+    onSaveDraft(fullGroupData, contractForConfirm, 'livree');
   };
 
   // Étape 2 : Sélection des tenues
@@ -273,13 +285,13 @@ export const ThreeStepRentalForm = forwardRef<
   const handleMeasurementSave = (updatedGroup: GroupRentalInfo) => {
     setGroupData(updatedGroup); // Mettre à jour les données locales pour localStorage
 
-    // Créer un contrat minimal avec le statut et rendu pour les préserver
+    // Créer un contrat minimal avec le statut forcé à 'brouillon'
     const minimalContract: Partial<RentalContract> = {
-      status: initialStatus as any,
+      status: 'brouillon',
       rendu: initialRendu
     };
 
-    onSaveDraft(updatedGroup, minimalContract);
+    onSaveDraft(updatedGroup, minimalContract, 'brouillon');
   };
 
   // Fonction pour confirmer en mode édition à l'étape 2
@@ -318,11 +330,11 @@ export const ThreeStepRentalForm = forwardRef<
         date: new Date().toISOString().split('T')[0],
         amount: arrhesAmount
       },
-      status: 'confirme', // Forcer le statut à 'confirme'
+      status: 'livree', // Forcer le statut à 'livree'
       rendu: initialRendu
     };
 
-    onSubmitComplete(updatedGroup, contractForConfirm);
+    onSaveDraft(updatedGroup, contractForConfirm, 'livree');
   };
 
   // Étape 3 : Bon de location

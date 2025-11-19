@@ -116,6 +116,7 @@ export const rentalContractsController = {
       
       // Reclassifier les contrats existants selon la nouvelle logique
       const reclassifiedContracts = contracts.map(contract => {
+        console.log('🔍 Backend - contract.numero:', contract.numero, 'paiementArrhes:', contract.paiementArrhes);
         const hasMultipleParticipants = contract.participantCount && contract.participantCount > 1;
         const hasGroupDetails = contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants.length > 1;
         const hasMultipleStockItems = contract.articlesStock && contract.articlesStock.length > 3; // Plus de 3 articles = probablement plusieurs personnes
@@ -499,8 +500,8 @@ export const rentalContractsController = {
         // Créer automatiquement les mouvements de retour
         await createStockMovements(contract, 'retour');
       } else if (!allReturned && contract.status === 'rendu') {
-        // Si ce n'est plus le cas que tous ont rendu, revenir au statut "retire" (équivalent à "livré")
-        contract.status = 'retire';
+        // Si ce n'est plus le cas que tous ont rendu, revenir au statut "livree"
+        contract.status = 'livree';
         contract.rendu = false;
         contract.dateRendu = undefined;
       }

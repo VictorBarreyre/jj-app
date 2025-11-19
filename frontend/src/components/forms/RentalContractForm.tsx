@@ -68,6 +68,8 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     };
 
     console.log('🔍 RentalContractForm - initialData.client:', initialData?.client);
+    console.log('🔍 RentalContractForm - initialData.paiementArrhes:', initialData?.paiementArrhes);
+    console.log('🔍 RentalContractForm - initialData.paiementSolde:', initialData?.paiementSolde);
 
     const mergedData = {
       ...defaultValues,
@@ -83,6 +85,8 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     };
 
     console.log('🔍 RentalContractForm - merged client:', mergedData.client);
+    console.log('🔍 RentalContractForm - merged paiementArrhes:', mergedData.paiementArrhes);
+    console.log('🔍 RentalContractForm - merged paiementSolde:', mergedData.paiementSolde);
 
     return mergedData;
   });
@@ -135,7 +139,14 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     const paymentField = type === 'arrhes' ? 'paiementArrhes' : type === 'solde' ? 'paiementSolde' : 'paiementDepotGarantie';
     setForm(prev => ({
       ...prev,
-      [paymentField]: { ...prev[paymentField], [field]: value }
+      [paymentField]: value === undefined ? undefined : { 
+        ...prev[paymentField], 
+        [field]: value,
+        // Ajouter une date par défaut si on définit une méthode et qu'il n'y a pas de date
+        ...(field === 'method' && value && !prev[paymentField]?.date && {
+          date: new Date().toISOString().split('T')[0]
+        })
+      }
     }));
   };
 
@@ -281,7 +292,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <div className="mt-2">
               <Select
                 value={form.paiementArrhes?.method || 'none'}
-                onValueChange={(value) => updateForm('paiementArrhes', value === 'none' ? undefined : { method: value, date: new Date().toISOString().split('T')[0] })}
+                onValueChange={(value) => updatePayment('arrhes', 'method', value === 'none' ? undefined : value)}
               >
                 <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
                   <SelectValue placeholder="Non versées" />
@@ -308,13 +319,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             </p>
           )}
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto sm:ml-auto">
-            <Button
-              variant="outline"
-              onClick={handleSaveDraft}
-              className="px-6 bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all shadow-sm"
-            >
-              💾 Sauvegarder le brouillon
-            </Button>
             <Button
               onClick={isEditMode ? handleSaveModifications : handleSubmit}
               disabled={!isFormValid}

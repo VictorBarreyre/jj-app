@@ -44,7 +44,12 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       if (page === 1) {
         setAllOrders(ordersData.orders);
       } else {
-        setAllOrders(prev => [...prev, ...ordersData.orders]);
+        // Éviter les doublons lors de la concaténation
+        setAllOrders(prev => {
+          const existingIds = new Set(prev.map(o => o.id));
+          const newOrders = ordersData.orders.filter(order => !existingIds.has(order.id));
+          return [...prev, ...newOrders];
+        });
       }
     }
   }, [ordersData, page]);
@@ -111,40 +116,108 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const handleUpdateParticipantReturn = async (orderId: string, participantIndex: number, returned: boolean) => {
     try {
       console.log('Mise à jour statut participant:', { orderId, participantIndex, returned });
-      
+
+      // Mise à jour optimiste de selectedOrder pour un retour visuel immédiat
+      if (selectedOrder && selectedOrder.id === orderId) {
+        if (selectedOrder.type === 'groupe' && selectedOrder.groupDetails?.participants) {
+          const updatedParticipants = selectedOrder.groupDetails.participants.map((p, idx) =>
+            idx === participantIndex ? { ...p, rendu: returned } : p
+          );
+          // Vérifier si tous les participants ont rendu
+          const allReturned = updatedParticipants.every(p => p.rendu);
+          const newStatus = allReturned ? 'rendu' : 'livree';
+
+          const updatedOrder = {
+            ...selectedOrder,
+            groupDetails: {
+              ...selectedOrder.groupDetails,
+              participants: updatedParticipants
+            },
+            status: newStatus
+          };
+          setSelectedOrder(updatedOrder);
+        } else if (selectedOrder.type === 'individuel' && participantIndex === 0) {
+          const newStatus = returned ? 'rendu' : 'livree';
+          setSelectedOrder({
+            ...selectedOrder,
+            rendu: returned,
+            status: newStatus
+          });
+        }
+      }
+
       // Récupérer le contrat actuel
       const contract = await rentalContractApi.getById(orderId);
       console.log('Contrat récupéré:', contract);
-      
+
       // Pour les commandes de groupe avec des participants réels
       if (contract.type === 'groupe' && contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants[participantIndex]) {
         console.log('Participant de groupe trouvé, mise à jour...');
         contract.groupDetails.participants[participantIndex].rendu = returned;
-        
+
+        // Vérifier si tous les participants ont rendu leurs articles
+        const allReturned = contract.groupDetails.participants.every(p => p.rendu);
+        const newStatus = allReturned ? 'rendu' : 'livree';
+
         // Sauvegarder via l'endpoint de mise à jour général
-        const updateData = { groupDetails: contract.groupDetails };
+        const updateData = {
+          groupDetails: contract.groupDetails,
+          status: newStatus
+        };
         console.log('Données à envoyer pour groupe:', updateData);
-        
+
         await rentalContractApi.update(orderId, updateData);
-        console.log('Mise à jour groupe réussie');
-        
+        console.log('Mise à jour groupe réussie, nouveau statut:', newStatus);
+
+        // Mettre à jour selectedOrder pour forcer le rafraîchissement de la modale
+        if (selectedOrder && selectedOrder.id === orderId && selectedOrder.groupDetails?.participants) {
+          const updatedOrder = {
+            ...selectedOrder,
+            groupDetails: {
+              ...selectedOrder.groupDetails,
+              participants: selectedOrder.groupDetails.participants.map((p, idx) =>
+                idx === participantIndex ? { ...p, rendu: returned } : p
+              )
+            },
+            status: newStatus
+          };
+          setSelectedOrder(updatedOrder);
+          console.log('selectedOrder mis à jour pour participant groupe:', participantIndex, 'rendu:', returned, 'status:', newStatus);
+        }
+
         // Invalider et refetch les données des commandes
         queryClient.invalidateQueries({ queryKey: ['orders'] });
-        
+
         // Afficher un message de succès
         toast.success(`Statut de rendu mis à jour pour ${contract.groupDetails.participants[participantIndex].nom}`);
-      } 
+      }
       // Pour les commandes individuelles (participant virtuel)
       else if (contract.type === 'individuel' && participantIndex === 0) {
         console.log('Commande individuelle, mise à jour du statut général...');
-        
-        // Mettre à jour directement le statut de rendu de la commande
-        await rentalContractApi.update(orderId, { rendu: returned });
-        console.log('Mise à jour individuelle réussie');
-        
+
+        // Pour les commandes individuelles: si rendu = true, status = 'rendu', sinon 'livree'
+        const newStatus = returned ? 'rendu' : 'livree';
+
+        // Mettre à jour le statut de rendu ET le status de la commande
+        await rentalContractApi.update(orderId, {
+          rendu: returned,
+          status: newStatus
+        });
+        console.log('Mise à jour individuelle réussie, nouveau statut:', newStatus);
+
+        // Mettre à jour selectedOrder pour forcer le rafraîchissement de la modale
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder({
+            ...selectedOrder,
+            rendu: returned,
+            status: newStatus
+          });
+          console.log('selectedOrder mis à jour avec rendu:', returned, 'status:', newStatus);
+        }
+
         // Invalider et refetch les données des commandes
         queryClient.invalidateQueries({ queryKey: ['orders'] });
-        
+
         // Afficher un message de succès
         toast.success(`Statut de rendu mis à jour pour ${contract.client.nom}`);
       }
@@ -284,7 +357,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       <OrderViewEditModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        order={selectedOrder ? orders.find(o => o.id === selectedOrder.id) || selectedOrder : null}
+        order={selectedOrder}
         isEditing={isEditing}
         onEdit={handleStartEdit}
         onSave={handleSaveOrder}

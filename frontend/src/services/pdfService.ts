@@ -244,9 +244,9 @@ export class PDFService {
     doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 10, currentY);
     doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 138, currentY, { align: 'right' });
-    currentY += 8;
+    currentY += 6;
 
-    // Moyens de paiement - plus petit et en normal
+    // Moyens de paiement - plus petit et en normal, plus proche des montants
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
 

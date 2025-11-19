@@ -507,6 +507,9 @@ function App() {
                     })()}
                     initialContract={(() => {
                       const contract = editParams.editMode && selectedOrder ? convertOrderToContract(selectedOrder) : undefined;
+                      console.log('🔍 App.tsx - selectedOrder for edit:', selectedOrder);
+                      console.log('🔍 App.tsx - selectedOrder.paiementArrhes:', selectedOrder?.paiementArrhes);
+                      console.log('🔍 App.tsx - converted contract.paiementArrhes:', contract?.paiementArrhes);
                       return contract;
                     })()}
                   />
