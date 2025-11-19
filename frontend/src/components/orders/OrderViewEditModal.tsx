@@ -485,16 +485,16 @@ export function OrderViewEditModal({
                         {onUpdateParticipantReturn && (
                           <button
                             onClick={() => {
-                              const currentState = participant.rendu || false;
-                              const newState = !currentState;
+                              const isOrderReturned = order.status === 'rendu' || order.status === 'rendue';
+                              const newState = !isOrderReturned;
                               onUpdateParticipantReturn(order.id, index, newState);
                             }}
                             className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
                           >
-                            <span className={(participant.rendu || false) ? "text-green-700" : "text-gray-600"}>
+                            <span className={(order.status === 'rendu' || order.status === 'rendue') ? "text-green-700" : "text-gray-600"}>
                               Article(s) rendu(s)
                             </span>
-                            {(participant.rendu || false) ? (
+                            {(order.status === 'rendu' || order.status === 'rendue') ? (
                               <CheckSquare className="w-4 h-4 text-green-600" />
                             ) : (
                               <Square className="w-4 h-4 text-gray-400" />
@@ -654,16 +654,16 @@ export function OrderViewEditModal({
                           {onUpdateParticipantReturn && (
                             <button
                               onClick={() => {
-                                const currentState = virtualParticipant.rendu || false;
-                                const newState = !currentState;
+                                const isOrderReturned = order.status === 'rendu' || order.status === 'rendue';
+                                const newState = !isOrderReturned;
                                 onUpdateParticipantReturn(order.id, 0, newState);
                               }}
                               className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
                             >
-                              <span className={virtualParticipant.rendu ? "text-green-700" : "text-gray-600"}>
+                              <span className={(order.status === 'rendu' || order.status === 'rendue') ? "text-green-700" : "text-gray-600"}>
                                 Article(s) rendu(s)
                               </span>
-                              {virtualParticipant.rendu ? (
+                              {(order.status === 'rendu' || order.status === 'rendue') ? (
                                 <CheckSquare className="w-4 h-4 text-green-600" />
                               ) : (
                                 <Square className="w-4 h-4 text-gray-400" />
