@@ -96,8 +96,16 @@ export const ThreeStepRentalForm = forwardRef<
   });
   
   const [contractData, setContractData] = useState<Partial<RentalContract> | null>(() => {
+    // En mode édition, prioriser initialContract sur localStorage
+    if (isEditMode && initialContract) {
+      console.log('🔍 ThreeStepRentalForm - Initializing with initialContract in edit mode');
+      return initialContract;
+    }
+    
+    // Sinon, utiliser les données sauvegardées
     const savedData = loadFromStorage<Partial<RentalContract>>(STORAGE_KEYS.CONTRACT_DATA);
     if (savedData) {
+      console.log('🔍 ThreeStepRentalForm - Initializing with saved localStorage data');
       // Appliquer les nouvelles valeurs par défaut si elles ne sont pas définies
       return {
         ...savedData,
@@ -105,6 +113,7 @@ export const ThreeStepRentalForm = forwardRef<
         arrhes: savedData.arrhes ?? 50
       };
     }
+    console.log('🔍 ThreeStepRentalForm - No initial data found');
     return null;
   });
 
@@ -133,6 +142,9 @@ export const ThreeStepRentalForm = forwardRef<
 
   // Gestion des données initiales (mode édition)
   useEffect(() => {
+    console.log('🔍 ThreeStepRentalForm - initialContract received:', initialContract);
+    console.log('🔍 ThreeStepRentalForm - initialContract.paiementArrhes:', initialContract?.paiementArrhes);
+    
     if (initialContract || initialGroup) {
       
       if (initialGroup) {
@@ -141,7 +153,8 @@ export const ThreeStepRentalForm = forwardRef<
         setCurrentStep(1);
       }
       
-      if (initialContract) {
+      if (initialContract && (!isEditMode || !contractData)) {
+        console.log('🔍 ThreeStepRentalForm - Setting contractData from initialContract');
         setContractData(initialContract);
       }
       

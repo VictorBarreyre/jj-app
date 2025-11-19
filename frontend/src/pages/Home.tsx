@@ -44,7 +44,12 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       if (page === 1) {
         setAllOrders(ordersData.orders);
       } else {
-        setAllOrders(prev => [...prev, ...ordersData.orders]);
+        // Éviter les doublons lors de la concaténation
+        setAllOrders(prev => {
+          const existingIds = new Set(prev.map(o => o.id));
+          const newOrders = ordersData.orders.filter(order => !existingIds.has(order.id));
+          return [...prev, ...newOrders];
+        });
       }
     }
   }, [ordersData, page]);

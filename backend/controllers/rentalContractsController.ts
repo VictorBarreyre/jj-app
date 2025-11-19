@@ -116,6 +116,7 @@ export const rentalContractsController = {
       
       // Reclassifier les contrats existants selon la nouvelle logique
       const reclassifiedContracts = contracts.map(contract => {
+        console.log('🔍 Backend - contract.numero:', contract.numero, 'paiementArrhes:', contract.paiementArrhes);
         const hasMultipleParticipants = contract.participantCount && contract.participantCount > 1;
         const hasGroupDetails = contract.groupDetails && contract.groupDetails.participants && contract.groupDetails.participants.length > 1;
         const hasMultipleStockItems = contract.articlesStock && contract.articlesStock.length > 3; // Plus de 3 articles = probablement plusieurs personnes

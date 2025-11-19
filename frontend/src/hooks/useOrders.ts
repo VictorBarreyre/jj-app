@@ -11,6 +11,7 @@ export const useOrders = (params?: { status?: string; search?: string; page?: nu
       // Transformer les contrats en format compatible avec l'interface existante
       return {
         orders: response.contracts.map((contract: RentalContract) => {
+          console.log('🔍 useOrders - contract from backend:', contract.numero, 'paiementArrhes:', contract.paiementArrhes);
           // Transformer les données en items
           const items = [];
           
@@ -162,11 +163,22 @@ export const useOrders = (params?: { status?: string; search?: string; page?: nu
             status: contract.status === 'brouillon' ? 'brouillon' : 
                     contract.status === 'rendue' ? 'rendue' : 
                     contract.rendu ? 'rendue' : 'livree',
+            rendu: contract.rendu,
+            tenue: contract.tenue,
             items: items,
             sousTotal: calculatedTotal,
             total: calculatedTotal,
             notes: contract.notes,
             createdBy: contract.vendeur || 'N/A',
+            // Ajouter les champs de paiement depuis le backend
+            tarifLocation: contract.tarifLocation,
+            depotGarantie: contract.depotGarantie,
+            arrhes: contract.arrhes,
+            paiementArrhes: contract.paiementArrhes,
+            paiementSolde: contract.paiementSolde,
+            paiementDepotGarantie: contract.paiementDepotGarantie,
+            // DEBUG: Vérifier les données de paiement
+            __debug_paiementArrhes: contract.paiementArrhes,
             // Ajouter les détails de groupe pour la gestion du rendu par personne
             participantCount: contract.participantCount,
             groupDetails: contract.groupDetails

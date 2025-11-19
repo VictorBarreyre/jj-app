@@ -41,10 +41,12 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
       isExistingClient: false
     },
     vendeur: (order.createdBy || 'N/A') as any,
-    tarifLocation: order.total || undefined,
-    depotGarantie: 400, // Valeur par défaut
-    arrhes: 50, // Valeur par défaut
-    paiementArrhes: undefined,
+    tarifLocation: order.tarifLocation || order.total || undefined,
+    depotGarantie: order.depotGarantie || 400, // Valeur par défaut
+    arrhes: order.arrhes || 50, // Valeur par défaut
+    paiementArrhes: order.paiementArrhes,
+    paiementSolde: order.paiementSolde,
+    paiementDepotGarantie: order.paiementDepotGarantie,
     notes: order.notes,
     tenue: tenue,
     articlesStock: order.items?.map(item => ({

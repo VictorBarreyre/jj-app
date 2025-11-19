@@ -1,5 +1,6 @@
 import { ProductCategory, VesteReference, GiletReference, PantalonReference, ChapeauReference, ChaussuresReference } from './product-references';
 import { TenueMeasurement } from './measurement-form';
+import { PaymentMethod, PaymentInfo } from './rental-contract';
 
 // Interface pour les mesures spécifiques par type de produit
 export interface VesteMeasurements {
@@ -105,8 +106,19 @@ export interface Order {
   type: 'individuel' | 'groupe'; // Type de commande
   notes?: string;
 
+  // Statut de rendu (aligné avec RentalContract)
+  rendu?: boolean;
+
   // Tenue et mesures (pour compatibilité avec RentalContract)
   tenue?: TenueMeasurement;
+
+  // Tarification et paiements (aligné avec RentalContract)
+  tarifLocation?: number;
+  depotGarantie?: number;
+  arrhes?: number;
+  paiementArrhes?: PaymentInfo;
+  paiementSolde?: PaymentInfo;
+  paiementDepotGarantie?: PaymentInfo;
 
   // Informations supplémentaires pour les groupes
   participantCount?: number; // Nombre de participants dans le groupe
