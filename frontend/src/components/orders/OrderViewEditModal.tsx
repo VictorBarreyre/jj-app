@@ -16,8 +16,6 @@ import {
   Euro,
   FileText,
   X,
-  CheckSquare,
-  Square,
   Trash2
 } from 'lucide-react';
 import { Order, OrderItem } from '@/types/order';
@@ -53,9 +51,9 @@ export function OrderViewEditModal({
   const [formData, setFormData] = useState<Partial<Order>>({});
   const [displayOrder, setDisplayOrder] = useState<Order | null>(order);
 
-  // Synchroniser displayOrder avec order UNIQUEMENT au premier affichage
+  // Synchroniser displayOrder avec order - toujours mettre à jour
   useEffect(() => {
-    if (order && !displayOrder) {
+    if (order) {
       setDisplayOrder(order);
     }
   }, [order]);
@@ -109,7 +107,6 @@ export function OrderViewEditModal({
       setDisplayOrder(newDisplayOrder);
     } else if (displayOrder.type === 'individuel' && participantIndex === 0) {
       const newDisplayOrder = { ...displayOrder, rendu: returned };
-      console.log('✅ Nouveau displayOrder (individuel):', newDisplayOrder);
       setDisplayOrder(newDisplayOrder);
     }
 
@@ -522,23 +519,30 @@ export function OrderViewEditModal({
                           {participant.prenom ? `${participant.nom} ${participant.prenom}` : participant.nom}
                         </div>
                         {onUpdateParticipantReturn && (
-                          <button
-                            onClick={() => {
-                              const currentState = participant.rendu || false;
-                              const newState = !currentState;
-                              handleLocalParticipantReturn(displayOrder.id, index, newState);
-                            }}
-                            className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
-                          >
-                            <span className={(participant.rendu || false) ? "text-green-700" : "text-gray-600"}>
+                          <div className="flex items-center gap-3">
+                            <span className={`text-sm font-medium ${
+                              (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'text-green-700' : 'text-gray-600'
+                            }`}>
                               Article(s) rendu(s)
                             </span>
-                            {(participant.rendu || false) ? (
-                              <CheckSquare className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <Square className="w-4 h-4 text-gray-400" />
-                            )}
-                          </button>
+                            <button
+                              onClick={() => {
+                                const isOrderReturned = displayOrder.status === 'rendu' || displayOrder.status === 'rendue';
+                                const newState = !isOrderReturned;
+                                handleLocalParticipantReturn(displayOrder.id, index, newState);
+                              }}
+                              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                                (displayOrder.status === 'rendu' || displayOrder.status === 'rendue')
+                                  ? 'bg-green-600 focus:ring-green-500' 
+                                  : 'bg-gray-300 focus:ring-gray-400'
+                              }`}
+                              title={(displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'Marquer comme non rendu' : 'Marquer comme rendu'}
+                            >
+                              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 shadow-sm ${
+                                (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'translate-x-6' : 'translate-x-1'
+                              }`} />
+                            </button>
+                          </div>
                         )}
                       </div>
                       <div className="space-y-1">
@@ -691,23 +695,37 @@ export function OrderViewEditModal({
                             {virtualParticipant.prenom ? `${virtualParticipant.nom} ${virtualParticipant.prenom}` : virtualParticipant.nom}
                           </div>
                           {onUpdateParticipantReturn && (
-                            <button
-                              onClick={() => {
-                                const currentState = virtualParticipant.rendu || false;
-                                const newState = !currentState;
-                                handleLocalParticipantReturn(displayOrder.id, 0, newState);
-                              }}
-                              className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all hover:bg-gray-50"
-                            >
-                              <span className={virtualParticipant.rendu ? "text-green-700" : "text-gray-600"}>
-                                Article(s) rendu(s)
+                            <div className="flex items-center gap-3">
+                              <span className={`text-sm font-medium ${
+                                (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'text-green-700' : 'text-gray-600'
+                              }`}>
+                                Article(s) rendu(s) 
                               </span>
-                              {virtualParticipant.rendu ? (
-                                <CheckSquare className="w-4 h-4 text-green-600" />
-                              ) : (
-                                <Square className="w-4 h-4 text-gray-400" />
-                              )}
-                            </button>
+                              
+                              <button
+                                onClick={() => {
+                                  const isOrderReturned = displayOrder.status === 'rendu' || displayOrder.status === 'rendue';
+                                  const newState = !isOrderReturned;
+                                  console.log('🎛️ SWITCH CLICK:', { 
+                                    currentStatus: displayOrder.status,
+                                    isOrderReturned,
+                                    newState,
+                                    id: displayOrder.id 
+                                  });
+                                  handleLocalParticipantReturn(displayOrder.id, 0, newState);
+                                }}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                                  (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') 
+                                    ? 'bg-green-600 focus:ring-green-500' 
+                                    : 'bg-gray-300 focus:ring-gray-400'
+                                }`}
+                                title={(displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'Marquer comme non rendu' : 'Marquer comme rendu'}
+                              >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 shadow-sm ${
+                                  (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'translate-x-6' : 'translate-x-1'
+                                }`} />
+                              </button>
+                            </div>
                           )}
                         </div>
                         <div className="space-y-1">
