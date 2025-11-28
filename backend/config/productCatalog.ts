@@ -88,13 +88,13 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   // JAQUETTES
   {
     id: 'jaquette-fff',
-    name: 'Jaquette FFF',
+    name: 'Jaquette Fil à Fil Foncé',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
     colors: ['noir'],
     basePrice: 150,
-    description: 'Jaquette traditionnelle française'
+    description: 'Jaquette Fil à Fil Foncé'
   },
   {
     id: 'jaquette-bleue',
@@ -138,13 +138,13 @@ export const PRODUCT_CATALOG: ProductReference[] = [
   },
   {
     id: 'jaquette-ff-clair',
-    name: 'Jaquette FF clair',
+    name: 'Jaquette Fil à Fil Clair',
     category: 'veste',
     subCategory: 'jaquette',
     availableSizes: JAQUETTE_SIZES,
     colors: ['gris clair'],
     basePrice: 150,
-    description: 'Jaquette française claire'
+    description: 'Jaquette Fil à Fil Clair'
   },
 
   // COSTUMES VILLE

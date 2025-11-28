@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test-email": "npx ts-node scripts/testEmail.ts",
-    "test-smtp": "npx ts-node scripts/testEmail.ts --connection-only"
+    "test-smtp": "npx ts-node scripts/testEmail.ts --connection-only",
+    "migrate:jaquette-names": "npx ts-node scripts/migrate-jaquette-names.ts"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",

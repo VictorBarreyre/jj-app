@@ -3,12 +3,12 @@ import { ProductCategory } from './product-references';
 // Catalogue organisé des références vestes
 export const VESTE_CATALOG = {
   JAQUETTES: [
-    'Jaquette FFF',
+    'Jaquette Fil à Fil Foncé',
     'Jaquette Bleue',
     'Jaquette Bleue Clair',
     'Jaquette BORDEAUX',
     'Jaquette flanelle',
-    'Jaquette FF Clair'
+    'Jaquette Fil à Fil Clair'
   ] as const,
   
   COSTUMES_VILLE: [
