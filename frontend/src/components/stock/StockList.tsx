@@ -2,14 +2,15 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { StockItem } from '@/types/stock';
-import { 
-  Package, 
+import {
+  Package,
   Plus,
-  Edit3, 
-  History, 
+  Edit3,
+  History,
   TrendingUp,
   TrendingDown,
-  Trash2
+  Trash2,
+  Euro
 } from 'lucide-react';
 
 export interface StockListProps {
@@ -102,7 +103,14 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                   </Badge>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-3 mb-3 text-left">
+                <div className="grid grid-cols-4 gap-3 mb-3 text-left">
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Prix</div>
+                    <div className="flex items-center">
+                      <Euro className="w-3 h-3 text-green-600 mr-1" />
+                      <span className="font-bold text-sm text-gray-900">{item.prix ? `${item.prix}€` : '-'}</span>
+                    </div>
+                  </div>
                   <div>
                     <div className="text-xs text-gray-500 mb-1">Stock</div>
                     <div className="flex items-center">
@@ -194,6 +202,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                       <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                         <tr>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Article</th>
+                          <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Prix</th>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Stock</th>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Réservé</th>
                           <th className="px-4 lg:px-6 py-3 lg:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Disponible</th>
@@ -211,6 +220,14 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                                   {item.taille}
                                   {item.couleur && ` • ${item.couleur}`}
                                 </div>
+                              </div>
+                            </td>
+                            <td className="px-4 lg:px-6 py-3 lg:py-4">
+                              <div className="flex items-center">
+                                <Euro className="w-4 h-4 text-green-600 mr-1" />
+                                <span className="font-semibold text-gray-900 text-sm lg:text-base">
+                                  {item.prix ? `${item.prix}€` : '-'}
+                                </span>
                               </div>
                             </td>
                             <td className="px-4 lg:px-6 py-3 lg:py-4">

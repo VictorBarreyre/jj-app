@@ -12,6 +12,7 @@ export interface StockItem {
   reference: string;
   taille: string;
   couleur?: string;
+  prix?: number;
   quantiteStock: number;
   quantiteReservee: number;
   quantiteDisponible: number;

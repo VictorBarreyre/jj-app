@@ -13,6 +13,7 @@ export interface IStockItem extends Document {
   reference: string;          // Ex: "Jaquette FFF", "Costume bleu"
   taille: string;             // Ex: "52", "46N", "48L", etc.
   couleur?: string;           // Ex: "Noir", "Bleu marine"
+  prix?: number;              // Prix de location
   quantiteStock: number;      // Quantité physique en stock
   quantiteReservee: number;   // Quantité réservée (louée)
   quantiteDisponible: number; // Calculé: stock - réservée
@@ -47,6 +48,10 @@ const stockItemSchema = new Schema<IStockItem>({
   couleur: {
     type: String,
     trim: true
+  },
+  prix: {
+    type: Number,
+    min: 0
   },
   quantiteStock: {
     type: Number,
