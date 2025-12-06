@@ -30,6 +30,12 @@ interface GroupMeasurementFormProps {
 const TAILLES_CHAUSSURES: TailleChaussure[] = ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48'];
 const TAILLES_CHAPEAUX: TailleChapeau[] = ['54', '55', '56', '57', '58', '59', '60', '61', '62'];
 
+// Options combinées taille + type (V/NV) pour les chaussures
+const CHAUSSURES_OPTIONS = TAILLES_CHAUSSURES.flatMap(taille => [
+  { value: `${taille}_V`, label: `${taille} V`, taille, type: 'V' as const },
+  { value: `${taille}_NV`, label: `${taille} NV`, taille, type: 'NV' as const }
+]);
+
 export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, isEditMode = false }: GroupMeasurementFormProps) {
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
@@ -481,49 +487,36 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
               </div>
               <div>
                 <Select
-                  value={currentClient.tenue.tailleChaussures || ''}
-                  onValueChange={(value) => updateClientAccessoire(currentClientIndex, 'tailleChaussures', value === '__none__' ? '' : value as TailleChaussure)}
+                  value={currentClient.tenue.tailleChaussures && currentClient.tenue.chaussuresType
+                    ? `${currentClient.tenue.tailleChaussures}_${currentClient.tenue.chaussuresType}`
+                    : ''}
+                  onValueChange={(value) => {
+                    if (value === '__none__') {
+                      updateClientAccessoire(currentClientIndex, 'tailleChaussures', '');
+                      updateClientAccessoire(currentClientIndex, 'chaussuresType', '');
+                    } else {
+                      const option = CHAUSSURES_OPTIONS.find(o => o.value === value);
+                      if (option) {
+                        updateClientAccessoire(currentClientIndex, 'tailleChaussures', option.taille);
+                        updateClientAccessoire(currentClientIndex, 'chaussuresType', option.type);
+                      }
+                    }
+                  }}
                 >
                   <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
-                    <SelectValue placeholder="Taille chaussures" />
+                    <SelectValue placeholder="Chaussures (taille + type)" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectContent className="bg-white border-gray-300 text-gray-900 max-h-60">
                     <SelectItem value="__none__">
-                      <span className="text-gray-500 italic">Aucune taille sélectionnée</span>
+                      <span className="text-gray-500 italic">Aucune sélection</span>
                     </SelectItem>
-                    {TAILLES_CHAUSSURES.map(taille => (
-                      <SelectItem key={taille} value={taille}>{taille}</SelectItem>
+                    {CHAUSSURES_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            {/* Sélecteur V/NV - uniquement si une taille de chaussures est sélectionnée */}
-            {currentClient.tenue.tailleChaussures && (
-              <div className="mt-4">
-                <Label className="block text-left text-sm font-medium text-gray-700 mb-2">
-                  Type de chaussures
-                </Label>
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    variant={currentClient.tenue.chaussuresType === 'V' ? 'default' : 'outline'}
-                    onClick={() => updateClientAccessoire(currentClientIndex, 'chaussuresType', 'V')}
-                    className={`flex-1 py-3 rounded-xl font-medium ${currentClient.tenue.chaussuresType === 'V' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    V (Vernies)
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={currentClient.tenue.chaussuresType === 'NV' ? 'default' : 'outline'}
-                    onClick={() => updateClientAccessoire(currentClientIndex, 'chaussuresType', 'NV')}
-                    className={`flex-1 py-3 rounded-xl font-medium ${currentClient.tenue.chaussuresType === 'NV' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    NV (Non Vernies)
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
 
         </div>
