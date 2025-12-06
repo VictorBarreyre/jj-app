@@ -17,7 +17,11 @@ import path from 'path';
 // Charger les variables d'environnement
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://barreyrevictorcontact:***REMOVED***@cluster0.fpj3xgu.mongodb.net/jj-app?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required. Set it in your .env file.');
+}
 
 // Mapping des anciens noms vers les nouveaux
 const RENAME_MAP = {
