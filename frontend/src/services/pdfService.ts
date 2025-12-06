@@ -343,7 +343,7 @@ export class PDFService {
 
   private static addVendeurDetachableSection(doc: jsPDF, contract: RentalContract, contentEndY: number, participantIndex?: number): number {
     // Utiliser des valeurs pour A5 (148mm x 210mm)
-    const pageHeight = 200; // Hauteur A5 effective
+    const pageHeight = 185; // Hauteur A5 effective (remontée)
     const sectionHeight = 35; // Hauteur de la section détachable
     const minSpacing = 10; // Espacement minimum après le contenu
 
