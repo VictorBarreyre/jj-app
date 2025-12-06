@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { OrdersList } from '../components/home/OrdersList';
 import { OrderViewEditModal } from '../components/orders/OrderViewEditModal';
+import { ListsManager } from '../components/lists/ListsManager';
 import { Order } from '@/types/order';
 import { useOrders, useUpdateOrder, useDeleteOrder } from '@/hooks/useOrders';
+import { useLists } from '@/hooks/useLists';
 import { Button } from '@/components/ui/button';
-import { User, Users, Plus } from 'lucide-react';
+import { User, FolderOpen, Plus } from 'lucide-react';
 import { rentalContractApi } from '@/services/rental-contract.api';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -15,13 +17,13 @@ interface HomeProps {
   onEditOrder: (order: Order) => void;
 }
 
-type OrderType = 'individuel' | 'groupe';
+type TabType = 'individuel' | 'listes';
 
 interface TypeTab {
-  id: OrderType;
+  id: TabType;
   label: string;
   icon: React.ReactNode;
-  count: number;
+  count?: number;
 }
 
 export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
@@ -30,11 +32,13 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   const updateOrderMutation = useUpdateOrder();
   const deleteOrderMutation = useDeleteOrder();
   const queryClient = useQueryClient();
-  const [activeType, setActiveType] = useState<OrderType>('individuel');
+  const { data: lists = [] } = useLists();
+  const [activeTab, setActiveTab] = useState<TabType>('individuel');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
+  const [isCreatingList, setIsCreatingList] = useState(false);
 
   const orders = allOrders;
 
@@ -240,35 +244,32 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
   
   // Statistiques rapides
   const stats = useMemo(() => {
-    const individuel = orders.filter(o => o.type === 'individuel').length;
-    const groupe = orders.filter(o => o.type === 'groupe').length;
-    
-    return { individuel, groupe };
+    const individuel = orders.length;
+    return { individuel };
   }, [orders]);
 
   // Définir les onglets avec leurs icônes
   const typeTabs: TypeTab[] = [
     {
       id: 'individuel',
-      label: 'Commandes individuelles',
+      label: 'Commandes',
       icon: <User className="w-5 h-5" />,
       count: stats.individuel
     },
     {
-      id: 'groupe',
-      label: 'Mariages/Cérémonies',
-      icon: <Users className="w-5 h-5" />,
-      count: stats.groupe
+      id: 'listes',
+      label: 'Listes',
+      icon: <FolderOpen className="w-5 h-5" />
     }
   ];
 
-  // Filtrer les commandes par type actif
+  // Filtrer les commandes (toutes les commandes pour l'onglet individuel)
   const filteredOrders = useMemo(() => {
-    return orders.filter(order => order.type === activeType);
-  }, [orders, activeType]);
+    return orders;
+  }, [orders]);
 
-  const handleTypeChange = (type: OrderType) => {
-    setActiveType(type);
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -279,16 +280,22 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
           {/* En-tête avec titre et bouton - maintenant dans le bloc */}
           <div className="flex justify-between items-start p-6 sm:p-8 border-b border-gray-200">
             <div className="text-left flex-1">
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight text-left">Commandes</h1>
-              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-tight sm:leading-relaxed">Gestion des commandes</p>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight text-left">
+                {activeTab === 'individuel' ? 'Commandes' : 'Listes'}
+              </h1>
+              <p className="text-gray-600 text-sm sm:text-sm mt-1 leading-tight sm:leading-relaxed">
+                {activeTab === 'individuel' ? 'Gestion des commandes' : 'Gestion des listes'}
+              </p>
             </div>
             <div className="ml-4">
-              <Button 
-                onClick={onCreateNew}
+              <Button
+                onClick={activeTab === 'individuel' ? onCreateNew : () => setIsCreatingList(true)}
                 className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-2 py-1 sm:px-6 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center w-10 sm:w-auto text-lg sm:text-base min-h-[40px] sm:min-h-0 sm:gap-3"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline ml-0 sm:ml-0">Nouvelle commande</span>
+                <span className="hidden sm:inline ml-0 sm:ml-0">
+                  {activeTab === 'individuel' ? 'Nouvelle commande' : 'Nouvelle liste'}
+                </span>
               </Button>
             </div>
           </div>
@@ -300,10 +307,10 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
               {typeTabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => handleTypeChange(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`
                     flex items-center gap-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap
-                    ${activeType === tab.id
+                    ${activeTab === tab.id
                       ? 'border-amber-500 text-amber-600 bg-amber-50/50'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }
@@ -311,44 +318,58 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
                 >
                   <span className="w-4 h-4 sm:w-5 sm:h-5">{tab.icon}</span>
                   <span className="hidden sm:inline">{tab.label}</span>
-                  <span className="sm:hidden">{tab.id === 'individuel' ? 'Individuelles' : 'Groupes'}</span>
-                  <span className={`
-                    ml-1 sm:ml-2 py-0.5 px-1.5 sm:px-2 rounded-full text-sm sm:text-xs font-bold
-                    ${activeType === tab.id
-                      ? 'bg-amber-100 text-amber-800'
-                      : 'bg-gray-100 text-gray-600'
-                    }
-                  `}>
-                    {tab.count}
-                  </span>
+                  <span className="sm:hidden">{tab.id === 'individuel' ? 'Commandes' : 'Listes'}</span>
+                  {tab.count !== undefined && (
+                    <span className={`
+                      ml-1 sm:ml-2 py-0.5 px-1.5 sm:px-2 rounded-full text-sm sm:text-xs font-bold
+                      ${activeTab === tab.id
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-gray-100 text-gray-600'
+                      }
+                    `}>
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
           </nav>
         </div>
 
-          {/* Liste des commandes */}
-          <OrdersList
-            orders={filteredOrders}
-            onView={handleViewOrder}
-            onEdit={handleEditOrder}
-            onCreateNew={onCreateNew}
-            hideHeader={true}
-            activeType={activeType}
-          />
+          {/* Contenu selon l'onglet actif */}
+          {activeTab === 'individuel' ? (
+            <>
+              {/* Liste des commandes */}
+              <OrdersList
+                orders={filteredOrders}
+                onView={handleViewOrder}
+                onEdit={handleEditOrder}
+                onCreateNew={onCreateNew}
+                hideHeader={true}
+              />
 
-          {/* Bouton Voir plus */}
-          {ordersData && ordersData.page < ordersData.totalPages && (
-            <div className="p-6 border-t border-gray-200 flex justify-center">
-              <Button
-                onClick={handleLoadMore}
-                disabled={isLoading}
-                variant="outline"
-                className="px-6 py-3 text-amber-600 border-amber-300 hover:bg-amber-50 hover:border-amber-400 rounded-xl transition-all shadow-sm"
-              >
-                {isLoading ? 'Chargement...' : 'Voir plus de commandes'}
-              </Button>
-            </div>
+              {/* Bouton Voir plus */}
+              {ordersData && ordersData.page < ordersData.totalPages && (
+                <div className="p-6 border-t border-gray-200 flex justify-center">
+                  <Button
+                    onClick={handleLoadMore}
+                    disabled={isLoading}
+                    variant="outline"
+                    className="px-6 py-3 text-amber-600 border-amber-300 hover:bg-amber-50 hover:border-amber-400 rounded-xl transition-all shadow-sm"
+                  >
+                    {isLoading ? 'Chargement...' : 'Voir plus de commandes'}
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <ListsManager
+              orders={orders}
+              onViewOrder={handleViewOrder}
+              onEditOrder={handleEditOrder}
+              isCreating={isCreatingList}
+              onCreatingChange={setIsCreatingList}
+            />
           )}
         </div>
       </div>
