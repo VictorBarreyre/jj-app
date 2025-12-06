@@ -375,6 +375,7 @@ export const stockController = {
               subCategory: '$subCategory',
               couleur: '$couleur'
             },
+            prix: { $first: '$prix' },
             items: {
               $push: {
                 id: { $toString: '$_id' },
@@ -399,6 +400,7 @@ export const stockController = {
             category: '$_id.category',
             subCategory: '$_id.subCategory',
             couleur: '$_id.couleur',
+            prix: 1,
             items: {
               $sortArray: {
                 input: '$items',

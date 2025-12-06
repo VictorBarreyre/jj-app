@@ -27,6 +27,7 @@ interface StockReferenceGroupData {
   category: string;
   subCategory?: string;
   couleur?: string;
+  prix?: number;
   items: Array<{
     id: string;
     taille: string;

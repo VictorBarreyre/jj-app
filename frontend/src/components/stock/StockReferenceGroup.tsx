@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ChevronDown, 
+import {
+  ChevronDown,
   ChevronUp,
-  Edit3, 
-  History, 
+  Edit3,
+  History,
   Trash2,
   Package,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Euro
 } from 'lucide-react';
 
 interface StockItemInGroup {
@@ -28,6 +29,7 @@ interface StockReferenceGroupData {
   category: string;
   subCategory?: string;
   couleur?: string;
+  prix?: number;
   items: StockItemInGroup[];
   totalStock: number;
   totalReserved: number;
@@ -89,7 +91,15 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
         <div className="flex items-start gap-4 sm:gap-3 flex-1">
           <div className="text-left flex-1">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
+              <div className="flex items-center gap-3">
+                <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
+                {group.prix && (
+                  <span className="flex items-center text-green-600 font-semibold text-base">
+                    <Euro className="w-4 h-4 mr-0.5" />
+                    {group.prix}€
+                  </span>
+                )}
+              </div>
               {/* Flèche à droite pour mobile seulement */}
               <div className="flex sm:hidden items-center">
                 {isExpanded ? (

@@ -19,6 +19,7 @@ interface StockReferenceGroupData {
   category: string;
   subCategory?: string;
   couleur?: string;
+  prix?: number;
   items: StockItemInGroup[];
   totalStock: number;
   totalReserved: number;
