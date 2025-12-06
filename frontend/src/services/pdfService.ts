@@ -371,7 +371,7 @@ export class PDFService {
 
     // Ligne verticale en tirets - de haut en bas de la section détachable
     doc.setLineDashPattern([1, 1], 0);
-    doc.line(separationX, y + 3, separationX, pageHeight - 5);
+    doc.line(separationX, y + 3, separationX, 205); // Descend jusqu'en bas de la page A5
     doc.setLineDashPattern([], 0); // Reset dash pattern
 
     // Partie gauche - texte vertical
