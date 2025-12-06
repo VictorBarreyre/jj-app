@@ -496,6 +496,7 @@ export const stockController = {
         reference: item.reference,
         taille: item.taille,
         couleur: item.couleur,
+        prix: item.prix,
         quantiteStock: item.quantiteStock,
         quantiteReservee: item.quantiteReservee,
         quantiteDisponible: item.quantiteDisponible,
