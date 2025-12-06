@@ -123,7 +123,7 @@ export class BackendPDFService {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Bon de location Jean Jacques Cérémonies</title>
+          <title>Bon de location Jean Jacques Cérémonie</title>
           <style>
             @page {
               size: A5;
@@ -233,10 +233,10 @@ export class BackendPDFService {
         </head>
         <body>
           <div class="header">
-            <h1>JEAN JACQUES CÉRÉMONIES</h1>
+            <h1>JEAN JACQUES CÉRÉMONIE</h1>
             <div class="subtitle">Fondé en 1867</div>
             <div class="subtitle">www.jjloc.fr</div>
-            <div class="subtitle">2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)</div>
+            <div class="subtitle">3 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)</div>
             <div class="contact">01 43 54 25 56</div>
             <div class="subtitle small">Ouvert du mardi au samedi de 9h à 18h sans interruption</div>
             <div class="subtitle small">Fermé dimanche et lundi</div>

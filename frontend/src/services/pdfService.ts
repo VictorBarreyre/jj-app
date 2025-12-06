@@ -27,7 +27,7 @@ export class PDFService {
     // Titre principal
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('JEAN JACQUES CÉRÉMONIES', centerX, 12, { align: 'center' });
+    doc.text('JEAN JACQUES CÉRÉMONIE', centerX, 12, { align: 'center' });
 
     // Fondé en 1867
     doc.setFontSize(9);
@@ -40,7 +40,7 @@ export class PDFService {
 
     // Adresse
     doc.setFontSize(8);
-    doc.text('2 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)', centerX, 28, { align: 'center' });
+    doc.text('3 rue Nicolas Flamel - 75004 Paris (Métro Châtelet)', centerX, 28, { align: 'center' });
 
     // Téléphone
     doc.setFontSize(9);
@@ -397,11 +397,11 @@ export class PDFService {
     // Informations JJ Cérémonies
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('JJ CÉRÉMONIES', rightSectionX, currentY);
+    doc.text('JJ CÉRÉMONIE', rightSectionX, currentY);
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.text('2 rue Nicolas Flamel - 75004 Paris', rightSectionX, currentY + 4);
+    doc.text('3 rue Nicolas Flamel - 75004 Paris', rightSectionX, currentY + 4);
     doc.text('01 43 54 25 56', rightSectionX, currentY + 8);
 
     currentY += 13;
