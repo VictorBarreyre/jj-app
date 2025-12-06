@@ -91,15 +91,7 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
         <div className="flex items-start gap-4 sm:gap-3 flex-1">
           <div className="text-left flex-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
-                {group.prix && (
-                  <span className="flex items-center text-green-600 font-semibold text-base">
-                    <Euro className="w-4 h-4 mr-0.5" />
-                    {group.prix}€
-                  </span>
-                )}
-              </div>
+              <h3 className="font-bold text-lg sm:text-xl text-gray-900 leading-tight">{group.reference}</h3>
               {/* Flèche à droite pour mobile seulement */}
               <div className="flex sm:hidden items-center">
                 {isExpanded ? (
@@ -115,6 +107,13 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
             
             {/* Totaux alignés sous le titre - mobile seulement */}
             <div className="flex justify-between w-full sm:hidden mt-4">
+              <div className="text-center">
+                <div className="text-sm text-gray-500 mb-2 font-medium">Prix</div>
+                <div className="flex items-center justify-center">
+                  <Euro className="w-4 h-4 text-green-600 mr-1" />
+                  <span className="font-bold text-green-600 text-lg">{group.prix ? `${group.prix}€` : '-'}</span>
+                </div>
+              </div>
               <div className="text-center">
                 <div className="text-sm text-gray-500 mb-2 font-medium">Stock</div>
                 <div className="flex items-center justify-center">
@@ -145,6 +144,13 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
 
         {/* Totaux à droite - desktop seulement */}
         <div className="hidden sm:flex sm:items-center sm:gap-8">
+          <div className="text-center">
+            <div className="text-xs text-gray-500 mb-1 font-medium">Prix</div>
+            <div className="flex items-center justify-center">
+              <Euro className="w-4 h-4 text-green-600 mr-1" />
+              <span className="font-bold text-green-600 text-base">{group.prix ? `${group.prix}€` : '-'}</span>
+            </div>
+          </div>
           <div className="text-center">
             <div className="text-xs text-gray-500 mb-1 font-medium">Stock</div>
             <div className="flex items-center justify-center">
