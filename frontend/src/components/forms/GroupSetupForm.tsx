@@ -228,7 +228,7 @@ export function GroupSetupForm({ onSubmit, onSave, onConfirm, initialData, isEdi
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <Calendar className="w-5 h-5 text-white" />
           </div>
-          1. Information liste
+          1. Information Client
         </h2>
 
         <div className="flex flex-col md:flex-row gap-3 md:gap-4">
@@ -304,117 +304,48 @@ export function GroupSetupForm({ onSubmit, onSave, onConfirm, initialData, isEdi
           </div>
         </div>
 
-        <div className="mt-4">
-          <Label htmlFor="groupName" className="block text-left text-sm font-semibold text-gray-700 mb-2">
-            Nom du groupe
-          </Label>
-          <Input
-            id="groupName"
-            value={formData.groupName || ''}
-            onChange={(e) => updateBasicInfo('groupName', e.target.value)}
-            placeholder="Nom du groupe ou de l'événement"
-            className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-          />
-        </div>
-      </div>
-
-      {/* 2. Gestion des clients */}
-      <div className="border-b border-gray-200 pb-8">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-2xl font-bold text-gray-900 text-left">
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            2. Participants
-          </h2>
-          
-          <Button
-            type="button"
-            onClick={addClient}
-            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Ajouter
-          </Button>
-        </div>
-
-        {errors.clients && (
-          <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 p-3 mb-4">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="text-sm text-red-700">{errors.clients}</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <Label htmlFor="clientNom" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+              Nom *
+            </Label>
+            <Input
+              id="clientNom"
+              value={formData.clients?.[0]?.nom || ''}
+              onChange={(e) => updateClient(0, 'nom', e.target.value)}
+              placeholder="Nom du client"
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
           </div>
-        )}
 
-        <div className="space-y-4">
-          {formData.clients?.map((client, index) => (
-            <div key={client.id} className="rounded-lg bg-gray-50/50">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800">
-                  <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  Personne {index + 1}
-                </h4>
-                
-                {formData.clients && formData.clients.length > 1 && (
-                  <Button
-                    type="button"
-                    onClick={() => removeClient(index)}
-                    variant="outline"
-                    size="sm"
-                    className="text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
-                    <User className="w-3 h-3" />
-                    Nom *
-                  </Label>
-                  <Input
-                    value={client.nom}
-                    onChange={(e) => updateClient(index, 'nom', e.target.value)}
-                    placeholder="Nom"
-                    className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-                  />
-                  {errors[`client_${index}_nom`] && (
-                    <p className="text-red-500 text-xs mt-1">{errors[`client_${index}_nom`]}</p>
-                  )}
-                </div>
-                <div>
-                  <Label className="flex items-center justify-start gap-1 text-sm font-semibold text-gray-700 mb-2">
-                    <User className="w-3 h-3" />
-                    Prénom
-                  </Label>
-                  <Input
-                    value={client.prenom || ''}
-                    onChange={(e) => updateClient(index, 'prenom', e.target.value)}
-                    placeholder="Prénom"
-                    className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+          <div>
+            <Label htmlFor="clientPrenom" className="block text-left text-sm font-semibold text-gray-700 mb-2">
+              Prénom
+            </Label>
+            <Input
+              id="clientPrenom"
+              value={formData.clients?.[0]?.prenom || ''}
+              onChange={(e) => updateClient(0, 'prenom', e.target.value)}
+              placeholder="Prénom du client"
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* 3. Notes du groupe */}
+        </div>
+
+      {/* 2. Notes */}
       <div className="border-b border-gray-200 pb-8">
         <h2 className="flex items-center gap-2 sm:gap-3 text-base sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-left">
           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg shadow-md">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          3. Notes du groupe
+          2. Notes
         </h2>
         <Textarea
           value={formData.groupNotes || ''}
           onChange={(e) => updateBasicInfo('groupNotes', e.target.value)}
-          placeholder="Notes générales pour ce groupe de location..."
+          placeholder="Notes générales pour ce client..."
           rows={3}
           className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
         />

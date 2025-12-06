@@ -8,7 +8,7 @@ import { StockIndicator } from '@/components/stock/StockIndicator';
 import { GroupRentalInfo, GroupClientInfo } from '@/types/group-rental';
 import { stockAPI } from '@/services/api';
 import { ArticleCategory } from '@/types/stock';
-import { TailleChaussure, TailleChapeau } from '@/types/measurement-form';
+import { TailleChaussure, TailleChapeau, ChaussuresType } from '@/types/measurement-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Shirt, 
@@ -85,7 +85,7 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
     });
   };
 
-  const updateClientAccessoire = (clientIndex: number, field: 'tailleChapeau' | 'tailleChaussures', value: any) => {
+  const updateClientAccessoire = (clientIndex: number, field: 'tailleChapeau' | 'tailleChaussures' | 'chaussuresType', value: any) => {
     setUpdatedGroup(prev => {
       const newClients = [...prev.clients];
       newClients[clientIndex].tenue[field] = value;
@@ -498,6 +498,32 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
                 </Select>
               </div>
             </div>
+            {/* Sélecteur V/NV - uniquement si une taille de chaussures est sélectionnée */}
+            {currentClient.tenue.tailleChaussures && (
+              <div className="mt-4">
+                <Label className="block text-left text-sm font-medium text-gray-700 mb-2">
+                  Type de chaussures
+                </Label>
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant={currentClient.tenue.chaussuresType === 'V' ? 'default' : 'outline'}
+                    onClick={() => updateClientAccessoire(currentClientIndex, 'chaussuresType', 'V')}
+                    className={`flex-1 py-3 rounded-xl font-medium ${currentClient.tenue.chaussuresType === 'V' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    V (Vernies)
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={currentClient.tenue.chaussuresType === 'NV' ? 'default' : 'outline'}
+                    onClick={() => updateClientAccessoire(currentClientIndex, 'chaussuresType', 'NV')}
+                    className={`flex-1 py-3 rounded-xl font-medium ${currentClient.tenue.chaussuresType === 'NV' ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-white/70 border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    NV (Non Vernies)
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>

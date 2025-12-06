@@ -1,6 +1,9 @@
 // Types pour les modes de paiement
 export type PaymentMethod = 'especes' | 'carte' | 'virement' | 'cheque' | 'autre';
 
+// Type pour les chaussures
+export type ChaussuresType = 'V' | 'NV'; // Vernies ou Non Vernies
+
 // Interface pour les articles de stock utilisés dans un contrat
 export interface ContractStockItem {
   stockItemId: string;
@@ -51,6 +54,7 @@ export interface TenueInfo {
   };
   tailleChapeau?: string;
   tailleChaussures?: string;
+  chaussuresType?: ChaussuresType; // V = Vernies, NV = Non Vernies
 }
 
 // Interface pour le tracking des paiements

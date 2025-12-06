@@ -162,8 +162,11 @@ export class PDFService {
         items.push(`Chapeau:  ${participant.tenue.tailleChapeau}`);
       }
       if (participant.tenue?.tailleChaussures) {
-        // Frontend PDF : toujours afficher la pointure
-        items.push(`Chaussures:  ${participant.tenue.tailleChaussures}`);
+        // Frontend PDF : toujours afficher la pointure avec V/NV si disponible
+        const chaussuresText = participant.tenue.chaussuresType
+          ? `${participant.tenue.tailleChaussures} ${participant.tenue.chaussuresType}`
+          : participant.tenue.tailleChaussures;
+        items.push(`Chaussures:  ${chaussuresText}`);
       }
 
       if (items.length > 0) {

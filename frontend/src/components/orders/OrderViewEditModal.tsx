@@ -580,7 +580,10 @@ export function OrderViewEditModal({
                             pieces.push({ text: `Chapeau: ${participant.tenue.tailleChapeau}`, notes: '' });
                           }
                           if (participant.tenue?.tailleChaussures) {
-                            pieces.push({ text: `Chaussures: ${participant.tenue.tailleChaussures}`, notes: '' });
+                            const chaussuresText = participant.tenue.chaussuresType
+                              ? `${participant.tenue.tailleChaussures} ${participant.tenue.chaussuresType}`
+                              : participant.tenue.tailleChaussures;
+                            pieces.push({ text: `Chaussures: ${chaussuresText}`, notes: '' });
                           }
 
                           return pieces.length > 0 ? (
@@ -763,7 +766,10 @@ export function OrderViewEditModal({
                               pieces.push({ text: `Chapeau: ${virtualParticipant.tenue.tailleChapeau}`, notes: '' });
                             }
                             if (virtualParticipant.tenue?.tailleChaussures) {
-                              pieces.push({ text: `Chaussures: ${virtualParticipant.tenue.tailleChaussures}`, notes: '' });
+                              const chaussuresText = virtualParticipant.tenue.chaussuresType
+                                ? `${virtualParticipant.tenue.tailleChaussures} ${virtualParticipant.tenue.chaussuresType}`
+                                : virtualParticipant.tenue.tailleChaussures;
+                              pieces.push({ text: `Chaussures: ${chaussuresText}`, notes: '' });
                             }
 
                             return pieces.length > 0 ? (

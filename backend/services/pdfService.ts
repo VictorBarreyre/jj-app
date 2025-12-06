@@ -106,8 +106,11 @@ export class BackendPDFService {
       }
     }
     if (participant?.tenue?.tailleChaussures) {
-      // Afficher la taille seulement pour le PDF vendeur
-      const text = type === 'vendeur' ? participant.tenue.tailleChaussures : '';
+      // Afficher la taille avec V/NV seulement pour le PDF vendeur
+      const chaussuresText = participant.tenue.chaussuresType
+        ? `${participant.tenue.tailleChaussures} ${participant.tenue.chaussuresType}`
+        : participant.tenue.tailleChaussures;
+      const text = type === 'vendeur' ? chaussuresText : '';
       if (text || type === 'client') {
         itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chaussures${type === 'vendeur' ? ':' : ''}</span> ${text}</div>`);
       }

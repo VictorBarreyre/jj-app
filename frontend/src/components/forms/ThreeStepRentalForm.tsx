@@ -6,6 +6,7 @@ import { GroupRentalInfo } from '@/types/group-rental';
 import { RentalContract } from '@/types/rental-contract';
 import { RotateCcw } from 'lucide-react';
 import { calculateDefaultDates } from '@/utils/dateCalculations';
+import { getProductPrice, calculateTenuePrice } from '@/utils/priceCalculation';
 
 // Clés pour localStorage
 const STORAGE_KEYS = {
@@ -366,7 +367,7 @@ export const ThreeStepRentalForm = forwardRef<
     switch (currentStep) {
       case 1:
         return {
-          title: 'Étape 1/3 : Clients',
+          title: 'Étape 1/3 : Client',
           description: isGroup 
             ? 'Informations et participants'
             : 'Informations client'
@@ -518,15 +519,17 @@ export const ThreeStepRentalForm = forwardRef<
               {/* Résumé des étapes précédentes */}
               <div className="mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
                 <h3 className="font-bold text-gray-900 mb-4 text-left text-lg">
-                  📋 Résumé {currentGroupData.clients.length > 1 ? 'du groupe de location' : 'de la prise de mesure'}
+                  📋 <span className="sm:hidden">Résumé</span><span className="hidden sm:inline">Résumé {currentGroupData.clients.length > 1 ? 'du groupe de location' : 'de la prise de mesure'}</span>
                 </h3>
               
-              {/* Informations principales - alignées à gauche */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              {/* Informations principales - pour les groupes seulement */}
+              {currentGroupData.clients.length > 1 && (
+              <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 {currentGroupData.groupName && (
                   <div className="text-left">
                     <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                      {currentGroupData.clients.length > 1 ? 'Groupe' : 'Client'}
+                      Groupe
                     </span>
                     <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.groupName}</p>
                   </div>
@@ -534,55 +537,35 @@ export const ThreeStepRentalForm = forwardRef<
 
                 <div className="text-left">
                   <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    {currentGroupData.clients.length > 1 ? 'Participants' : 'Téléphone'}
+                    Participants
                   </span>
                   <p className="font-medium text-gray-900 text-xs sm:text-sm">
-                    {currentGroupData.clients.length > 1
-                      ? `${currentGroupData.clients.length} personne${currentGroupData.clients.length > 1 ? 's' : ''}`
-                      : currentGroupData.telephone
-                    }
+                    {currentGroupData.clients.length} personnes
                   </p>
-                </div>
-
-                <div className="text-left">
-                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    Vendeur
-                  </span>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.vendeur}</p>
-                </div>
-
-                <div className="text-left">
-                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    Date événement
-                  </span>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">{currentGroupData.dateEssai.toLocaleDateString('fr-FR')}</p>
                 </div>
               </div>
 
               {/* Participants détaillés pour les groupes */}
-              {currentGroupData.clients.length > 1 && (
-                <div className="pt-3 border-t border-gray-300">
-                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
-                    Liste des participants
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {currentGroupData.clients.map((client, index) => (
-                      <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                        {client.prenom ? `${client.prenom} ${client.nom}` : client.nom}
-                      </span>
-                    ))}
-                  </div>
+              <div className="pt-3 border-t border-gray-300">
+                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                  Liste des participants
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {currentGroupData.clients.map((client, index) => (
+                    <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      {client.prenom ? `${client.prenom} ${client.nom}` : client.nom}
+                    </span>
+                  ))}
                 </div>
+              </div>
+              </>
               )}
 
               {/* Pièces de tenue réservées */}
-              <div className="pt-3 border-t border-gray-300 mt-3">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
-                  Pièces de tenue réservées
-                </span>
+              <div>
                 <div className="space-y-4">
                   {currentGroupData.clients.map((client, clientIndex) => {
-                    const pieces = [];
+                    const pieces: { text: string; notes: string; prix?: number }[] = [];
 
                     // Veste
                     if (client.tenue.veste) {
@@ -591,7 +574,8 @@ export const ThreeStepRentalForm = forwardRef<
                       const longueurManche = client.tenue.veste.longueurManche || '';
                       const notes = client.tenue.veste.notes || '';
                       const parts = [reference, taille, longueurManche].filter(part => part);
-                      pieces.push({ text: `Veste: ${parts.join(' / ')}`, notes });
+                      const prix = reference ? getProductPrice(reference) : undefined;
+                      pieces.push({ text: `Veste: ${parts.join(' / ')}`, notes, prix });
                     }
 
                     // Gilet (ne pas afficher si sans gilet)
@@ -600,7 +584,8 @@ export const ThreeStepRentalForm = forwardRef<
                       const taille = client.tenue.gilet.taille || '';
                       const notes = client.tenue.gilet.notes || '';
                       const parts = [reference, taille].filter(part => part);
-                      pieces.push({ text: `Gilet: ${parts.join(' / ')}`, notes });
+                      const prix = getProductPrice(reference);
+                      pieces.push({ text: `Gilet: ${parts.join(' / ')}`, notes, prix });
                     }
 
                     // Pantalon (ne pas afficher si sans pantalon)
@@ -610,7 +595,8 @@ export const ThreeStepRentalForm = forwardRef<
                       const longueur = client.tenue.pantalon.longueur || '';
                       const notes = client.tenue.pantalon.notes || '';
                       const parts = [reference, taille, longueur].filter(part => part);
-                      pieces.push({ text: `Pantalon: ${parts.join(' / ')}`, notes });
+                      const prix = getProductPrice(reference);
+                      pieces.push({ text: `Pantalon: ${parts.join(' / ')}`, notes, prix });
                     }
 
                     // Ceinture
@@ -619,7 +605,8 @@ export const ThreeStepRentalForm = forwardRef<
                       const taille = client.tenue.ceinture.taille || '';
                       const notes = client.tenue.ceinture.notes || '';
                       const parts = [reference, taille].filter(part => part);
-                      pieces.push({ text: `Ceinture: ${parts.join(' / ')}`, notes });
+                      const prix = reference ? getProductPrice(reference) : undefined;
+                      pieces.push({ text: `Ceinture: ${parts.join(' / ')}`, notes, prix });
                     }
 
                     // Chapeau
@@ -629,31 +616,63 @@ export const ThreeStepRentalForm = forwardRef<
 
                     // Chaussures
                     if (client.tenue.tailleChaussures) {
-                      pieces.push({ text: `Chaussures: ${client.tenue.tailleChaussures}`, notes: '' });
+                      const chaussuresText = client.tenue.chaussuresType
+                        ? `${client.tenue.tailleChaussures} ${client.tenue.chaussuresType}`
+                        : client.tenue.tailleChaussures;
+                      pieces.push({ text: `Chaussures: ${chaussuresText}`, notes: '' });
                     }
 
                     if (pieces.length === 0) {
                       pieces.push({ text: 'Aucune pièce sélectionnée', notes: '' });
                     }
 
+                    // Calculer le prix avec les combinaisons
+                    const prixCombinaison = calculateTenuePrice(client.tenue);
+                    // Calculer le total des prix individuels pour comparaison
+                    const totalPrixIndividuel = pieces.reduce((sum, p) => sum + (p.prix || 0), 0);
+                    // Vérifier si c'est une combinaison (prix différent)
+                    const isCombinaison = prixCombinaison !== undefined && prixCombinaison !== totalPrixIndividuel;
+                    const totalPrix = prixCombinaison || totalPrixIndividuel;
+
                     return (
-                      <div key={clientIndex} className="bg-gray-50 rounded-lg p-3 text-left">
+                      <div key={clientIndex} className="pt-2 sm:pt-0 sm:bg-gray-50 sm:rounded-lg sm:p-3 text-left">
                         <div className="font-semibold text-gray-800 text-left mb-2">
                           {client.prenom ? `${client.prenom} ${client.nom}` : client.nom}
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           {pieces.map((piece, index) => (
-                            <div key={index} className="text-sm text-gray-700 text-left pl-3">
-                              <span className="text-amber-600 font-medium">•</span>
-                              <span className="ml-2">
-                                {piece.text}
-                                {piece.notes && <span className="text-gray-500 italic ml-2">({piece.notes})</span>}
+                            <div key={index} className="text-sm text-gray-700 text-left pl-1 sm:pl-3 flex justify-between">
+                              <span>
+                                <span className="text-amber-600 font-medium">•</span>
+                                <span className="ml-2">
+                                  {piece.text}
+                                  {piece.notes && <span className="text-gray-500 italic ml-2">({piece.notes})</span>}
+                                </span>
                               </span>
+                              {piece.prix !== undefined && piece.prix > 0 && (
+                                <span className={`font-medium ml-2 ${isCombinaison ? 'text-gray-400 line-through' : 'text-green-600'}`}>
+                                  {piece.prix}€
+                                </span>
+                              )}
                             </div>
                           ))}
+                          {isCombinaison && totalPrixIndividuel > 0 && (
+                            <div className="text-sm text-left pl-1 sm:pl-3 flex justify-between pt-2 mt-2 border-t border-gray-200">
+                              <span className="text-gray-500">Sous-total</span>
+                              <span className="text-gray-400 line-through">{totalPrixIndividuel}€</span>
+                            </div>
+                          )}
+                          {totalPrix > 0 && (
+                            <div className={`text-sm text-left pl-1 sm:pl-3 flex justify-between ${isCombinaison ? 'pt-2' : 'pt-2 mt-2 border-t border-gray-200'}`}>
+                              <span className="font-semibold text-gray-800">
+                                Prix total
+                              </span>
+                              <span className="font-bold text-green-700">{totalPrix}€</span>
+                            </div>
+                          )}
                         </div>
                         {client.notes && (
-                          <div className="mt-2 text-xs text-gray-500 italic text-left pl-3">
+                          <div className="mt-2 text-xs text-gray-500 italic text-left pl-1 sm:pl-3">
                             Note : {client.notes}
                           </div>
                         )}
@@ -662,7 +681,7 @@ export const ThreeStepRentalForm = forwardRef<
                   })}
                 </div>
               </div>
-              
+
               {/* Contact supplémentaire pour les groupes */}
               {currentGroupData.clients.length > 1 && currentGroupData.telephone && (
                 <div className="pt-3 border-t border-gray-300 mt-3">

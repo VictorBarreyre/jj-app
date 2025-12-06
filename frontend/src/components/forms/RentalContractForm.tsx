@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,9 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RentalContract, PaymentMethod } from '@/types/rental-contract';
 import { TenueMeasurement, Vendeur } from '@/types/measurement-form';
-import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle } from 'lucide-react';
+import { Calendar, Euro, User, FileText, Printer, CreditCard, CheckCircle, Calculator } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { calculateDefaultDates } from '@/utils/dateCalculations';
+import { calculateTenuePrice } from '@/utils/priceCalculation';
 
 // CSS personnalisé pour réduire l'espacement de l'icône calendrier
 const dateInputStyles = `
@@ -40,9 +41,20 @@ interface RentalContractFormProps {
 export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint, initialData, isEditMode = false }: RentalContractFormProps) {
   const { user } = useAuth();
 
+  // Calculer le prix suggéré à partir de la tenue
+  const calculatedPrice = useMemo(() => {
+    return calculateTenuePrice(initialData?.tenue);
+  }, [initialData?.tenue]);
+
+  // État pour suivre si le prix a été modifié manuellement
+  const [priceWasAutoSet, setPriceWasAutoSet] = useState(false);
+
   const [form, setForm] = useState<Partial<RentalContract>>(() => {
     const today = new Date();
     const defaultDates = calculateDefaultDates(today);
+
+    // Calculer le prix automatiquement si disponible et non défini
+    const autoCalculatedPrice = calculateTenuePrice(initialData?.tenue);
 
     const defaultValues = {
       dateCreation: new Date(),
@@ -71,6 +83,9 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     console.log('🔍 RentalContractForm - initialData.paiementArrhes:', initialData?.paiementArrhes);
     console.log('🔍 RentalContractForm - initialData.paiementSolde:', initialData?.paiementSolde);
 
+    // Utiliser le prix auto-calculé si tarifLocation n'est pas défini
+    const tarifToUse = initialData?.tarifLocation ?? autoCalculatedPrice;
+
     const mergedData = {
       ...defaultValues,
       ...initialData,
@@ -81,15 +96,26 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       },
       // Force les nouvelles valeurs par défaut si elles ne sont pas définies dans initialData
       depotGarantie: initialData?.depotGarantie ?? 400,
-      arrhes: initialData?.arrhes ?? 50
+      arrhes: initialData?.arrhes ?? 50,
+      // Appliquer le tarif calculé automatiquement si pas défini
+      tarifLocation: tarifToUse
     };
 
     console.log('🔍 RentalContractForm - merged client:', mergedData.client);
     console.log('🔍 RentalContractForm - merged paiementArrhes:', mergedData.paiementArrhes);
     console.log('🔍 RentalContractForm - merged paiementSolde:', mergedData.paiementSolde);
+    console.log('🔍 RentalContractForm - calculatedPrice:', autoCalculatedPrice);
+    console.log('🔍 RentalContractForm - tarifLocation used:', tarifToUse);
 
     return mergedData;
   });
+
+  // Marquer le prix comme auto-calculé au chargement
+  useEffect(() => {
+    if (calculatedPrice && !initialData?.tarifLocation && form.tarifLocation === calculatedPrice) {
+      setPriceWasAutoSet(true);
+    }
+  }, []);
 
   const paymentMethods: { value: PaymentMethod; label: string }[] = [
     { value: 'especes', label: 'Espèces' },
@@ -221,13 +247,24 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Tarif de location */}
           <div>
-            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Tarif de location</Label>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+              Tarif de location
+              {calculatedPrice && priceWasAutoSet && form.tarifLocation === calculatedPrice && (
+                <span className="ml-2 text-xs font-normal text-green-600 inline-flex items-center gap-1">
+                  <Calculator className="w-3 h-3" />
+                  calculé
+                </span>
+              )}
+            </Label>
             <Input
               type="number"
               step="0.01"
               min="0"
               value={form.tarifLocation || ''}
-              onChange={(e) => updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined)}
+              onChange={(e) => {
+                updateForm('tarifLocation', e.target.value ? parseFloat(e.target.value) : undefined);
+                setPriceWasAutoSet(false);
+              }}
               className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
             />
             <div className="mt-2">

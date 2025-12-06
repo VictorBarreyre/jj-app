@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import { PaymentMethod, ClientInfo, TenueInfo, ContractStockItem, PaymentInfo } from './RentalContract';
+import { PaymentMethod, ChaussuresType, ClientInfo, TenueInfo, ContractStockItem, PaymentInfo } from './RentalContract';
 
 // Interface pour le document MongoDB
 export interface IRentalContractDocument extends Document {
@@ -86,7 +86,11 @@ const tenueSchema = new Schema<TenueInfo>({
   pantalon: teenuePieceSchema,
   ceinture: teenuePieceSchema, // Ajout de la ceinture
   tailleChapeau: { type: String },
-  tailleChaussures: { type: String }
+  tailleChaussures: { type: String },
+  chaussuresType: {
+    type: String,
+    enum: ['V', 'NV'] as ChaussuresType[] // V = Vernies, NV = Non Vernies
+  }
 });
 
 // Schéma pour un article de stock dans le contrat

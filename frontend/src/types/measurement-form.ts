@@ -4,6 +4,7 @@
 export type TailleVetement = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL';
 export type LongueurVetement = 'Court' | 'Moyen' | 'Long';
 export type TailleChaussure = '38' | '39' | '40' | '41' | '42' | '43' | '44' | '45' | '46' | '47' | '48';
+export type ChaussuresType = 'V' | 'NV'; // Vernies ou Non Vernies
 export type TailleChapeau = '54' | '55' | '56' | '57' | '58' | '59' | '60' | '61' | '62';
 
 // Types pour les vendeurs
@@ -48,6 +49,7 @@ export interface TenueMeasurement {
   // Autres accessoires
   tailleChapeau?: TailleChapeau;
   tailleChaussures?: TailleChaussure;
+  chaussuresType?: ChaussuresType; // V = Vernies, NV = Non Vernies
 }
 
 // Interface pour le client (formulaire de mesure)
