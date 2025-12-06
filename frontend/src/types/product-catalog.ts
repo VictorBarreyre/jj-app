@@ -4,55 +4,57 @@ import { ProductCategory } from './product-references';
 export const VESTE_CATALOG = {
   JAQUETTES: [
     'Jaquette Fil à Fil Foncé',
+    'Jaquette Fil à Fil Clair',
     'Jaquette Bleue',
     'Jaquette Bleue Clair',
-    'Jaquette BORDEAUX',
-    'Jaquette flanelle',
-    'Jaquette Fil à Fil Clair'
+    'Jaquette Bordeaux',
+    'Jaquette Flanelle',
+    'Jaquette Jola'
   ] as const,
-  
+
   COSTUMES_VILLE: [
-    'Costume bleu',
-    'Costume gris'
+    'Costume Bleu',
+    'Costume Gris'
   ] as const,
-  
+
   SMOKING: [
-    'Smoking noir châle',
-    'Smoking noir cranté',
-    'Smoking bleu',
+    'Smoking Noir Châle',
+    'Smoking Noir Cranté',
+    'Smoking Bleu',
     'Smoking Bordeaux',
-    'Smoking gris'
+    'Smoking Gris'
   ] as const,
-  
+
   HABIT_QUEUE_DE_PIE: [
-    'Habit noir'
+    'Habit Noir'
   ] as const
 } as const;
 
 // Catalogue organisé des références gilets
 export const GILET_CATALOG = [
-  'Clair',
-  'Clair croisé',
-  'Ficelle droit',
-  'Ficelle croisé',
-  'Écru croisé',
-  'Bleu',
-  'Bleu croisé',
-  'Rose croisé',
-  'Ceinture smok'
+  'Gilet Clair',
+  'Gilet Clair Croisé',
+  'Gilet Bleu',
+  'Gilet Bleu Croisé',
+  'Gilet Ficelle Droit',
+  'Gilet Ficelle Croisé',
+  'Gilet Rose Croisé',
+  'Gilet Écru Croisé',
+  'Ceinture Scratch'
 ] as const;
 
 // Catalogue organisé des références pantalons
 export const PANTALON_CATALOG = [
-  'Rayé',
-  'Bleu',
-  'Bleu clair',
-  'Uni foncé',
-  'Gris ville',
-  'Bleu smok',
-  'Gris smok',
-  'Bordeaux',
-  'Noir smok'
+  'Pantalon Rayé',
+  'Pantalon Bleu',
+  'Pantalon Bleu Clair',
+  'Pantalon Uni Foncé',
+  'Pantalon Gris Ville',
+  'Pantalon Bleu Smoking',
+  'Pantalon Gris Smoking',
+  'Pantalon Bordeaux',
+  'Pantalon Noir Smoking',
+  'Pantalon SP'
 ] as const;
 
 // Interface pour les options de sélection
@@ -70,24 +72,24 @@ export function getReferencesByCategory(category: ProductCategory): ProductOptio
         ...Object.values(VESTE_CATALOG).flat().map(ref => ({
           value: ref,
           label: ref,
-          category: 'veste'
+          category: 'veste' as ProductCategory
         }))
       ];
-    
+
     case 'gilet':
       return GILET_CATALOG.map(ref => ({
         value: ref,
         label: ref,
-        category: 'gilet'
+        category: 'gilet' as ProductCategory
       }));
-    
+
     case 'pantalon':
       return PANTALON_CATALOG.map(ref => ({
         value: ref,
         label: ref,
-        category: 'pantalon'
+        category: 'pantalon' as ProductCategory
       }));
-    
+
     default:
       return [];
   }

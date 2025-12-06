@@ -58,7 +58,7 @@ export const GILET_SIZES_STANDARD = [
 
 // Tailles pour gilets écru (tailles simplifiées avec L)
 export const GILET_SIZES_ECRU = [
-  '34', '34L', '36', '36L', '38', '38L', '40', '40L', 
+  '34', '34L', '36', '36L', '38', '38L', '40', '40L',
   '42', '42L', '44', '44L', '46', '46L', '48', '48L'
 ];
 
@@ -68,7 +68,7 @@ export const GILET_SIZES_BLANC_HABIT = [
 ];
 
 // Tailles pour ceinture scratch (flexible - saisie libre)
-export const CEINTURE_SIZES_FLEXIBLE = [];
+export const CEINTURE_SIZES_FLEXIBLE: string[] = [];
 
 // Tailles pour ceintures
 export const CEINTURE_SIZES = [
@@ -87,7 +87,7 @@ export const PANTALON_SIZES = [
 export const PRODUCT_CATALOG: ProductReference[] = [
   // JAQUETTES
   {
-    id: 'jaquette-fil-a-fil-fonce',
+    id: 'Jaquette Fil à Fil Foncé',
     name: 'Jaquette Fil à Fil Foncé',
     category: 'veste',
     subCategory: 'jaquette',
@@ -97,47 +97,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     description: 'Jaquette Fil à Fil Foncé'
   },
   {
-    id: 'jaquette-bleue',
-    name: 'Jaquette bleue',
-    category: 'veste',
-    subCategory: 'jaquette',
-    availableSizes: JAQUETTE_SIZES,
-    colors: ['bleu'],
-    basePrice: 150,
-    description: 'Jaquette bleue élégante'
-  },
-  {
-    id: 'jaquette-bleue-clair',
-    name: 'Jaquette bleue clair',
-    category: 'veste',
-    subCategory: 'jaquette',
-    availableSizes: JAQUETTE_SIZES,
-    colors: ['bleu clair'],
-    basePrice: 150,
-    description: 'Jaquette bleu clair'
-  },
-  {
-    id: 'jaquette-bordeaux',
-    name: 'Jaquette bordeaux',
-    category: 'veste',
-    subCategory: 'jaquette',
-    availableSizes: JAQUETTE_SIZES,
-    colors: ['bordeaux'],
-    basePrice: 150,
-    description: 'Jaquette bordeaux distinguée'
-  },
-  {
-    id: 'jaquette-flanelle',
-    name: 'Jaquette flanelle',
-    category: 'veste',
-    subCategory: 'jaquette',
-    availableSizes: JAQUETTE_SIZES,
-    colors: ['noir'],
-    basePrice: 160,
-    description: 'Jaquette flanelle premium'
-  },
-  {
-    id: 'jaquette-fil-a-fil-clair',
+    id: 'Jaquette Fil à Fil Clair',
     name: 'Jaquette Fil à Fil Clair',
     category: 'veste',
     subCategory: 'jaquette',
@@ -146,294 +106,353 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     basePrice: 150,
     description: 'Jaquette Fil à Fil Clair'
   },
+  {
+    id: 'Jaquette Bleue',
+    name: 'Jaquette Bleue',
+    category: 'veste',
+    subCategory: 'jaquette',
+    availableSizes: JAQUETTE_SIZES,
+    colors: ['bleu'],
+    basePrice: 150,
+    description: 'Jaquette Bleue élégante'
+  },
+  {
+    id: 'Jaquette Bleue Clair',
+    name: 'Jaquette Bleue Clair',
+    category: 'veste',
+    subCategory: 'jaquette',
+    availableSizes: JAQUETTE_SIZES,
+    colors: ['bleu clair'],
+    basePrice: 150,
+    description: 'Jaquette Bleue Clair'
+  },
+  {
+    id: 'Jaquette Bordeaux',
+    name: 'Jaquette Bordeaux',
+    category: 'veste',
+    subCategory: 'jaquette',
+    availableSizes: JAQUETTE_SIZES,
+    colors: ['bordeaux'],
+    basePrice: 150,
+    description: 'Jaquette Bordeaux distinguée'
+  },
+  {
+    id: 'Jaquette Flanelle',
+    name: 'Jaquette Flanelle',
+    category: 'veste',
+    subCategory: 'jaquette',
+    availableSizes: JAQUETTE_SIZES,
+    colors: ['noir'],
+    basePrice: 160,
+    description: 'Jaquette Flanelle premium'
+  },
+  {
+    id: 'Jaquette Jola',
+    name: 'Jaquette Jola',
+    category: 'veste',
+    subCategory: 'jaquette',
+    availableSizes: JAQUETTE_SIZES,
+    colors: ['noir'],
+    basePrice: 150,
+    description: 'Jaquette Jola'
+  },
 
   // COSTUMES VILLE
   {
-    id: 'costume-bleu',
-    name: 'Costume bleu',
+    id: 'Costume Bleu',
+    name: 'Costume Bleu',
     category: 'veste',
     subCategory: 'costume-ville',
     availableSizes: COSTUME_VILLE_SIZES,
     colors: ['bleu marine'],
     basePrice: 120,
-    description: 'Costume ville bleu marine classique'
+    description: 'Costume ville Bleu marine classique'
   },
   {
-    id: 'costume-gris',
-    name: 'Costume gris',
+    id: 'Costume Gris',
+    name: 'Costume Gris',
     category: 'veste',
     subCategory: 'costume-ville',
     availableSizes: COSTUME_VILLE_SIZES,
     colors: ['gris'],
     basePrice: 120,
-    description: 'Costume ville gris élégant'
+    description: 'Costume ville Gris élégant'
   },
 
   // SMOKING
   {
-    id: 'smoking-noir-chale',
-    name: 'Smoking noir châle',
+    id: 'Smoking Noir Châle',
+    name: 'Smoking Noir Châle',
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
     colors: ['noir'],
     basePrice: 180,
-    description: 'Smoking noir avec revers châle'
+    description: 'Smoking Noir avec revers Châle'
   },
   {
-    id: 'smoking-noir-crante',
-    name: 'Smoking noir cranté',
+    id: 'Smoking Noir Cranté',
+    name: 'Smoking Noir Cranté',
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
     colors: ['noir'],
     basePrice: 180,
-    description: 'Smoking noir avec revers cranté'
+    description: 'Smoking Noir avec revers Cranté'
   },
   {
-    id: 'smoking-bleu',
-    name: 'Smoking bleu',
+    id: 'Smoking Bleu',
+    name: 'Smoking Bleu',
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
     colors: ['bleu'],
     basePrice: 180,
-    description: 'Smoking bleu élégant'
+    description: 'Smoking Bleu élégant'
   },
   {
-    id: 'smoking-bordeaux',
-    name: 'Smoking bordeaux',
+    id: 'Smoking Bordeaux',
+    name: 'Smoking Bordeaux',
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
     colors: ['bordeaux'],
     basePrice: 180,
-    description: 'Smoking bordeaux distingué'
+    description: 'Smoking Bordeaux distingué'
   },
   {
-    id: 'smoking-gris',
-    name: 'Smoking gris',
+    id: 'Smoking Gris',
+    name: 'Smoking Gris',
     category: 'veste',
     subCategory: 'smoking',
     availableSizes: SMOKING_SIZES,
     colors: ['gris'],
     basePrice: 180,
-    description: 'Smoking gris raffiné'
+    description: 'Smoking Gris raffiné'
   },
 
   // HABIT QUEUE DE PIE
   {
-    id: 'habit-noir',
-    name: 'Habit queue de pie noir',
+    id: 'Habit Noir',
+    name: 'Habit Noir',
     category: 'veste',
     subCategory: 'habit-queue-de-pie',
     availableSizes: HABIT_QUEUE_DE_PIE_SIZES,
     colors: ['noir'],
     basePrice: 200,
-    description: 'Habit queue de pie noir traditionnel'
+    description: 'Habit queue de pie Noir traditionnel'
   },
 
   // GILETS CLASSIQUES
   {
-    id: 'gilet-clair',
-    name: 'Gilet clair',
+    id: 'Gilet Clair',
+    name: 'Gilet Clair',
     category: 'gilet',
     subCategory: 'classique-standard',
     availableSizes: GILET_SIZES_CLASSIQUE,
     colors: ['clair'],
     basePrice: 80,
-    description: 'Gilet clair élégant'
+    description: 'Gilet Clair élégant'
   },
   {
-    id: 'gilet-clair-croise',
-    name: 'Gilet clair croisé',
+    id: 'Gilet Clair Croisé',
+    name: 'Gilet Clair Croisé',
     category: 'gilet',
     subCategory: 'classique-croise',
     availableSizes: GILET_SIZES_CLASSIQUE,
     colors: ['clair'],
     basePrice: 85,
-    description: 'Gilet clair croisé distingué'
+    description: 'Gilet Clair Croisé distingué'
   },
   {
-    id: 'gilet-bleu',
-    name: 'Gilet bleu',
+    id: 'Gilet Bleu',
+    name: 'Gilet Bleu',
     category: 'gilet',
     subCategory: 'classique-standard',
     availableSizes: GILET_SIZES_CLASSIQUE,
     colors: ['bleu'],
     basePrice: 80,
-    description: 'Gilet bleu classique'
+    description: 'Gilet Bleu classique'
   },
 
   // GILETS FICELLE (tailles XS-XXXL)
   {
-    id: 'gilet-ficelle-droit',
-    name: 'Gilet ficelle droit',
+    id: 'Gilet Ficelle Droit',
+    name: 'Gilet Ficelle Droit',
     category: 'gilet',
     subCategory: 'ficelle-droit',
     availableSizes: GILET_SIZES_STANDARD,
     colors: ['ficelle'],
     basePrice: 75,
-    description: 'Gilet ficelle coupe droite'
+    description: 'Gilet Ficelle coupe Droite'
   },
   {
-    id: 'gilet-ficelle-croise',
-    name: 'Gilet ficelle croisé',
+    id: 'Gilet Ficelle Croisé',
+    name: 'Gilet Ficelle Croisé',
     category: 'gilet',
     subCategory: 'ficelle-croise',
     availableSizes: GILET_SIZES_STANDARD,
     colors: ['ficelle'],
     basePrice: 80,
-    description: 'Gilet ficelle croisé élégant'
+    description: 'Gilet Ficelle Croisé élégant'
   },
   {
-    id: 'gilet-bleu-croise',
-    name: 'Gilet bleu croisé',
+    id: 'Gilet Bleu Croisé',
+    name: 'Gilet Bleu Croisé',
     category: 'gilet',
     subCategory: 'ficelle-croise',
     availableSizes: GILET_SIZES_STANDARD,
     colors: ['bleu'],
     basePrice: 80,
-    description: 'Gilet bleu croisé moderne'
+    description: 'Gilet Bleu Croisé moderne'
   },
   {
-    id: 'gilet-rose-croise',
-    name: 'Gilet rose croisé',
+    id: 'Gilet Rose Croisé',
+    name: 'Gilet Rose Croisé',
     category: 'gilet',
     subCategory: 'ficelle-croise',
     availableSizes: GILET_SIZES_STANDARD,
     colors: ['rose'],
     basePrice: 80,
-    description: 'Gilet rose croisé original'
+    description: 'Gilet Rose Croisé original'
   },
 
   // GILET ÉCRU (tailles spécifiques)
   {
-    id: 'gilet-ecru-croise',
-    name: 'Gilet écru croisé',
+    id: 'Gilet Écru Croisé',
+    name: 'Gilet Écru Croisé',
     category: 'gilet',
     subCategory: 'ecru-croise',
     availableSizes: GILET_SIZES_ECRU,
     colors: ['écru'],
     basePrice: 85,
-    description: 'Gilet écru croisé avec tailles spécifiques'
+    description: 'Gilet Écru Croisé avec tailles spécifiques'
   },
 
   // GILET BLANC HABIT
   {
-    id: 'gilet-blanc-habit',
-    name: 'Gilet blanc habit',
+    id: 'Gilet Blanc Habit',
+    name: 'Gilet Blanc Habit',
     category: 'gilet',
     subCategory: 'habit',
     availableSizes: GILET_SIZES_BLANC_HABIT,
     colors: ['blanc'],
     basePrice: 90,
-    description: 'Gilet blanc pour habit de cérémonie'
+    description: 'Gilet Blanc pour habit de cérémonie'
   },
 
   // CEINTURE SCRATCH (maintenant dans les gilets)
   {
-    id: 'ceinture-scratch',
-    name: 'Ceinture scratch',
+    id: 'Ceinture Scratch',
+    name: 'Ceinture Scratch',
     category: 'gilet',
     subCategory: 'ceinture',
     availableSizes: CEINTURE_SIZES_FLEXIBLE,
     colors: ['noir'],
     basePrice: 25,
-    description: 'Ceinture scratch pratique et ajustable - taille libre'
+    description: 'Ceinture Scratch pratique et ajustable - taille libre'
   },
-
 
   // PANTALONS
   {
-    id: 'pantalon-raye',
-    name: 'Pantalon rayé',
+    id: 'Pantalon Rayé',
+    name: 'Pantalon Rayé',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
     colors: ['rayé'],
     basePrice: 60,
-    description: 'Pantalon rayé classique'
+    description: 'Pantalon Rayé classique'
   },
   {
-    id: 'pantalon-bleu',
-    name: 'Pantalon bleu',
+    id: 'Pantalon Bleu',
+    name: 'Pantalon Bleu',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
     colors: ['bleu'],
     basePrice: 60,
-    description: 'Pantalon bleu élégant'
+    description: 'Pantalon Bleu élégant'
   },
   {
-    id: 'pantalon-bleu-clair',
-    name: 'Pantalon bleu clair',
+    id: 'Pantalon Bleu Clair',
+    name: 'Pantalon Bleu Clair',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
     colors: ['bleu clair'],
     basePrice: 60,
-    description: 'Pantalon bleu clair moderne'
+    description: 'Pantalon Bleu Clair moderne'
   },
   {
-    id: 'pantalon-uni-fonce',
-    name: 'Pantalon uni foncé',
+    id: 'Pantalon Uni Foncé',
+    name: 'Pantalon Uni Foncé',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
     colors: ['uni foncé'],
     basePrice: 60,
-    description: 'Pantalon uni foncé classique'
+    description: 'Pantalon Uni Foncé classique'
   },
   {
-    id: 'pantalon-gris-ville',
-    name: 'Pantalon gris ville',
+    id: 'Pantalon Gris Ville',
+    name: 'Pantalon Gris Ville',
     category: 'pantalon',
     subCategory: 'ville',
     availableSizes: PANTALON_SIZES,
     colors: ['gris'],
     basePrice: 65,
-    description: 'Pantalon gris ville chic'
+    description: 'Pantalon Gris Ville chic'
   },
   {
-    id: 'pantalon-bleu-smok',
-    name: 'Pantalon bleu smok',
+    id: 'Pantalon Bleu Smoking',
+    name: 'Pantalon Bleu Smoking',
     category: 'pantalon',
     subCategory: 'smoking',
     availableSizes: PANTALON_SIZES,
     colors: ['bleu'],
     basePrice: 70,
-    description: 'Pantalon bleu pour smoking'
+    description: 'Pantalon Bleu pour Smoking'
   },
   {
-    id: 'pantalon-gris-smok',
-    name: 'Pantalon gris smok',
+    id: 'Pantalon Gris Smoking',
+    name: 'Pantalon Gris Smoking',
     category: 'pantalon',
     subCategory: 'smoking',
     availableSizes: PANTALON_SIZES,
     colors: ['gris'],
     basePrice: 70,
-    description: 'Pantalon gris pour smoking'
+    description: 'Pantalon Gris pour Smoking'
   },
   {
-    id: 'pantalon-bordeaux',
-    name: 'Pantalon bordeaux',
+    id: 'Pantalon Bordeaux',
+    name: 'Pantalon Bordeaux',
     category: 'pantalon',
     subCategory: 'standard',
     availableSizes: PANTALON_SIZES,
     colors: ['bordeaux'],
     basePrice: 65,
-    description: 'Pantalon bordeaux distingué'
+    description: 'Pantalon Bordeaux distingué'
   },
   {
-    id: 'pantalon-noir-smok',
-    name: 'Pantalon noir smok',
+    id: 'Pantalon Noir Smoking',
+    name: 'Pantalon Noir Smoking',
     category: 'pantalon',
     subCategory: 'smoking',
     availableSizes: PANTALON_SIZES,
     colors: ['noir'],
     basePrice: 70,
-    description: 'Pantalon noir pour smoking'
+    description: 'Pantalon Noir pour Smoking'
+  },
+  {
+    id: 'Pantalon SP',
+    name: 'Pantalon SP',
+    category: 'pantalon',
+    subCategory: 'standard',
+    availableSizes: PANTALON_SIZES,
+    colors: ['noir'],
+    basePrice: 60,
+    description: 'Pantalon SP'
   }
 ];
 
