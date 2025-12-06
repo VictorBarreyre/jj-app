@@ -11,7 +11,7 @@ import path from 'path';
 // Charger les variables d'environnement
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://barreyrevictorcontact:UrxGVftvE26QBCET@cluster0.fpj3xgu.mongodb.net/jj-app?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://barreyrevictorcontact:***REMOVED***@cluster0.fpj3xgu.mongodb.net/jj-app?retryWrites=true&w=majority&appName=Cluster0';
 
 // Anciens noms à vérifier
 const OLD_NAMES = [

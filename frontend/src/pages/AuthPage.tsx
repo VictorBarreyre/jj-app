@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
+import { useAuth } from '@/contexts/AuthContext';
 
 type AuthView = 'login' | 'register' | 'forgot-password';
 
 export const AuthPage: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
   const [currentView, setCurrentView] = useState<AuthView>('login');
+
+  // Si déjà connecté, rediriger vers la home
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 flex items-center justify-center p-4">

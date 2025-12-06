@@ -87,7 +87,7 @@ export const PANTALON_SIZES = [
 export const PRODUCT_CATALOG: ProductReference[] = [
   // JAQUETTES
   {
-    id: 'jaquette-fff',
+    id: 'jaquette-fil-a-fil-fonce',
     name: 'Jaquette Fil à Fil Foncé',
     category: 'veste',
     subCategory: 'jaquette',
@@ -137,7 +137,7 @@ export const PRODUCT_CATALOG: ProductReference[] = [
     description: 'Jaquette flanelle premium'
   },
   {
-    id: 'jaquette-ff-clair',
+    id: 'jaquette-fil-a-fil-clair',
     name: 'Jaquette Fil à Fil Clair',
     category: 'veste',
     subCategory: 'jaquette',
