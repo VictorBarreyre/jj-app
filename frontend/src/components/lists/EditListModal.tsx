@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Users, Search, ChevronUp, ChevronDown, Phone, Calendar, Edit3, FileText, Trash2 } from 'lucide-react';
+import { X, Users, Search, ChevronUp, ChevronDown, Phone, Calendar, Edit3, FileText, Trash2, Euro } from 'lucide-react';
 import { useUpdateList, useDeleteList } from '@/hooks/useLists';
 import { Order } from '@/types/order';
 import { List, ListParticipant } from '@/types/list';
+import { calculateTenuePrice, GROUP_THRESHOLD } from '@/utils/priceCalculation';
+import { rentalContractApi } from '@/services/rental-contract.api';
+import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 interface EditListModalProps {
@@ -29,8 +32,207 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
   const [searchQuery, setSearchQuery] = useState('');
   const [participants, setParticipants] = useState<ParticipantState[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isApplyingGroupPricing, setIsApplyingGroupPricing] = useState(false);
+  const [hasGroupPricingApplied, setHasGroupPricingApplied] = useState(false);
+  const [originalPrices, setOriginalPrices] = useState<Record<string, number>>({});
+  const [localPrices, setLocalPrices] = useState<Record<string, number>>({});
+  const prevParticipantsCountRef = useRef<number>(0);
   const updateListMutation = useUpdateList();
   const deleteListMutation = useDeleteList();
+  const queryClient = useQueryClient();
+
+  // Appliquer le tarif préférentiel (groupe 6+) à toutes les commandes
+  const handleApplyGroupPricing = async () => {
+    if (participants.length === 0) return;
+
+    setIsApplyingGroupPricing(true);
+    const groupSize = Math.max(participants.length, GROUP_THRESHOLD); // Force au moins 6 pour le tarif groupe
+
+    // Sauvegarder les prix originaux avant modification
+    const pricesBeforeChange: Record<string, number> = {};
+    for (const p of participants) {
+      const order = orders.find(o => o.id === p.contractId);
+      if (order?.tarifLocation) {
+        pricesBeforeChange[p.contractId] = order.tarifLocation;
+      }
+    }
+
+    try {
+      let updatedCount = 0;
+      let skippedNoTenue = 0;
+      let skippedSamePrice = 0;
+      let skippedNoCombination = 0;
+      const newPrices: Record<string, number> = {};
+
+      console.log(`=== APPLICATION TARIF PRÉFÉRENTIEL ===`);
+      console.log(`Nombre de participants: ${participants.length}, groupSize utilisé: ${groupSize}`);
+
+      for (const p of participants) {
+        const order = orders.find(o => o.id === p.contractId);
+
+        // Vérifier si la commande a une tenue avec au moins une référence
+        const hasTenue = order?.tenue && (
+          order.tenue.veste?.reference ||
+          order.tenue.gilet?.reference ||
+          order.tenue.pantalon?.reference
+        );
+
+        if (!hasTenue) {
+          console.log(`❌ Commande ${order?.numero || p.contractId}: pas de tenue ou tenue vide`);
+          skippedNoTenue++;
+          continue;
+        }
+
+        // Calculer le prix standard (individuel) et le prix groupe
+        const prixStandard = calculateTenuePrice(order.tenue, 1);
+        const prixGroupe = calculateTenuePrice(order.tenue, groupSize);
+
+        console.log(`📦 Commande ${order.numero}:`);
+        console.log(`   Veste: ${order.tenue.veste?.reference}`);
+        console.log(`   Gilet: ${order.tenue.gilet?.reference}`);
+        console.log(`   Pantalon: ${order.tenue.pantalon?.reference}`);
+        console.log(`   Prix actuel: ${order.tarifLocation}€`);
+        console.log(`   Prix standard calculé: ${prixStandard}€`);
+        console.log(`   Prix groupe calculé: ${prixGroupe}€`);
+
+        if (prixGroupe === undefined) {
+          console.log(`   ⚠️ Impossible de calculer le prix groupe (combinaison non trouvée)`);
+          skippedNoCombination++;
+          continue;
+        }
+
+        // Si le prix groupe est le même que le standard, pas de réduction possible
+        if (prixGroupe === prixStandard) {
+          console.log(`   ℹ️ Pas de réduction groupe pour cette combinaison`);
+          skippedSamePrice++;
+          continue;
+        }
+
+        // Si le prix actuel est déjà le prix groupe
+        if (prixGroupe === order.tarifLocation) {
+          console.log(`   ✓ Prix groupe déjà appliqué`);
+          skippedSamePrice++;
+          newPrices[order.id] = prixGroupe; // Garder le prix dans localPrices pour l'affichage
+          continue;
+        }
+
+        // Appliquer le nouveau prix
+        console.log(`   🔄 Mise à jour: ${order.tarifLocation}€ → ${prixGroupe}€`);
+        await rentalContractApi.update(order.id, { tarifLocation: prixGroupe });
+        newPrices[order.id] = prixGroupe;
+        updatedCount++;
+      }
+
+      // Mettre à jour les prix locaux immédiatement
+      setLocalPrices(prev => ({ ...prev, ...newPrices }));
+
+      // Rafraîchir les données en arrière-plan
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+
+      console.log(`=== RÉSULTAT ===`);
+      console.log(`✓ Mis à jour: ${updatedCount}`);
+      console.log(`○ Déjà au prix groupe: ${skippedSamePrice}`);
+      console.log(`○ Sans tenue: ${skippedNoTenue}`);
+      console.log(`○ Sans combinaison: ${skippedNoCombination}`);
+
+      // Déterminer le résultat à afficher
+      const hasGroupPriceApplied = updatedCount > 0 || Object.keys(newPrices).length > 0;
+
+      if (updatedCount > 0) {
+        toast.success(`Tarif préférentiel appliqué à ${updatedCount} commande${updatedCount > 1 ? 's' : ''}`);
+        setOriginalPrices(pricesBeforeChange);
+        setHasGroupPricingApplied(true);
+      } else if (hasGroupPriceApplied || skippedSamePrice > 0) {
+        // Au moins une commande a le tarif groupe (soit déjà appliqué, soit mis à jour)
+        toast.success('Tarif préférentiel déjà appliqué');
+        setHasGroupPricingApplied(true);
+      } else if (skippedNoCombination > 0) {
+        toast.error(`Combinaisons non reconnues (${skippedNoCombination}). Voir console pour détails.`);
+      } else if (skippedNoTenue > 0) {
+        toast.error('Aucune commande avec tenue trouvée');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'application du tarif:', error);
+      toast.error('Erreur lors de l\'application du tarif préférentiel');
+    } finally {
+      setIsApplyingGroupPricing(false);
+    }
+  };
+
+  // Revenir au tarif normal (individuel)
+  const handleApplyNormalPricing = async () => {
+    if (participants.length === 0) return;
+
+    setIsApplyingGroupPricing(true);
+
+    try {
+      let updatedCount = 0;
+      const newPrices: Record<string, number> = {};
+
+      console.log(`=== RETOUR AU TARIF NORMAL ===`);
+
+      for (const p of participants) {
+        const order = orders.find(o => o.id === p.contractId);
+
+        // Vérifier si la commande a une tenue avec au moins une référence
+        const hasTenue = order?.tenue && (
+          order.tenue.veste?.reference ||
+          order.tenue.gilet?.reference ||
+          order.tenue.pantalon?.reference
+        );
+
+        if (!hasTenue) {
+          continue;
+        }
+
+        // Recalculer le prix avec le tarif normal (groupSize = 1)
+        const prixStandard = calculateTenuePrice(order.tenue, 1);
+
+        // Prix actuel (depuis localPrices ou order)
+        const currentPrice = localPrices[order.id] ?? order.tarifLocation;
+
+        console.log(`📦 Commande ${order.numero}:`);
+        console.log(`   Prix actuel: ${currentPrice}€`);
+        console.log(`   Prix standard: ${prixStandard}€`);
+
+        if (prixStandard === undefined) {
+          console.log(`   ⚠️ Prix standard non calculable`);
+          continue;
+        }
+
+        if (prixStandard === currentPrice) {
+          console.log(`   ✓ Déjà au prix standard`);
+          continue;
+        }
+
+        console.log(`   🔄 Mise à jour: ${currentPrice}€ → ${prixStandard}€`);
+        await rentalContractApi.update(order.id, { tarifLocation: prixStandard });
+        newPrices[order.id] = prixStandard;
+        updatedCount++;
+      }
+
+      // Mettre à jour les prix locaux
+      setLocalPrices(newPrices);
+
+      // Rafraîchir les données en arrière-plan
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+
+      console.log(`=== RÉSULTAT: ${updatedCount} commande(s) mise(s) à jour ===`);
+
+      if (updatedCount > 0) {
+        toast.success(`Tarif normal appliqué à ${updatedCount} commande${updatedCount > 1 ? 's' : ''}`);
+      } else {
+        toast.success('Tarif normal déjà appliqué');
+      }
+      setOriginalPrices({});
+      setHasGroupPricingApplied(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'application du tarif:', error);
+      toast.error('Erreur lors de l\'application du tarif normal');
+    } finally {
+      setIsApplyingGroupPricing(false);
+    }
+  };
 
   // Supprimer la liste
   const handleDeleteList = async () => {
@@ -49,6 +251,21 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
         toast.error('Erreur lors de la suppression de la liste');
       }
     }
+  };
+
+  // Calculer le prix total de la liste (utiliser localPrices si disponible)
+  const totalPrice = useMemo(() => {
+    return participants.reduce((total, p) => {
+      const order = orders.find(o => o.id === p.contractId);
+      // Utiliser le prix local s'il existe, sinon le prix de la commande
+      const price = localPrices[p.contractId] ?? order?.tarifLocation ?? 0;
+      return total + price;
+    }, 0);
+  }, [participants, orders, localPrices]);
+
+  // Formater le prix
+  const formatPrice = (price: number): string => {
+    return `${price}€`;
   };
 
   // Calculer la date d'événement la plus commune à partir des commandes
@@ -86,8 +303,16 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       setNotes(list.description || '');
       setSearchQuery('');
       setIsEditing(false); // Toujours ouvrir en mode visualisation
+      setOriginalPrices({}); // Réinitialiser les prix originaux
+      setLocalPrices({}); // Réinitialiser les prix locaux
 
       // Initialiser les participants à partir de la liste existante
+      const participantCount = list.participants?.length || list.contractIds?.length || 0;
+
+      // Vérifier si le tarif préférentiel est déjà appliqué en comparant les prix
+      // On ne peut pas simplement se baser sur le nombre de participants
+      setHasGroupPricingApplied(false); // On commence par false, sera mis à jour si nécessaire
+
       if (list.participants && list.participants.length > 0) {
         setParticipants(
           list.participants.map(p => ({
@@ -108,6 +333,20 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       }
     }
   }, [isOpen, list]);
+
+  // Appliquer automatiquement le tarif préférentiel quand on atteint 6+ participants
+  useEffect(() => {
+    const prevCount = prevParticipantsCountRef.current;
+    const currentCount = participants.length;
+
+    // Si on vient de passer de <6 à >=6 participants, appliquer automatiquement
+    if (prevCount < GROUP_THRESHOLD && currentCount >= GROUP_THRESHOLD && !isApplyingGroupPricing) {
+      handleApplyGroupPricing();
+      setHasGroupPricingApplied(true);
+    }
+
+    prevParticipantsCountRef.current = currentCount;
+  }, [participants.length]);
 
   // Gestion de la touche Escape
   useEffect(() => {
@@ -516,6 +755,81 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                   </div>
                 )}
               </div>
+
+              {/* Tarification */}
+              {totalPrice > 0 && (
+                <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h2 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2 sm:gap-3 text-left">
+                      <Euro className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+                      Tarification
+                    </h2>
+                    {hasGroupPricingApplied ? (
+                      <button
+                        type="button"
+                        onClick={handleApplyNormalPricing}
+                        disabled={isApplyingGroupPricing}
+                        className="text-sm text-gray-900 underline hover:text-gray-700 disabled:opacity-50"
+                        title="Cliquer pour revenir au tarif normal"
+                      >
+                        {isApplyingGroupPricing ? 'Application...' : 'Tarif préférentiel appliqué'}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleApplyGroupPricing}
+                        disabled={isApplyingGroupPricing}
+                        className="text-sm text-gray-900 underline hover:text-gray-700 disabled:opacity-50"
+                      >
+                        {isApplyingGroupPricing ? 'Application...' : 'Appliquer le tarif préférentiel'}
+                      </button>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    {/* Total */}
+                    <div className="flex justify-between text-left">
+                      <span className="font-semibold text-gray-900 text-left">Total:</span>
+                      <div className="text-right">
+                        {hasGroupPricingApplied && Object.keys(originalPrices).length > 0 && (
+                          <span className="text-sm text-gray-400 line-through mr-2">
+                            {formatPrice(Object.values(originalPrices).reduce((sum, p) => sum + p, 0))}
+                          </span>
+                        )}
+                        <span className="font-bold text-base text-amber-600">{formatPrice(totalPrice)}</span>
+                      </div>
+                    </div>
+                    {/* Détail par commande */}
+                    <div className="border-t border-gray-200 pt-3 mt-3 space-y-1.5">
+                      {participants.map((p) => {
+                        const order = orders.find(o => o.id === p.contractId);
+                        // Utiliser le prix local s'il existe, sinon le prix de la commande
+                        const currentPrice = localPrices[p.contractId] ?? order?.tarifLocation;
+                        if (!order || !currentPrice) return null;
+                        const originalPrice = originalPrices[p.contractId];
+                        const hasDiscount = hasGroupPricingApplied && originalPrice && originalPrice !== currentPrice;
+                        return (
+                          <div key={p.contractId} className="flex justify-between text-sm text-gray-600">
+                            <span className="text-left">
+                              #{order.numero} - {order.client.prenom} {order.client.nom}
+                              {p.role && <span className="text-amber-600 ml-1">({p.role})</span>}
+                            </span>
+                            <div className="text-right">
+                              {hasDiscount && (
+                                <span className="text-gray-400 line-through mr-2">
+                                  {formatPrice(originalPrice)}
+                                </span>
+                              )}
+                              <span className={hasDiscount ? 'text-green-600 font-medium' : ''}>
+                                {formatPrice(currentPrice)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Ajouter des commandes - seulement en mode édition */}
               {isEditing && (

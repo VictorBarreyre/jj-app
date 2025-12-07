@@ -327,10 +327,10 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                   variant="ghost"
                   size="sm"
                   onClick={() => onView(order)}
-                  className="h-7 w-7 p-0"
+                  className="h-7 w-7 p-0 text-gray-400 hover:text-amber-600"
                   title="Voir"
                 >
-                  <Eye className="w-3 h-3" />
+                  <Eye className="w-4 h-4" />
                 </Button>
                 <PDFButton
                   contract={convertOrderToRentalContract(order)}
@@ -394,7 +394,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
                   onClick={() => onView(order)}
                   className="flex-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium min-h-[48px]"
                 >
-                  <Eye className="w-5 h-5 mr-2" />
+                  <Eye className="w-4 h-4 mr-2" />
                   <span className="text-sm">Voir</span>
                 </Button>
                 <PDFButton

@@ -9,6 +9,70 @@ interface TenueData {
 }
 
 // ============================================================================
+// NORMALISATION DES RÉFÉRENCES
+// ============================================================================
+
+// Mapping des références kebab-case vers Title Case
+const REFERENCE_MAPPING: Record<string, string> = {
+  // Jaquettes
+  'jaquette-fil-a-fil-fonce': 'Jaquette Fil à Fil Foncé',
+  'jaquette-fil-a-fil-clair': 'Jaquette Fil à Fil Clair',
+  'jaquette-bleue': 'Jaquette Bleue',
+  'jaquette-bleue-clair': 'Jaquette Bleue Clair',
+  'jaquette-bordeaux': 'Jaquette Bordeaux',
+  'jaquette-flanelle': 'Jaquette Flanelle',
+  'jaquette-jola': 'Jaquette Jola',
+  // Costumes
+  'costume-bleu': 'Costume Bleu',
+  'costume-gris': 'Costume Gris',
+  // Smokings
+  'smoking-noir-chale': 'Smoking Noir Châle',
+  'smoking-noir-crante': 'Smoking Noir Cranté',
+  'smoking-bleu': 'Smoking Bleu',
+  'smoking-bordeaux': 'Smoking Bordeaux',
+  'smoking-gris': 'Smoking Gris',
+  // Habit
+  'habit-noir': 'Habit Noir',
+  // Gilets
+  'gilet-clair': 'Gilet Clair',
+  'gilet-clair-croise': 'Gilet Clair Croisé',
+  'gilet-bleu': 'Gilet Bleu',
+  'gilet-bleu-croise': 'Gilet Bleu Croisé',
+  'gilet-ficelle-droit': 'Gilet Ficelle Droit',
+  'gilet-ficelle-croise': 'Gilet Ficelle Croisé',
+  'gilet-rose-croise': 'Gilet Rose Croisé',
+  'gilet-ecru-croise': 'Gilet Écru Croisé',
+  'gilet-blanc-habit': 'Gilet Blanc Habit',
+  // Pantalons
+  'pantalon-raye': 'Pantalon Rayé',
+  'pantalon-bleu': 'Pantalon Bleu',
+  'pantalon-bleu-clair': 'Pantalon Bleu Clair',
+  'pantalon-uni-fonce': 'Pantalon Uni Foncé',
+  'pantalon-gris-ville': 'Pantalon Gris Ville',
+  'pantalon-bleu-smoking': 'Pantalon Bleu Smoking',
+  'pantalon-gris-smoking': 'Pantalon Gris Smoking',
+  'pantalon-bordeaux': 'Pantalon Bordeaux',
+  'pantalon-noir-smoking': 'Pantalon Noir Smoking',
+  'pantalon-sp': 'Pantalon SP',
+  // Ceintures
+  'ceinture-noire': 'Ceinture Noire',
+  'ceinture-marron': 'Ceinture Marron',
+  'ceinture-scratch': 'Ceinture Scratch',
+};
+
+/**
+ * Normalise une référence en format Title Case
+ * Supporte les deux formats: kebab-case et Title Case
+ */
+function normalizeReference(ref?: string): string | undefined {
+  if (!ref) return undefined;
+  // Si c'est déjà en Title Case (contient des espaces), retourner tel quel
+  if (ref.includes(' ')) return ref;
+  // Sinon, chercher dans le mapping
+  return REFERENCE_MAPPING[ref.toLowerCase()] || ref;
+}
+
+// ============================================================================
 // CATÉGORIES DE GILETS
 // ============================================================================
 
@@ -92,7 +156,7 @@ function isPantalonVille(ref?: string): boolean {
 /**
  * Calcule le prix pour les Jaquettes Fil à Fil Foncé et Clair
  */
-function getPrixJaquetteFFF(gilet?: string, pantalon?: string): number | null {
+function getPrixJaquetteFFF(gilet?: string, pantalon?: string, isGroup: boolean = false): number | null {
   const hasGiletStandard = isGiletStandard(gilet);
   const hasGiletCroise = isGiletStandardCroise(gilet);
   const hasGiletFancy = isGiletFancy(gilet);
@@ -100,20 +164,39 @@ function getPrixJaquetteFFF(gilet?: string, pantalon?: string): number | null {
   const hasPantalonUniFonce = isPantalonUniFonce(pantalon);
   const hasPantalon = hasPantalonRaye || hasPantalonUniFonce;
 
-  // Veste + gilet fancy + pantalon
-  if (hasGiletFancy && hasPantalon) return 208;
-  // Veste + gilet croisé + pantalon
-  if (hasGiletCroise && hasPantalon) return 198;
-  // Veste + gilet standard + pantalon
-  if (hasGiletStandard && hasPantalon) return 178;
-  // Veste + gilet fancy
-  if (hasGiletFancy) return 189;
-  // Veste + gilet croisé
-  if (hasGiletCroise) return 179;
-  // Veste + gilet standard
-  if (hasGiletStandard) return 159;
-  // Veste + pantalon
-  if (hasPantalon) return 164;
+  if (isGroup) {
+    // Prix groupe (6+)
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 187;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 178;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 160;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 170;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 161;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 143;
+    // Veste + pantalon
+    if (hasPantalon) return 147;
+  } else {
+    // Prix standard
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 208;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 198;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 178;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 189;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 179;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 159;
+    // Veste + pantalon
+    if (hasPantalon) return 164;
+  }
 
   return null; // Pas de combinaison trouvée
 }
@@ -121,28 +204,48 @@ function getPrixJaquetteFFF(gilet?: string, pantalon?: string): number | null {
 /**
  * Calcule le prix pour les Jaquettes Bleue et Bordeaux
  */
-function getPrixJaquetteBleue(gilet?: string, pantalon?: string): number | null {
+function getPrixJaquetteBleue(gilet?: string, pantalon?: string, isGroup: boolean = false): number | null {
   const hasGiletStandard = isGiletStandard(gilet);
   const hasGiletCroise = isGiletStandardCroise(gilet);
   const hasGiletFancy = isGiletFancy(gilet);
   const hasPantalonBleu = isPantalonBleu(pantalon);
   const hasPantalonRaye = isPantalonRaye(pantalon);
-  const hasPantalon = hasPantalonBleu || hasPantalonRaye;
+  const hasPantalonUniFonce = isPantalonUniFonce(pantalon);
+  const hasPantalon = hasPantalonBleu || hasPantalonRaye || hasPantalonUniFonce;
 
-  // Veste + gilet fancy + pantalon
-  if (hasGiletFancy && hasPantalon) return 226;
-  // Veste + gilet croisé + pantalon
-  if (hasGiletCroise && hasPantalon) return 216;
-  // Veste + gilet standard + pantalon
-  if (hasGiletStandard && hasPantalon) return 196;
-  // Veste + gilet fancy
-  if (hasGiletFancy) return 207;
-  // Veste + gilet croisé
-  if (hasGiletCroise) return 197;
-  // Veste + gilet standard
-  if (hasGiletStandard) return 177;
-  // Veste + pantalon
-  if (hasPantalon) return 182;
+  if (isGroup) {
+    // Prix groupe (6+)
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 203;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 194;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 176;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 186;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 177;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 159;
+    // Veste + pantalon
+    if (hasPantalon) return 164;
+  } else {
+    // Prix standard
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 226;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 216;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 196;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 207;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 197;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 177;
+    // Veste + pantalon
+    if (hasPantalon) return 182;
+  }
 
   return null;
 }
@@ -150,28 +253,48 @@ function getPrixJaquetteBleue(gilet?: string, pantalon?: string): number | null 
 /**
  * Calcule le prix pour les Jaquettes Bleue Clair
  */
-function getPrixJaquetteBleueClaire(gilet?: string, pantalon?: string): number | null {
+function getPrixJaquetteBleueClaire(gilet?: string, pantalon?: string, isGroup: boolean = false): number | null {
   const hasGiletStandard = isGiletStandard(gilet);
   const hasGiletCroise = isGiletStandardCroise(gilet);
   const hasGiletFancy = isGiletFancy(gilet);
   const hasPantalonBleuClair = isPantalonBleuClair(pantalon);
   const hasPantalonRaye = isPantalonRaye(pantalon);
-  const hasPantalon = hasPantalonBleuClair || hasPantalonRaye;
+  const hasPantalonUniFonce = isPantalonUniFonce(pantalon);
+  const hasPantalon = hasPantalonBleuClair || hasPantalonRaye || hasPantalonUniFonce;
 
-  // Veste + gilet fancy + pantalon
-  if (hasGiletFancy && hasPantalon) return 230;
-  // Veste + gilet croisé + pantalon
-  if (hasGiletCroise && hasPantalon) return 220;
-  // Veste + gilet standard + pantalon
-  if (hasGiletStandard && hasPantalon) return 200;
-  // Veste + gilet fancy
-  if (hasGiletFancy) return 211;
-  // Veste + gilet croisé
-  if (hasGiletCroise) return 201;
-  // Veste + gilet standard
-  if (hasGiletStandard) return 181;
-  // Veste + pantalon
-  if (hasPantalon) return 186;
+  if (isGroup) {
+    // Prix groupe (6+)
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 207;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 198;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 180;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 190;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 181;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 163;
+    // Veste + pantalon
+    if (hasPantalon) return 167;
+  } else {
+    // Prix standard
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 230;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 220;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 200;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 211;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 201;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 181;
+    // Veste + pantalon
+    if (hasPantalon) return 186;
+  }
 
   return null;
 }
@@ -179,26 +302,47 @@ function getPrixJaquetteBleueClaire(gilet?: string, pantalon?: string): number |
 /**
  * Calcule le prix pour les Jaquettes Flanelle
  */
-function getPrixJaquetteFlanelle(gilet?: string, pantalon?: string): number | null {
+function getPrixJaquetteFlanelle(gilet?: string, pantalon?: string, isGroup: boolean = false): number | null {
   const hasGiletStandard = isGiletStandard(gilet);
   const hasGiletCroise = isGiletStandardCroise(gilet);
   const hasGiletFancy = isGiletFancy(gilet);
   const hasPantalonRaye = isPantalonRaye(pantalon);
+  const hasPantalonUniFonce = isPantalonUniFonce(pantalon);
+  const hasPantalon = hasPantalonRaye || hasPantalonUniFonce;
 
-  // Veste + gilet fancy + pantalon
-  if (hasGiletFancy && hasPantalonRaye) return 200;
-  // Veste + gilet croisé + pantalon
-  if (hasGiletCroise && hasPantalonRaye) return 190;
-  // Veste + gilet standard + pantalon
-  if (hasGiletStandard && hasPantalonRaye) return 170;
-  // Veste + gilet fancy
-  if (hasGiletFancy) return 180;
-  // Veste + gilet croisé
-  if (hasGiletCroise) return 170;
-  // Veste + gilet standard
-  if (hasGiletStandard) return 150;
-  // Veste + pantalon
-  if (hasPantalonRaye) return 155;
+  if (isGroup) {
+    // Prix groupe (6+)
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 180;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 171;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 153;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 162;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 153;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 135;
+    // Veste + pantalon
+    if (hasPantalon) return 140;
+  } else {
+    // Prix standard
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 200;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 190;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 170;
+    // Veste + gilet fancy
+    if (hasGiletFancy) return 180;
+    // Veste + gilet croisé
+    if (hasGiletCroise) return 170;
+    // Veste + gilet standard
+    if (hasGiletStandard) return 150;
+    // Veste + pantalon
+    if (hasPantalon) return 155;
+  }
 
   return null;
 }
@@ -223,31 +367,49 @@ function getPrixHabit(gilet?: string, pantalon?: string): number | null {
 /**
  * Calcule le prix pour le Smoking Noir
  */
-function getPrixSmokingNoir(pantalon?: string, hasCeinture?: boolean): number | null {
+function getPrixSmokingNoir(pantalon?: string, hasCeinture?: boolean, isGroup: boolean = false): number | null {
   const hasPantalonSmoking = isPantalonSmoking(pantalon);
 
-  // Veste + pantalon + ceinture
-  if (hasPantalonSmoking) return 115;
-  // Veste seule (+ ceinture optionnelle qui est à 0€)
-  return 95;
+  if (isGroup) {
+    // Prix groupe (6+)
+    // Veste + pantalon + ceinture
+    if (hasPantalonSmoking) return 104;
+    // Veste seule (+ ceinture optionnelle qui est à 0€)
+    return 85;
+  } else {
+    // Prix standard
+    // Veste + pantalon + ceinture
+    if (hasPantalonSmoking) return 115;
+    // Veste seule (+ ceinture optionnelle qui est à 0€)
+    return 95;
+  }
 }
 
 /**
  * Calcule le prix pour les Smokings Bleu, Bordeaux, Gris
  */
-function getPrixSmokingCouleur(pantalon?: string, hasCeinture?: boolean): number | null {
+function getPrixSmokingCouleur(pantalon?: string, hasCeinture?: boolean, isGroup: boolean = false): number | null {
   const hasPantalonSmoking = isPantalonSmoking(pantalon);
 
-  // Veste + pantalon + ceinture
-  if (hasPantalonSmoking) return 125;
-  // Veste seule (+ ceinture optionnelle qui est à 0€)
-  return 110;
+  if (isGroup) {
+    // Prix groupe (6+) - même prix que smoking noir groupe
+    // Veste + pantalon + ceinture
+    if (hasPantalonSmoking) return 104;
+    // Veste seule (+ ceinture optionnelle qui est à 0€)
+    return 85;
+  } else {
+    // Prix standard
+    // Veste + pantalon + ceinture
+    if (hasPantalonSmoking) return 125;
+    // Veste seule (+ ceinture optionnelle qui est à 0€)
+    return 110;
+  }
 }
 
 /**
  * Calcule le prix pour les Costumes Ville
  */
-function getPrixCostumeVille(gilet?: string, pantalon?: string): number | null {
+function getPrixCostumeVille(gilet?: string, pantalon?: string, isGroup: boolean = false): number | null {
   const hasGiletStandard = isGiletStandard(gilet);
   const hasGiletCroise = isGiletStandardCroise(gilet);
   const hasGiletFancy = isGiletFancy(gilet);
@@ -255,14 +417,27 @@ function getPrixCostumeVille(gilet?: string, pantalon?: string): number | null {
   const hasPantalonBleu = isPantalonBleu(pantalon);
   const hasPantalon = hasPantalonVille || hasPantalonBleu;
 
-  // Veste + gilet fancy + pantalon
-  if (hasGiletFancy && hasPantalon) return 170;
-  // Veste + gilet croisé + pantalon
-  if (hasGiletCroise && hasPantalon) return 160;
-  // Veste + gilet standard + pantalon
-  if (hasGiletStandard && hasPantalon) return 140;
-  // Veste + pantalon
-  if (hasPantalon) return 125;
+  if (isGroup) {
+    // Prix groupe (6+)
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 153;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 144;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 126;
+    // Veste + pantalon
+    if (hasPantalon) return 110;
+  } else {
+    // Prix standard
+    // Veste + gilet fancy + pantalon
+    if (hasGiletFancy && hasPantalon) return 170;
+    // Veste + gilet croisé + pantalon
+    if (hasGiletCroise && hasPantalon) return 160;
+    // Veste + gilet standard + pantalon
+    if (hasGiletStandard && hasPantalon) return 140;
+    // Veste + pantalon
+    if (hasPantalon) return 125;
+  }
 
   return null;
 }
@@ -325,18 +500,24 @@ const CEINTURE_PRICES: Record<string, number> = {
 // FONCTION PRINCIPALE DE CALCUL
 // ============================================================================
 
+// Seuil pour les prix de groupe
+const GROUP_THRESHOLD = 6;
+
 /**
  * Calcule le prix total d'une tenue en utilisant les combinaisons de prix
  * @param tenue Les données de la tenue avec les références
+ * @param groupSize Taille du groupe (si >= 6, applique les prix groupe)
  * @returns Le prix total calculé ou undefined si aucun article n'est sélectionné
  */
-export function calculateTenuePrice(tenue?: TenueData): number | undefined {
+export function calculateTenuePrice(tenue?: TenueData, groupSize: number = 1): number | undefined {
   if (!tenue) return undefined;
 
-  const veste = tenue.veste?.reference;
-  const gilet = tenue.gilet?.reference;
-  const pantalon = tenue.pantalon?.reference;
-  const ceinture = tenue.ceinture?.reference;
+  // Normaliser les références (supporte kebab-case et Title Case)
+  const veste = normalizeReference(tenue.veste?.reference);
+  const gilet = normalizeReference(tenue.gilet?.reference);
+  const pantalon = normalizeReference(tenue.pantalon?.reference);
+  const ceinture = normalizeReference(tenue.ceinture?.reference);
+  const isGroup = groupSize >= GROUP_THRESHOLD;
 
   // Si pas de veste, calculer avec les prix individuels
   if (!veste) {
@@ -347,35 +528,35 @@ export function calculateTenuePrice(tenue?: TenueData): number | undefined {
 
   // Jaquettes Fil à Fil
   if (veste === 'Jaquette Fil à Fil Foncé' || veste === 'Jaquette Fil à Fil Clair') {
-    combinationPrice = getPrixJaquetteFFF(gilet, pantalon);
+    combinationPrice = getPrixJaquetteFFF(gilet, pantalon, isGroup);
   }
   // Jaquettes Bleue et Bordeaux
   else if (veste === 'Jaquette Bleue' || veste === 'Jaquette Bordeaux') {
-    combinationPrice = getPrixJaquetteBleue(gilet, pantalon);
+    combinationPrice = getPrixJaquetteBleue(gilet, pantalon, isGroup);
   }
   // Jaquette Bleue Clair
   else if (veste === 'Jaquette Bleue Clair') {
-    combinationPrice = getPrixJaquetteBleueClaire(gilet, pantalon);
+    combinationPrice = getPrixJaquetteBleueClaire(gilet, pantalon, isGroup);
   }
   // Jaquette Flanelle
   else if (veste === 'Jaquette Flanelle') {
-    combinationPrice = getPrixJaquetteFlanelle(gilet, pantalon);
+    combinationPrice = getPrixJaquetteFlanelle(gilet, pantalon, isGroup);
   }
-  // Habit Queue de Pie
+  // Habit Queue de Pie (pas de prix groupe)
   else if (veste === 'Habit Noir') {
     combinationPrice = getPrixHabit(gilet, pantalon);
   }
   // Smoking Noir
   else if (veste === 'Smoking Noir Châle' || veste === 'Smoking Noir Cranté') {
-    combinationPrice = getPrixSmokingNoir(pantalon, !!ceinture);
+    combinationPrice = getPrixSmokingNoir(pantalon, !!ceinture, isGroup);
   }
   // Smokings Couleur (Bleu, Bordeaux, Gris)
   else if (veste === 'Smoking Bleu' || veste === 'Smoking Bordeaux' || veste === 'Smoking Gris') {
-    combinationPrice = getPrixSmokingCouleur(pantalon, !!ceinture);
+    combinationPrice = getPrixSmokingCouleur(pantalon, !!ceinture, isGroup);
   }
   // Costumes Ville
   else if (veste === 'Costume Bleu' || veste === 'Costume Gris') {
-    combinationPrice = getPrixCostumeVille(gilet, pantalon);
+    combinationPrice = getPrixCostumeVille(gilet, pantalon, isGroup);
   }
 
   // Si une combinaison a été trouvée, la retourner
@@ -395,7 +576,8 @@ function calculateIndividualPrices(tenue: TenueData): number | undefined {
   let hasItems = false;
 
   if (tenue.veste?.reference) {
-    const price = VESTE_PRICES[tenue.veste.reference];
+    const normalizedRef = normalizeReference(tenue.veste.reference);
+    const price = normalizedRef ? VESTE_PRICES[normalizedRef] : undefined;
     if (price) {
       total += price;
       hasItems = true;
@@ -403,7 +585,8 @@ function calculateIndividualPrices(tenue: TenueData): number | undefined {
   }
 
   if (tenue.gilet?.reference) {
-    const price = GILET_PRICES[tenue.gilet.reference];
+    const normalizedRef = normalizeReference(tenue.gilet.reference);
+    const price = normalizedRef ? GILET_PRICES[normalizedRef] : undefined;
     if (price !== undefined) {
       total += price;
       hasItems = true;
@@ -411,7 +594,8 @@ function calculateIndividualPrices(tenue: TenueData): number | undefined {
   }
 
   if (tenue.pantalon?.reference) {
-    const price = PANTALON_PRICES[tenue.pantalon.reference];
+    const normalizedRef = normalizeReference(tenue.pantalon.reference);
+    const price = normalizedRef ? PANTALON_PRICES[normalizedRef] : undefined;
     if (price) {
       total += price;
       hasItems = true;
@@ -419,7 +603,8 @@ function calculateIndividualPrices(tenue: TenueData): number | undefined {
   }
 
   if (tenue.ceinture?.reference) {
-    const price = CEINTURE_PRICES[tenue.ceinture.reference] ?? GILET_PRICES[tenue.ceinture.reference];
+    const normalizedRef = normalizeReference(tenue.ceinture.reference);
+    const price = normalizedRef ? (CEINTURE_PRICES[normalizedRef] ?? GILET_PRICES[normalizedRef]) : undefined;
     if (price !== undefined) {
       total += price;
       hasItems = true;
@@ -435,11 +620,14 @@ function calculateIndividualPrices(tenue: TenueData): number | undefined {
  * @returns Le prix ou undefined si non trouvé
  */
 export function getProductPrice(reference: string): number | undefined {
+  const normalizedRef = normalizeReference(reference);
+  if (!normalizedRef) return undefined;
+
   const price =
-    VESTE_PRICES[reference] ??
-    GILET_PRICES[reference] ??
-    PANTALON_PRICES[reference] ??
-    CEINTURE_PRICES[reference];
+    VESTE_PRICES[normalizedRef] ??
+    GILET_PRICES[normalizedRef] ??
+    PANTALON_PRICES[normalizedRef] ??
+    CEINTURE_PRICES[normalizedRef];
 
   return price;
 }
@@ -447,22 +635,25 @@ export function getProductPrice(reference: string): number | undefined {
 /**
  * Obtient le détail des prix d'une tenue (avec prix de combinaison)
  * @param tenue Les données de la tenue
+ * @param groupSize Taille du groupe (si >= 6, applique les prix groupe)
  * @returns Un objet avec le détail des prix par catégorie
  */
-export function getTenuePriceDetails(tenue?: TenueData): {
+export function getTenuePriceDetails(tenue?: TenueData, groupSize: number = 1): {
   veste?: { reference: string; prix: number };
   gilet?: { reference: string; prix: number };
   pantalon?: { reference: string; prix: number };
   ceinture?: { reference: string; prix: number };
   total: number;
   isCombinaison: boolean;
+  isGroupPrice: boolean;
 } {
-  const details: ReturnType<typeof getTenuePriceDetails> = { total: 0, isCombinaison: false };
+  const isGroup = groupSize >= GROUP_THRESHOLD;
+  const details: ReturnType<typeof getTenuePriceDetails> = { total: 0, isCombinaison: false, isGroupPrice: isGroup };
 
   if (!tenue) return details;
 
-  // Calculer le prix total avec combinaison
-  const totalPrice = calculateTenuePrice(tenue);
+  // Calculer le prix total avec combinaison (et prix groupe si applicable)
+  const totalPrice = calculateTenuePrice(tenue, groupSize);
 
   // Calculer le prix individuel pour comparaison
   const individualPrice = calculateIndividualPrices(tenue);
@@ -473,32 +664,76 @@ export function getTenuePriceDetails(tenue?: TenueData): {
 
   // Afficher les prix individuels pour le détail
   if (tenue.veste?.reference) {
-    const prix = VESTE_PRICES[tenue.veste.reference];
+    const normalizedRef = normalizeReference(tenue.veste.reference);
+    const prix = normalizedRef ? VESTE_PRICES[normalizedRef] : undefined;
     if (prix !== undefined) {
-      details.veste = { reference: tenue.veste.reference, prix };
+      details.veste = { reference: normalizedRef || tenue.veste.reference, prix };
     }
   }
 
   if (tenue.gilet?.reference) {
-    const prix = GILET_PRICES[tenue.gilet.reference];
+    const normalizedRef = normalizeReference(tenue.gilet.reference);
+    const prix = normalizedRef ? GILET_PRICES[normalizedRef] : undefined;
     if (prix !== undefined) {
-      details.gilet = { reference: tenue.gilet.reference, prix };
+      details.gilet = { reference: normalizedRef || tenue.gilet.reference, prix };
     }
   }
 
   if (tenue.pantalon?.reference) {
-    const prix = PANTALON_PRICES[tenue.pantalon.reference];
+    const normalizedRef = normalizeReference(tenue.pantalon.reference);
+    const prix = normalizedRef ? PANTALON_PRICES[normalizedRef] : undefined;
     if (prix !== undefined) {
-      details.pantalon = { reference: tenue.pantalon.reference, prix };
+      details.pantalon = { reference: normalizedRef || tenue.pantalon.reference, prix };
     }
   }
 
   if (tenue.ceinture?.reference) {
-    const prix = CEINTURE_PRICES[tenue.ceinture.reference] ?? GILET_PRICES[tenue.ceinture.reference];
+    const normalizedRef = normalizeReference(tenue.ceinture.reference);
+    const prix = normalizedRef ? (CEINTURE_PRICES[normalizedRef] ?? GILET_PRICES[normalizedRef]) : undefined;
     if (prix !== undefined) {
-      details.ceinture = { reference: tenue.ceinture.reference, prix };
+      details.ceinture = { reference: normalizedRef || tenue.ceinture.reference, prix };
     }
   }
 
   return details;
+}
+
+/**
+ * Exporte le seuil de groupe pour utilisation externe
+ */
+export { GROUP_THRESHOLD };
+
+/**
+ * Calcule le prix total pour un groupe de tenues
+ * Applique automatiquement les prix de groupe si >= 6 participants
+ * @param tenues Liste des tenues
+ * @returns Le prix total du groupe
+ */
+export function calculateGroupPrice(tenues: TenueData[]): {
+  totalStandard: number;
+  totalGroup: number;
+  savings: number;
+  isGroupPricing: boolean;
+  participantCount: number;
+} {
+  const participantCount = tenues.length;
+  const isGroupPricing = participantCount >= GROUP_THRESHOLD;
+
+  let totalStandard = 0;
+  let totalGroup = 0;
+
+  for (const tenue of tenues) {
+    const priceStandard = calculateTenuePrice(tenue, 1) || 0;
+    const priceGroup = calculateTenuePrice(tenue, participantCount) || 0;
+    totalStandard += priceStandard;
+    totalGroup += priceGroup;
+  }
+
+  return {
+    totalStandard,
+    totalGroup: isGroupPricing ? totalGroup : totalStandard,
+    savings: isGroupPricing ? totalStandard - totalGroup : 0,
+    isGroupPricing,
+    participantCount
+  };
 }

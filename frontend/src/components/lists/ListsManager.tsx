@@ -47,6 +47,16 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
       .sort((a, b) => (a.participant?.order || 999) - (b.participant?.order || 999));
   };
 
+  // Calculer le prix total d'une liste (somme des tarifLocation des commandes)
+  const getListTotalPrice = (listOrders: Order[]): number => {
+    return listOrders.reduce((total, order) => total + (order.tarifLocation || 0), 0);
+  };
+
+  // Formater le prix
+  const formatPrice = (price: number): string => {
+    return `${price}€`;
+  };
+
   const formatDate = (dateString: string | Date) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -106,11 +116,12 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
         <div className="p-4 sm:p-6">
           {/* Version desktop - En-tête du tableau */}
           <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
-            <div className="col-span-4 text-left">N° / Nom de la liste</div>
-            <div className="col-span-2 text-left">Date événement</div>
-            <div className="col-span-2 text-left">Téléphone</div>
-            <div className="col-span-2 text-center">Commandes</div>
-            <div className="col-span-2 text-center">Actions</div>
+            <div className="col-span-2 text-left">Numéro</div>
+            <div className="col-span-3 text-left ml-16">Nom</div>
+            <div className="col-span-2">Date événement</div>
+            <div className="col-span-2">Commandes</div>
+            <div className="col-span-2">Total</div>
+            <div className="col-span-1 text-center">Actions</div>
           </div>
 
           {/* Liste des listes */}
@@ -142,60 +153,67 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       className="hidden md:grid grid-cols-12 gap-4 p-3 lg:p-4 hover:bg-gray-50/30 transition-all duration-200 cursor-pointer"
                       onClick={() => toggleExpand(list._id)}
                     >
-                      {/* Nom */}
-                      <div className="col-span-4 flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: list.color || '#f59e0b' }}
-                        />
+                      {/* Numéro */}
+                      <div className="col-span-2 text-left flex items-center gap-2">
                         {isExpanded ? (
                           <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
                         ) : (
                           <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                         )}
-                        <span className="font-semibold text-amber-600 text-sm">#{list.numero}</span>
-                        <span className="font-semibold text-gray-900 truncate">{list.name}</span>
+                        <div>
+                          <div className="font-semibold text-amber-600 text-left">#{list.numero}</div>
+                          {list.createdBy && (
+                            <div className="text-xs text-gray-500 mt-1 text-left">
+                              par {list.createdBy}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Date d'événement */}
-                      <div className="col-span-2 text-sm text-gray-600 flex items-center gap-1">
-                        {list.dateEvenement ? (
-                          <>
-                            <Calendar className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                            <span className="font-medium text-amber-700">{formatEventDate(list.dateEvenement)}</span>
-                          </>
-                        ) : (
-                          <span className="text-gray-400 text-xs">Non définie</span>
+                      {/* Nom */}
+                      <div className="col-span-3 flex flex-col justify-start items-start ml-16">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: list.color || '#f59e0b' }}
+                          />
+                          <span className="font-medium text-gray-900">{list.name}</span>
+                        </div>
+                        {list.telephone && (
+                          <div className="flex items-center justify-start gap-1 text-xs text-gray-600 mt-1 w-full">
+                            <Phone className="w-3 h-3 flex-shrink-0" />
+                            <span>{list.telephone}</span>
+                          </div>
                         )}
                       </div>
 
-                      {/* Téléphone */}
-                      <div className="col-span-2 text-sm text-gray-600 flex items-center gap-1">
-                        {list.telephone ? (
-                          <>
-                            <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <span>{list.telephone}</span>
-                          </>
+                      {/* Date d'événement */}
+                      <div className="col-span-2 text-sm text-gray-600">
+                        {list.dateEvenement ? (
+                          formatEventDate(list.dateEvenement)
                         ) : (
-                          <span className="text-gray-400 text-xs">-</span>
+                          <span className="text-gray-400">-</span>
                         )}
                       </div>
 
                       {/* Nombre de commandes */}
-                      <div className="col-span-2 flex justify-center items-center">
-                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
-                          {listOrders.length} commande{listOrders.length > 1 ? 's' : ''}
-                        </Badge>
+                      <div className="col-span-2 text-sm text-gray-600">
+                        {listOrders.length} commande{listOrders.length > 1 ? 's' : ''}
+                      </div>
+
+                      {/* Prix total */}
+                      <div className="col-span-2 font-semibold text-sm text-amber-600">
+                        {formatPrice(getListTotalPrice(listOrders))}
                       </div>
 
                       {/* Actions */}
-                      <div className="col-span-2 flex justify-center items-center">
+                      <div className="col-span-1 flex justify-center gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={(e) => handleEditList(list, e)}
-                          className="h-8 w-8 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                          title="Voir la liste"
+                          className="h-7 w-7 p-0 text-gray-400 hover:text-amber-600"
+                          title="Voir"
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
@@ -207,7 +225,8 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       className="block md:hidden p-5 hover:bg-gray-50/30 transition-colors cursor-pointer"
                       onClick={() => toggleExpand(list._id)}
                     >
-                      <div className="flex justify-between items-start mb-3">
+                      {/* Première ligne : numéro, nom et badge */}
+                      <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2 flex-wrap">
                           <div
                             className="w-3 h-3 rounded-full flex-shrink-0"
@@ -219,31 +238,24 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                             <ChevronRight className="w-4 h-4 text-gray-400" />
                           )}
                           <span className="font-semibold text-amber-600">#{list.numero}</span>
-                          <span className="text-gray-400">•</span>
                           <span className="font-bold text-base text-gray-900">{list.name}</span>
                         </div>
-                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 text-xs">
+                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 text-xs flex-shrink-0">
                           {listOrders.length}
                         </Badge>
                       </div>
 
-                      {/* Date d'événement et téléphone */}
-                      <div className="flex flex-wrap items-center gap-4 text-sm mb-3">
-                        {list.dateEvenement && (
-                          <div className="flex items-center gap-1 text-amber-700">
-                            <Calendar className="w-4 h-4 text-amber-500" />
-                            <span className="font-medium">{formatEventDate(list.dateEvenement)}</span>
-                          </div>
-                        )}
-                        {list.telephone && (
-                          <div className="flex items-center gap-1 text-gray-600">
-                            <Phone className="w-4 h-4 text-gray-400" />
-                            <span>{list.telephone}</span>
-                          </div>
-                        )}
-                        {!list.dateEvenement && !list.telephone && (
-                          <span className="text-gray-400 text-xs">Aucune info de contact</span>
-                        )}
+                      {/* Date d'événement */}
+                      {list.dateEvenement && (
+                        <div className="flex items-center gap-1 text-amber-700 text-sm mb-2">
+                          <Calendar className="w-4 h-4 text-amber-500" />
+                          <span className="font-medium">{formatEventDate(list.dateEvenement)}</span>
+                        </div>
+                      )}
+
+                      {/* Prix en bas à droite */}
+                      <div className="flex justify-end mb-3">
+                        <span className="font-semibold text-amber-600">{formatPrice(getListTotalPrice(listOrders))}</span>
                       </div>
 
                       {/* Actions mobile */}
@@ -287,62 +299,102 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                                     <span className="font-semibold text-amber-600">
                                       #{order.numero}
                                     </span>
-                                    {order.participant?.role && (
-                                      <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
-                                        {order.participant.role}
-                                      </span>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                      {order.participant?.role && (
+                                        <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+                                          {order.participant.role}
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
                                   <div className="font-medium text-gray-900 text-left">
                                     {order.client.prenom} {order.client.nom}
                                   </div>
-                                  <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                                    {order.client.telephone && (
-                                      <div className="flex items-center gap-1">
-                                        <Phone className="w-3 h-3" />
-                                        <span>{order.client.telephone}</span>
-                                      </div>
-                                    )}
-                                    <div className="flex items-center gap-1">
-                                      <Calendar className="w-3 h-3" />
-                                      <span>{formatDate(order.dateLivraison || order.dateCreation)}</span>
+                                  {order.client.telephone && (
+                                    <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                                      <Phone className="w-3 h-3" />
+                                      <span>{order.client.telephone}</span>
                                     </div>
+                                  )}
+                                  {/* Bouton voir et prix */}
+                                  <div className="flex items-center justify-end gap-3 mt-2 pt-2 border-t border-gray-100">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onViewOrder(order);
+                                      }}
+                                      className="h-8 px-3 text-amber-600 hover:bg-amber-50"
+                                    >
+                                      <Eye className="w-4 h-4 mr-1" />
+                                      <span className="text-xs">Voir</span>
+                                    </Button>
+                                    <span className="font-semibold text-amber-600">
+                                      {formatPrice(order.tarifLocation || 0)}
+                                    </span>
                                   </div>
                                 </div>
 
-                                {/* Version desktop - en ligne */}
-                                <div className="hidden sm:block">
-                                  <div className="flex items-center gap-3 mb-1">
-                                    <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
+                                {/* Version desktop - en grille alignée avec l'en-tête */}
+                                <div className="hidden sm:grid grid-cols-12 gap-4 items-center">
+                                  {/* Numéro (col-span-2) */}
+                                  <div className="col-span-2 flex items-center gap-2">
+                                    <span className="w-6 h-6 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-xs font-bold flex items-center justify-center">
                                       {order.participant?.order || '?'}
                                     </span>
-                                    <span className="font-semibold text-amber-600 hover:underline">
+                                    <span className="font-semibold text-amber-600 text-sm">
                                       #{order.numero}
                                     </span>
-                                    <span className="text-gray-400">•</span>
-                                    <span className="font-medium text-gray-900">
-                                      {order.client.prenom} {order.client.nom}
-                                    </span>
-                                    {order.participant?.role && (
-                                      <>
-                                        <span className="text-gray-400">•</span>
-                                        <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
-                                          {order.participant.role}
-                                        </span>
-                                      </>
-                                    )}
                                   </div>
-                                  <div className="flex items-center gap-4 text-sm text-gray-500 ml-10">
+
+                                  {/* Nom (col-span-3 + ml-16) */}
+                                  <div className="col-span-3 ml-16 text-left">
+                                    <div className="font-medium text-gray-900 text-sm text-left">
+                                      {order.client.prenom} {order.client.nom}
+                                    </div>
                                     {order.client.telephone && (
-                                      <div className="flex items-center gap-1">
+                                      <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
                                         <Phone className="w-3 h-3" />
                                         <span>{order.client.telephone}</span>
                                       </div>
                                     )}
-                                    <div className="flex items-center gap-1">
-                                      <Calendar className="w-3 h-3" />
-                                      <span>{formatDate(order.dateLivraison || order.dateCreation)}</span>
-                                    </div>
+                                  </div>
+
+                                  {/* Date (col-span-2) - masquée */}
+                                  <div className="col-span-2">
+                                  </div>
+
+                                  {/* Rôle (col-span-2) - à la place de "Commandes" */}
+                                  <div className="col-span-2 text-sm">
+                                    {order.participant?.role ? (
+                                      <span className="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+                                        {order.participant.role}
+                                      </span>
+                                    ) : (
+                                      <span className="text-gray-400">-</span>
+                                    )}
+                                  </div>
+
+                                  {/* Prix (col-span-2) - aligné sous "Total" */}
+                                  <div className="col-span-2 font-medium text-gray-700 text-sm">
+                                    {formatPrice(order.tarifLocation || 0)}
+                                  </div>
+
+                                  {/* Actions (col-span-1) */}
+                                  <div className="col-span-1 flex justify-center">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onViewOrder(order);
+                                      }}
+                                      className="h-7 w-7 p-0 text-gray-400 hover:text-amber-600"
+                                      title="Voir la commande"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
                                   </div>
                                 </div>
                               </div>

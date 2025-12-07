@@ -49,11 +49,20 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       if (page === 1) {
         setAllOrders(ordersData.orders);
       } else {
-        // Éviter les doublons lors de la concaténation
+        // Fusionner: mettre à jour les commandes existantes ET ajouter les nouvelles
         setAllOrders(prev => {
-          const existingIds = new Set(prev.map(o => o.id));
-          const newOrders = ordersData.orders.filter(order => !existingIds.has(order.id));
-          return [...prev, ...newOrders];
+          const updatedOrders = [...prev];
+          ordersData.orders.forEach(order => {
+            const existingIndex = updatedOrders.findIndex(o => o.id === order.id);
+            if (existingIndex >= 0) {
+              // Mettre à jour la commande existante
+              updatedOrders[existingIndex] = order;
+            } else {
+              // Ajouter la nouvelle commande
+              updatedOrders.push(order);
+            }
+          });
+          return updatedOrders;
         });
       }
     }
