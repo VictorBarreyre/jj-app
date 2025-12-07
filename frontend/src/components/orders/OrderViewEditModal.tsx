@@ -546,12 +546,12 @@ export function OrderViewEditModal({
                     <div className="space-y-4 pb-4">
                       {displayOrder.groupDetails.participants.map((participant, index) => (
                     <div key={index} className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="mb-2">
                         <div className="font-semibold text-gray-800 text-left">
                           {participant.prenom ? `${participant.nom} ${participant.prenom}` : participant.nom}
                         </div>
                         {onUpdateParticipantReturn && (
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 mt-2">
                             <span className={`text-sm font-medium ${
                               (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'text-green-700' : 'text-gray-600'
                             }`}>
@@ -565,7 +565,7 @@ export function OrderViewEditModal({
                               }}
                               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                                 (displayOrder.status === 'rendu' || displayOrder.status === 'rendue')
-                                  ? 'bg-green-600 focus:ring-green-500' 
+                                  ? 'bg-green-600 focus:ring-green-500'
                                   : 'bg-gray-300 focus:ring-gray-400'
                               }`}
                               title={(displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'Marquer comme non rendu' : 'Marquer comme rendu'}
@@ -725,33 +725,32 @@ export function OrderViewEditModal({
                     </span>
                     <div className="space-y-4 pb-4">
                       <div className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="mb-2">
                           <div className="font-semibold text-gray-800 text-left">
                             {virtualParticipant.prenom ? `${virtualParticipant.nom} ${virtualParticipant.prenom}` : virtualParticipant.nom}
                           </div>
                           {onUpdateParticipantReturn && (
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 mt-2">
                               <span className={`text-sm font-medium ${
                                 (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'text-green-700' : 'text-gray-600'
                               }`}>
-                                Article(s) rendu(s) 
+                                Article(s) rendu(s)
                               </span>
-                              
                               <button
                                 onClick={() => {
                                   const isOrderReturned = displayOrder.status === 'rendu' || displayOrder.status === 'rendue';
                                   const newState = !isOrderReturned;
-                                  console.log('🎛️ SWITCH CLICK:', { 
+                                  console.log('🎛️ SWITCH CLICK:', {
                                     currentStatus: displayOrder.status,
                                     isOrderReturned,
                                     newState,
-                                    id: displayOrder.id 
+                                    id: displayOrder.id
                                   });
                                   handleLocalParticipantReturn(displayOrder.id, 0, newState);
                                 }}
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                                  (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') 
-                                    ? 'bg-green-600 focus:ring-green-500' 
+                                  (displayOrder.status === 'rendu' || displayOrder.status === 'rendue')
+                                    ? 'bg-green-600 focus:ring-green-500'
                                     : 'bg-gray-300 focus:ring-gray-400'
                                 }`}
                                 title={(displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'Marquer comme non rendu' : 'Marquer comme rendu'}
