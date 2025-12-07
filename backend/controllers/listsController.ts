@@ -1,5 +1,30 @@
 import { Request, Response } from 'express';
-import { ListModel } from '../models/List';
+import { ListModel, ListNumberingModel } from '../models/List';
+
+// Fonction pour générer le numéro de liste
+async function generateListNumero(): Promise<string> {
+  const currentYear = new Date().getFullYear();
+
+  // Chercher ou créer le document de numérotation pour l'année en cours
+  let numbering = await ListNumberingModel.findOne({ year: currentYear });
+
+  if (!numbering) {
+    // Créer un nouveau document pour cette année
+    numbering = new ListNumberingModel({
+      year: currentYear,
+      lastNumber: 0,
+      prefix: 'L'
+    });
+  }
+
+  // Incrémenter le compteur
+  numbering.lastNumber += 1;
+  await numbering.save();
+
+  // Formater le numéro (ex: L-2025-001)
+  const paddedNumber = String(numbering.lastNumber).padStart(3, '0');
+  return `${numbering.prefix}-${currentYear}-${paddedNumber}`;
+}
 
 // Récupérer toutes les listes
 export const getAllLists = async (_req: Request, res: Response) => {
@@ -35,7 +60,11 @@ export const createList = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Le nom de la liste est requis' });
     }
 
+    // Générer le numéro de liste
+    const numero = await generateListNumero();
+
     const newList = new ListModel({
+      numero,
       name: name.trim(),
       description: description?.trim(),
       color: color || '#f59e0b',

@@ -60,6 +60,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
     const query = searchQuery.toLowerCase().trim();
     return lists.filter(list =>
       list.name.toLowerCase().includes(query) ||
+      list.numero?.toLowerCase().includes(query) ||
       (list.description && list.description.toLowerCase().includes(query))
     );
   }, [lists, searchQuery]);
@@ -95,7 +96,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
         <div className="p-4 sm:p-6">
           {/* Version desktop - En-tête du tableau */}
           <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
-            <div className="col-span-5 text-left">Nom de la liste</div>
+            <div className="col-span-5 text-left">N° / Nom de la liste</div>
             <div className="col-span-3 text-left">Description</div>
             <div className="col-span-2 text-center">Commandes</div>
             <div className="col-span-2 text-center">Actions</div>
@@ -141,6 +142,8 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                         ) : (
                           <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                         )}
+                        <span className="font-semibold text-amber-600">#{list.numero}</span>
+                        <span className="text-gray-400">•</span>
                         <span className="font-semibold text-gray-900">{list.name}</span>
                       </div>
 
@@ -197,7 +200,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       onClick={() => toggleExpand(list._id)}
                     >
                       <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <div
                             className="w-3 h-3 rounded-full flex-shrink-0"
                             style={{ backgroundColor: list.color || '#f59e0b' }}
@@ -207,6 +210,8 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                           ) : (
                             <ChevronRight className="w-4 h-4 text-gray-400" />
                           )}
+                          <span className="font-semibold text-amber-600">#{list.numero}</span>
+                          <span className="text-gray-400">•</span>
                           <span className="font-bold text-base text-gray-900">{list.name}</span>
                         </div>
                         <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 text-xs">

@@ -1,6 +1,7 @@
 // Interface pour une liste de commandes
 export interface List {
   _id: string;
+  numero: string; // Numéro unique de la liste (ex: L-2025-001)
   name: string;
   description?: string;
   color: string;
