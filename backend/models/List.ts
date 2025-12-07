@@ -12,6 +12,8 @@ export interface IList {
   numero: string; // Numéro unique de la liste (ex: L-2025-001)
   name: string;
   description?: string;
+  telephone?: string; // Numéro de téléphone de contact
+  dateEvenement?: Date; // Date de l'événement (manuelle ou auto-calculée)
   color?: string; // Couleur pour identifier visuellement la liste
   contractIds: string[]; // IDs des contrats associés (legacy, pour compatibilité)
   participants: IListParticipant[]; // Nouvelle structure avec rôles
@@ -45,6 +47,13 @@ const listSchema = new Schema<IListDocument>({
   description: {
     type: String,
     trim: true
+  },
+  telephone: {
+    type: String,
+    trim: true
+  },
+  dateEvenement: {
+    type: Date
   },
   color: {
     type: String,

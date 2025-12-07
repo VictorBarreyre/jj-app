@@ -54,7 +54,7 @@ export const getListById = async (req: Request, res: Response) => {
 // Créer une nouvelle liste
 export const createList = async (req: Request, res: Response) => {
   try {
-    const { name, description, color } = req.body;
+    const { name, description, color, telephone, dateEvenement } = req.body;
 
     if (!name || name.trim() === '') {
       return res.status(400).json({ message: 'Le nom de la liste est requis' });
@@ -67,6 +67,8 @@ export const createList = async (req: Request, res: Response) => {
       numero,
       name: name.trim(),
       description: description?.trim(),
+      telephone: telephone?.trim(),
+      dateEvenement: dateEvenement ? new Date(dateEvenement) : undefined,
       color: color || '#f59e0b',
       contractIds: [],
       participants: []
@@ -83,7 +85,7 @@ export const createList = async (req: Request, res: Response) => {
 // Mettre à jour une liste
 export const updateList = async (req: Request, res: Response) => {
   try {
-    const { name, description, color, participants } = req.body;
+    const { name, description, color, participants, telephone, dateEvenement } = req.body;
 
     const list = await ListModel.findById(req.params.id);
     if (!list) {
@@ -93,6 +95,10 @@ export const updateList = async (req: Request, res: Response) => {
     if (name) list.name = name.trim();
     if (description !== undefined) list.description = description?.trim();
     if (color) list.color = color;
+    if (telephone !== undefined) list.telephone = telephone?.trim();
+    if (dateEvenement !== undefined) {
+      list.dateEvenement = dateEvenement ? new Date(dateEvenement) : undefined;
+    }
 
     // Mise à jour des participants (avec rôles)
     if (participants !== undefined) {

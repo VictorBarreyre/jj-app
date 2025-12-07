@@ -11,6 +11,8 @@ export interface List {
   numero: string; // Numéro unique de la liste (ex: L-2025-001)
   name: string;
   description?: string;
+  telephone?: string; // Numéro de téléphone de contact
+  dateEvenement?: string; // Date de l'événement
   color: string;
   contractIds: string[];
   participants?: ListParticipant[]; // Structure avec rôles
@@ -22,6 +24,8 @@ export interface List {
 export interface CreateListRequest {
   name: string;
   description?: string;
+  telephone?: string;
+  dateEvenement?: string;
   color?: string;
 }
 
@@ -29,6 +33,8 @@ export interface CreateListRequest {
 export interface UpdateListRequest {
   name?: string;
   description?: string;
+  telephone?: string;
+  dateEvenement?: string;
   color?: string;
   participants?: ListParticipant[];
 }

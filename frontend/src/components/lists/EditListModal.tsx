@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, FolderOpen, Search, Check, Pencil, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
+import { X, FolderOpen, Search, Pencil, ChevronUp, ChevronDown, Phone, Calendar } from 'lucide-react';
 import { useUpdateList } from '@/hooks/useLists';
 import { Order } from '@/types/order';
 import { List, ListParticipant } from '@/types/list';
@@ -22,14 +22,44 @@ interface ParticipantState {
 
 export function EditListModal({ isOpen, onClose, list, orders }: EditListModalProps) {
   const [listName, setListName] = useState('');
+  const [telephone, setTelephone] = useState('');
+  const [dateEvenement, setDateEvenement] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [participants, setParticipants] = useState<ParticipantState[]>([]);
   const updateListMutation = useUpdateList();
+
+  // Calculer la date d'événement la plus commune à partir des commandes
+  const suggestedEventDate = useMemo(() => {
+    if (participants.length === 0) return null;
+
+    const dates: Record<string, number> = {};
+    participants.forEach(p => {
+      const order = orders.find(o => o.id === p.contractId);
+      if (order?.dateLivraison) {
+        const dateStr = new Date(order.dateLivraison).toISOString().split('T')[0];
+        dates[dateStr] = (dates[dateStr] || 0) + 1;
+      }
+    });
+
+    // Trouver la date la plus fréquente
+    let maxCount = 0;
+    let mostCommonDate: string | null = null;
+    Object.entries(dates).forEach(([date, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        mostCommonDate = date;
+      }
+    });
+
+    return mostCommonDate;
+  }, [participants, orders]);
 
   // Initialiser le formulaire quand la modale s'ouvre ou quand la liste change
   useEffect(() => {
     if (isOpen && list) {
       setListName(list.name);
+      setTelephone(list.telephone || '');
+      setDateEvenement(list.dateEvenement ? new Date(list.dateEvenement).toISOString().split('T')[0] : '');
       setSearchQuery('');
 
       // Initialiser les participants à partir de la liste existante
@@ -132,16 +162,25 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
     return orders.find(o => o.id === contractId);
   };
 
+  // Utiliser la date suggérée
+  const useSuggestedDate = () => {
+    if (suggestedEventDate) {
+      setDateEvenement(suggestedEventDate);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!listName.trim() || !list) return;
 
     try {
-      // Mettre à jour la liste avec le nom et les participants
+      // Mettre à jour la liste avec tous les champs
       await updateListMutation.mutateAsync({
         id: list._id,
         data: {
           name: listName.trim(),
+          telephone: telephone.trim() || undefined,
+          dateEvenement: dateEvenement || undefined,
           participants: participants.map(p => ({
             contractId: p.contractId,
             role: p.role,
@@ -161,6 +200,16 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
   const isLoading = updateListMutation.isPending;
 
+  const formatDateDisplay = (dateStr: string) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
@@ -175,40 +224,97 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
           className="relative w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                <Pencil className="w-5 h-5 text-amber-600" />
+          {/* Header avec nom de liste mis en évidence */}
+          <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-t-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Pencil className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-amber-100 text-sm font-medium">Liste #{list.numero}</div>
+                  <h2 className="text-2xl font-bold text-white">{list.name}</h2>
+                </div>
               </div>
-              <h2 className="text-xl font-bold text-gray-900">Modifier la liste</h2>
+              <Button
+                onClick={onClose}
+                variant="ghost"
+                size="sm"
+                className="h-10 w-10 p-0 text-white/80 hover:text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
             </div>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
 
           {/* Content */}
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
-              {/* Nom de la liste */}
+              {/* Informations principales */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Nom de la liste */}
+                <div>
+                  <label htmlFor="editListName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    Nom de la liste
+                  </label>
+                  <Input
+                    id="editListName"
+                    placeholder="Ex: Mariage Dupont..."
+                    value={listName}
+                    onChange={(e) => setListName(e.target.value)}
+                    className="w-full text-lg font-semibold"
+                    autoFocus
+                  />
+                </div>
+
+                {/* Téléphone */}
+                <div>
+                  <label htmlFor="editTelephone" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <Phone className="w-4 h-4 inline mr-1" />
+                    Téléphone de contact
+                  </label>
+                  <Input
+                    id="editTelephone"
+                    type="tel"
+                    placeholder="Ex: 06 12 34 56 78"
+                    value={telephone}
+                    onChange={(e) => setTelephone(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Date d'événement */}
               <div>
-                <label htmlFor="editListName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                  Nom de la liste
+                <label htmlFor="editDateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                  <Calendar className="w-4 h-4 inline mr-1" />
+                  Date de l'événement
                 </label>
-                <Input
-                  id="editListName"
-                  placeholder="Ex: Mariage Dupont, Cérémonie 15 juin..."
-                  value={listName}
-                  onChange={(e) => setListName(e.target.value)}
-                  className="w-full"
-                  autoFocus
-                />
+                <div className="flex gap-2 items-center">
+                  <Input
+                    id="editDateEvenement"
+                    type="date"
+                    value={dateEvenement}
+                    onChange={(e) => setDateEvenement(e.target.value)}
+                    className="flex-1"
+                  />
+                  {suggestedEventDate && suggestedEventDate !== dateEvenement && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={useSuggestedDate}
+                      className="text-xs whitespace-nowrap border-amber-300 text-amber-600 hover:bg-amber-50"
+                    >
+                      Utiliser {formatDateDisplay(suggestedEventDate)}
+                    </Button>
+                  )}
+                </div>
+                {dateEvenement && (
+                  <p className="text-sm text-gray-500 mt-1 text-left">
+                    {formatDateDisplay(dateEvenement)}
+                  </p>
+                )}
               </div>
 
               {/* Participants actuels */}
@@ -223,7 +329,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     Aucun participant. Ajoutez des commandes ci-dessous.
                   </div>
                 ) : (
-                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="border border-gray-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
                     <div className="divide-y divide-gray-100">
                       {participants.map((participant, index) => {
                         const order = getOrderById(participant.contractId);
@@ -321,7 +427,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                 </div>
 
                 {/* Liste des commandes disponibles */}
-                <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-xl">
+                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-xl">
                   {filteredOrders.length === 0 ? (
                     <div className="p-4 text-center text-gray-500 text-sm">
                       {searchQuery ? 'Aucune commande trouvée' : 'Toutes les commandes sont déjà dans la liste'}

@@ -67,9 +67,21 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
     return lists.filter(list =>
       list.name.toLowerCase().includes(query) ||
       list.numero?.toLowerCase().includes(query) ||
-      (list.description && list.description.toLowerCase().includes(query))
+      (list.description && list.description.toLowerCase().includes(query)) ||
+      (list.telephone && list.telephone.toLowerCase().includes(query))
     );
   }, [lists, searchQuery]);
+
+  // Formater la date d'événement de manière lisible
+  const formatEventDate = (dateString?: string) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
 
   if (isLoading) {
     return (
@@ -102,8 +114,9 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
         <div className="p-4 sm:p-6">
           {/* Version desktop - En-tête du tableau */}
           <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
-            <div className="col-span-5 text-left">N° / Nom de la liste</div>
-            <div className="col-span-3 text-left">Date de création</div>
+            <div className="col-span-4 text-left">N° / Nom de la liste</div>
+            <div className="col-span-2 text-left">Date événement</div>
+            <div className="col-span-2 text-left">Téléphone</div>
             <div className="col-span-2 text-center">Commandes</div>
             <div className="col-span-2 text-center">Actions</div>
           </div>
@@ -138,7 +151,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       onClick={() => toggleExpand(list._id)}
                     >
                       {/* Nom */}
-                      <div className="col-span-5 flex items-center gap-3">
+                      <div className="col-span-4 flex items-center gap-2">
                         <div
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: list.color || '#f59e0b' }}
@@ -148,15 +161,32 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                         ) : (
                           <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                         )}
-                        <span className="font-semibold text-amber-600">#{list.numero}</span>
-                        <span className="text-gray-400">•</span>
-                        <span className="font-semibold text-gray-900">{list.name}</span>
+                        <span className="font-semibold text-amber-600 text-sm">#{list.numero}</span>
+                        <span className="font-semibold text-gray-900 truncate">{list.name}</span>
                       </div>
 
-                      {/* Date de création */}
-                      <div className="col-span-3 text-sm text-gray-600 flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        {formatDate(list.createdAt)}
+                      {/* Date d'événement */}
+                      <div className="col-span-2 text-sm text-gray-600 flex items-center gap-1">
+                        {list.dateEvenement ? (
+                          <>
+                            <Calendar className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                            <span className="font-medium text-amber-700">{formatEventDate(list.dateEvenement)}</span>
+                          </>
+                        ) : (
+                          <span className="text-gray-400 text-xs">Non définie</span>
+                        )}
+                      </div>
+
+                      {/* Téléphone */}
+                      <div className="col-span-2 text-sm text-gray-600 flex items-center gap-1">
+                        {list.telephone ? (
+                          <>
+                            <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            <span>{list.telephone}</span>
+                          </>
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
                       </div>
 
                       {/* Nombre de commandes */}
@@ -226,10 +256,23 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                         </Badge>
                       </div>
 
-                      {/* Date de création */}
-                      <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                        <Calendar className="w-4 h-4" />
-                        <span>Créée le {formatDate(list.createdAt)}</span>
+                      {/* Date d'événement et téléphone */}
+                      <div className="flex flex-wrap items-center gap-4 text-sm mb-3">
+                        {list.dateEvenement && (
+                          <div className="flex items-center gap-1 text-amber-700">
+                            <Calendar className="w-4 h-4 text-amber-500" />
+                            <span className="font-medium">{formatEventDate(list.dateEvenement)}</span>
+                          </div>
+                        )}
+                        {list.telephone && (
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <Phone className="w-4 h-4 text-gray-400" />
+                            <span>{list.telephone}</span>
+                          </div>
+                        )}
+                        {!list.dateEvenement && !list.telephone && (
+                          <span className="text-gray-400 text-xs">Aucune info de contact</span>
+                        )}
                       </div>
 
                       {/* Actions mobile */}
