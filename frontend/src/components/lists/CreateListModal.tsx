@@ -193,7 +193,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                     type="date"
                     value={dateEvenement}
                     onChange={(e) => setDateEvenement(e.target.value)}
-                    className="w-32"
+                    className="w-40"
                   />
                 </div>
               </div>

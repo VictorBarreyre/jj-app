@@ -294,7 +294,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     type="date"
                     value={dateEvenement}
                     onChange={(e) => setDateEvenement(e.target.value)}
-                    className="w-32"
+                    className="w-40"
                   />
                 </div>
               </div>
