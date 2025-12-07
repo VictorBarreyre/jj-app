@@ -115,7 +115,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className="relative w-full max-w-lg transform rounded-2xl bg-white shadow-2xl transition-all"
+          className="relative w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -172,7 +172,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                 </div>
 
                 {/* Liste des commandes */}
-                <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-xl">
+                <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-xl">
                   {filteredOrders.length === 0 ? (
                     <div className="p-4 text-center text-gray-500 text-sm">
                       {searchQuery ? 'Aucune commande trouvée' : 'Aucune commande disponible'}
