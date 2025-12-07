@@ -16,6 +16,7 @@ export interface List {
   color: string;
   contractIds: string[];
   participants?: ListParticipant[]; // Structure avec rôles
+  createdBy?: string; // Nom de l'utilisateur qui a créé la liste
   createdAt: string;
   updatedAt: string;
 }
@@ -27,6 +28,7 @@ export interface CreateListRequest {
   telephone?: string;
   dateEvenement?: string;
   color?: string;
+  createdBy?: string;
 }
 
 // Interface pour mettre à jour une liste

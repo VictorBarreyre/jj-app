@@ -7,7 +7,7 @@ import { Order } from '@/types/order';
 import { useOrders, useUpdateOrder, useDeleteOrder } from '@/hooks/useOrders';
 import { useLists } from '@/hooks/useLists';
 import { Button } from '@/components/ui/button';
-import { User, FolderOpen, Plus } from 'lucide-react';
+import { User, Users, Plus } from 'lucide-react';
 import { rentalContractApi } from '@/services/rental-contract.api';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -260,7 +260,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
     {
       id: 'listes',
       label: 'Listes',
-      icon: <FolderOpen className="w-5 h-5" />
+      icon: <Users className="w-5 h-5" />
     }
   ];
 

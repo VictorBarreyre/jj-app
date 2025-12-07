@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Search, Check, Phone, Calendar } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { X, Search, Check, Phone, Calendar, FileText } from 'lucide-react';
 import { useCreateList, useAddContractToList } from '@/hooks/useLists';
+import { useAuth } from '@/contexts/AuthContext';
 import { Order } from '@/types/order';
 import toast from 'react-hot-toast';
 
@@ -16,10 +18,12 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
   const [listName, setListName] = useState('');
   const [telephone, setTelephone] = useState('');
   const [dateEvenement, setDateEvenement] = useState('');
+  const [notes, setNotes] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
   const createListMutation = useCreateList();
   const addContractMutation = useAddContractToList();
+  const { user } = useAuth();
 
   // Reset le formulaire quand la modale s'ouvre
   useEffect(() => {
@@ -27,6 +31,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
       setListName('');
       setTelephone('');
       setDateEvenement('');
+      setNotes('');
       setSearchQuery('');
       setSelectedOrderIds(new Set());
     }
@@ -65,6 +70,39 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
     );
   }, [orders, searchQuery]);
 
+  // Calculer la date d'événement la plus commune à partir des commandes sélectionnées
+  const suggestedEventDate = useMemo(() => {
+    if (selectedOrderIds.size === 0) return null;
+
+    const dates: Record<string, number> = {};
+    selectedOrderIds.forEach(orderId => {
+      const order = orders.find(o => o.id === orderId);
+      if (order?.dateLivraison) {
+        const dateStr = new Date(order.dateLivraison).toISOString().split('T')[0];
+        dates[dateStr] = (dates[dateStr] || 0) + 1;
+      }
+    });
+
+    // Trouver la date la plus fréquente
+    let maxCount = 0;
+    let mostCommonDate: string | null = null;
+    Object.entries(dates).forEach(([date, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        mostCommonDate = date;
+      }
+    });
+
+    return mostCommonDate;
+  }, [selectedOrderIds, orders]);
+
+  // Mettre à jour automatiquement la date d'événement quand une date suggérée est disponible
+  useEffect(() => {
+    if (suggestedEventDate && !dateEvenement) {
+      setDateEvenement(suggestedEventDate);
+    }
+  }, [suggestedEventDate]);
+
   const toggleOrderSelection = (orderId: string) => {
     setSelectedOrderIds(prev => {
       const newSet = new Set(prev);
@@ -86,7 +124,9 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
       const newList = await createListMutation.mutateAsync({
         name: listName.trim(),
         telephone: telephone.trim() || undefined,
-        dateEvenement: dateEvenement || undefined
+        dateEvenement: dateEvenement || undefined,
+        description: notes.trim() || undefined,
+        createdBy: user?.prenom || undefined
       });
 
       // Ajouter les commandes sélectionnées à la liste
@@ -149,7 +189,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
               {/* Informations principales */}
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 {/* Nom de la liste */}
-                <div className="md:col-span-3">
+                <div className="md:col-span-2">
                   <label htmlFor="listName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                     Nom de la liste
                   </label>
@@ -180,7 +220,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                 </div>
 
                 {/* Date d'événement */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-2">
                   <label htmlFor="dateEvenement" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4" />
                     Date
@@ -190,7 +230,22 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                     type="date"
                     value={dateEvenement}
                     onChange={(e) => setDateEvenement(e.target.value)}
-                    className="w-full"
+                    className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
+                  />
+                </div>
+
+                {/* Notes */}
+                <div className="md:col-span-6">
+                  <label htmlFor="notes" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
+                    <FileText className="w-4 h-4" />
+                    Notes <span className="text-gray-400 font-normal">(optionnel)</span>
+                  </label>
+                  <Textarea
+                    id="notes"
+                    placeholder="Notes ou informations complémentaires..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className="w-full min-h-[80px] resize-none"
                   />
                 </div>
               </div>

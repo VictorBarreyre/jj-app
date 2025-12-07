@@ -54,7 +54,7 @@ export const getListById = async (req: Request, res: Response) => {
 // Créer une nouvelle liste
 export const createList = async (req: Request, res: Response) => {
   try {
-    const { name, description, color, telephone, dateEvenement } = req.body;
+    const { name, description, color, telephone, dateEvenement, createdBy } = req.body;
 
     if (!name || name.trim() === '') {
       return res.status(400).json({ message: 'Le nom de la liste est requis' });
@@ -71,7 +71,8 @@ export const createList = async (req: Request, res: Response) => {
       dateEvenement: dateEvenement ? new Date(dateEvenement) : undefined,
       color: color || '#f59e0b',
       contractIds: [],
-      participants: []
+      participants: [],
+      createdBy: createdBy?.trim()
     });
 
     const savedList = await newList.save();

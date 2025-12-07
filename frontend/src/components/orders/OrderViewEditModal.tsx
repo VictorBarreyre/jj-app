@@ -252,42 +252,39 @@ export function OrderViewEditModal({
           <div className="max-h-[90vh] sm:max-h-[80vh] overflow-y-scroll scrollbar-none">
             {/* Header personnalisé avec titre, statut et actions */}
             <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
-              <div className="flex items-start sm:items-center justify-between pl-2 sm:pl-4">
-                {/* Titre avec statut */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900 truncate text-left">Commande #{displayOrder.numero}</h2>
-                  <Badge className={`${getStatusColor(displayOrder.status)} border text-xs sm:text-sm font-semibold self-start`}>
-                    {getStatusLabel(displayOrder.status)}
-                  </Badge>
-                </div>
-                
-                {/* Bouton fermer seulement */}
-                <div className="flex items-center flex-shrink-0">
-                  <Button 
-                    onClick={onClose} 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
+              <div className="flex items-center justify-between pl-2 sm:pl-4">
+                {/* Titre */}
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900 truncate text-left">Commande #{displayOrder.numero}</h2>
+
+                {/* Bouton fermer */}
+                <Button
+                  onClick={onClose}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 flex-shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
 
-              {/* Métadonnées sous le titre avec boutons d'action */}
-              <div className="mt-3 sm:mt-4 pl-2 sm:pl-4 flex justify-between items-end">
-                <div className="text-xs sm:text-xs text-gray-500 space-y-1 text-left">
-                  <div className="text-left">Créée le {formatDate(displayOrder.dateCreation)}</div>
+              {/* Métadonnées + Statut */}
+              <div className="mt-3 sm:mt-4 pl-2 sm:pl-4 flex items-start justify-between">
+                <div className="text-xs text-gray-500 text-left space-y-0.5">
+                  <div>Créée le {formatDate(displayOrder.dateCreation)}</div>
                   {displayOrder.updatedAt && (
-                    <div className="text-left">Modifiée le {formatDate(displayOrder.updatedAt)}</div>
+                    <div>Modifiée le {formatDate(displayOrder.updatedAt)}</div>
                   )}
                   {displayOrder.createdBy && (
-                    <div className="text-left">Par {displayOrder.createdBy}</div>
+                    <div>Par {displayOrder.createdBy}</div>
                   )}
                 </div>
-                
-                {/* Boutons d'action en bas à droite */}
-                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <Badge className={`${getStatusColor(displayOrder.status)} border text-xs sm:text-sm font-semibold flex-shrink-0`}>
+                  {getStatusLabel(displayOrder.status)}
+                </Badge>
+              </div>
+
+              {/* Boutons d'action */}
+              <div className="mt-3 pl-2 sm:pl-4 flex items-center gap-2 w-full">
                   {!isEditing ? (
                     <>
                       {/* Bouton Email - uniquement si client a un email */}
@@ -297,30 +294,30 @@ export function OrderViewEditModal({
                           type="client"
                           variant="outline"
                           showText={true}
-                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 hover:border-blue-300 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                          className="flex-1 sm:flex-initial bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 hover:border-blue-300 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                         />
                       )}
-                      
-                      <Button 
+
+                      <Button
                         onClick={handleEditOrderRedirect}
-                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                        className="flex-1 sm:flex-initial bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                       >
                         <Edit3 className="w-4 h-4" />
                         <span>Modifier</span>
                       </Button>
                     </>
                   ) : (
-                    <div className="flex gap-1 sm:gap-2">
-                      <Button 
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <Button
                         onClick={onCancel}
                         variant="outline"
-                        className="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50 text-sm sm:text-base"
+                        className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50 text-sm sm:text-base"
                       >
                         Annuler
                       </Button>
-                      <Button 
+                      <Button
                         onClick={handleSave}
-                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                        className="flex-1 sm:flex-initial bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                       >
                         <Save className="w-4 h-4" />
                         <span className="hidden sm:inline">Sauvegarder</span>
@@ -328,7 +325,6 @@ export function OrderViewEditModal({
                       </Button>
                     </div>
                   )}
-                </div>
               </div>
             </div>
 

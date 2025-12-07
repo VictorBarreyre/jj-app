@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, FolderOpen, Search, ChevronUp, ChevronDown, Phone, Calendar } from 'lucide-react';
-import { useUpdateList } from '@/hooks/useLists';
+import { Textarea } from '@/components/ui/textarea';
+import { X, Users, Search, ChevronUp, ChevronDown, Phone, Calendar, Edit3, FileText, Trash2 } from 'lucide-react';
+import { useUpdateList, useDeleteList } from '@/hooks/useLists';
 import { Order } from '@/types/order';
 import { List, ListParticipant } from '@/types/list';
 import toast from 'react-hot-toast';
@@ -24,9 +25,31 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
   const [listName, setListName] = useState('');
   const [telephone, setTelephone] = useState('');
   const [dateEvenement, setDateEvenement] = useState('');
+  const [notes, setNotes] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [participants, setParticipants] = useState<ParticipantState[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
   const updateListMutation = useUpdateList();
+  const deleteListMutation = useDeleteList();
+
+  // Supprimer la liste
+  const handleDeleteList = async () => {
+    if (!list) return;
+
+    const confirmed = window.confirm(
+      `Êtes-vous sûr de vouloir supprimer la liste "${list.name}" ?\n\nCette action est irréversible.`
+    );
+
+    if (confirmed) {
+      try {
+        await deleteListMutation.mutateAsync(list._id);
+        onClose();
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        toast.error('Erreur lors de la suppression de la liste');
+      }
+    }
+  };
 
   // Calculer la date d'événement la plus commune à partir des commandes
   const suggestedEventDate = useMemo(() => {
@@ -60,7 +83,9 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       setListName(list.name);
       setTelephone(list.telephone || '');
       setDateEvenement(list.dateEvenement ? new Date(list.dateEvenement).toISOString().split('T')[0] : '');
+      setNotes(list.description || '');
       setSearchQuery('');
+      setIsEditing(false); // Toujours ouvrir en mode visualisation
 
       // Initialiser les participants à partir de la liste existante
       if (list.participants && list.participants.length > 0) {
@@ -181,6 +206,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
           name: listName.trim(),
           telephone: telephone.trim() || undefined,
           dateEvenement: dateEvenement || undefined,
+          description: notes.trim() || undefined,
           participants: participants.map(p => ({
             contractId: p.contractId,
             role: p.role,
@@ -225,7 +251,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
+          <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-left">
                 Liste #{list.numero}
@@ -239,11 +265,27 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            {/* Métadonnées */}
-            <div className="mt-3 text-xs text-gray-500 space-y-1 text-left">
-              <div>Créée le {new Date(list.createdAt).toLocaleDateString('fr-FR')}</div>
-              {list.updatedAt && list.updatedAt !== list.createdAt && (
-                <div>Modifiée le {new Date(list.updatedAt).toLocaleDateString('fr-FR')}</div>
+            {/* Métadonnées avec boutons d'action */}
+            <div className="mt-3 sm:mt-4 flex justify-between items-end">
+              <div className="text-xs text-gray-500 space-y-1 text-left">
+                <div>Créée le {new Date(list.createdAt).toLocaleDateString('fr-FR')}</div>
+                {list.updatedAt && list.updatedAt !== list.createdAt && (
+                  <div>Modifiée le {new Date(list.updatedAt).toLocaleDateString('fr-FR')}</div>
+                )}
+                {list.createdBy && (
+                  <div>Par {list.createdBy}</div>
+                )}
+              </div>
+
+              {/* Bouton Modifier */}
+              {!isEditing && (
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>Modifier</span>
+                </Button>
               )}
             </div>
           </div>
@@ -254,7 +296,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
               {/* Informations principales */}
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 {/* Nom de la liste */}
-                <div className="md:col-span-3">
+                <div className="md:col-span-2">
                   <label htmlFor="editListName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                     Nom de la liste
                   </label>
@@ -263,8 +305,9 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     placeholder="Ex: Mariage Dupont..."
                     value={listName}
                     onChange={(e) => setListName(e.target.value)}
-                    className="w-full text-lg font-semibold"
-                    autoFocus
+                    className={`w-full text-lg font-semibold ${!isEditing ? 'bg-gray-50 cursor-default' : ''}`}
+                    autoFocus={isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -280,12 +323,13 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     placeholder="06 12 34 56 78"
                     value={telephone}
                     onChange={(e) => setTelephone(e.target.value)}
-                    className="w-full"
+                    className={`w-full ${!isEditing ? 'bg-gray-50 cursor-default' : ''}`}
+                    readOnly={!isEditing}
                   />
                 </div>
 
                 {/* Date d'événement */}
-                <div className="md:col-span-1">
+                <div className="md:col-span-2">
                   <label htmlFor="editDateEvenement" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4" />
                     Date
@@ -295,7 +339,24 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     type="date"
                     value={dateEvenement}
                     onChange={(e) => setDateEvenement(e.target.value)}
-                    className="w-full"
+                    className={`w-40 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight ${!isEditing ? 'bg-gray-50 cursor-default' : 'bg-white/70'}`}
+                    readOnly={!isEditing}
+                  />
+                </div>
+
+                {/* Notes */}
+                <div className="md:col-span-6">
+                  <label htmlFor="editNotes" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
+                    <FileText className="w-4 h-4" />
+                    Notes
+                  </label>
+                  <Textarea
+                    id="editNotes"
+                    placeholder="Notes ou informations complémentaires..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    className={`w-full min-h-[80px] resize-none ${!isEditing ? 'bg-gray-50 cursor-default' : ''}`}
+                    readOnly={!isEditing}
                   />
                 </div>
               </div>
@@ -308,8 +369,8 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
                 {participants.length === 0 ? (
                   <div className="border border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500 text-sm">
-                    <FolderOpen className="w-8 h-8 mx-auto text-gray-300 mb-2" />
-                    Aucun participant. Ajoutez des commandes ci-dessous.
+                    <Users className="w-8 h-8 mx-auto text-gray-300 mb-2" />
+                    {isEditing ? 'Aucun participant. Ajoutez des commandes ci-dessous.' : 'Aucun participant dans cette liste.'}
                   </div>
                 ) : (
                   <div className="border border-gray-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
@@ -321,39 +382,177 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                         return (
                           <div
                             key={participant.contractId}
-                            className="flex items-center gap-3 p-3 bg-white hover:bg-gray-50 transition-colors"
+                            className="p-3 bg-white hover:bg-gray-50 transition-colors"
                           >
-                            {/* Numéro d'ordre */}
-                            <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
-                              {participant.order}
-                            </span>
+                            {/* Version mobile - en colonne */}
+                            <div className="flex flex-col gap-2 sm:hidden">
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-amber-600 text-sm">
+                                  #{order.numero}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  {!isEditing && participant.role && (
+                                    <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+                                      {participant.role}
+                                    </span>
+                                  )}
+                                  {isEditing && (
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => moveUp(index)}
+                                        disabled={index === 0}
+                                        className={`p-1 rounded ${index === 0 ? 'text-gray-300' : 'text-gray-400 hover:text-amber-600'}`}
+                                      >
+                                        <ChevronUp className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => moveDown(index)}
+                                        disabled={index === participants.length - 1}
+                                        className={`p-1 rounded ${index === participants.length - 1 ? 'text-gray-300' : 'text-gray-400 hover:text-amber-600'}`}
+                                      >
+                                        <ChevronDown className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeParticipant(participant.contractId)}
+                                        className="p-1 text-gray-400 hover:text-red-500 rounded"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-gray-900 font-medium text-sm text-left">
+                                {order.client.prenom} {order.client.nom}
+                              </div>
+                              {isEditing && (
+                                <Input
+                                  placeholder="Rôle (ex: Marié)"
+                                  value={participant.role}
+                                  onChange={(e) => updateRole(participant.contractId, e.target.value)}
+                                  className="text-sm h-8"
+                                />
+                              )}
+                            </div>
 
-                            {/* Boutons de réorganisation */}
-                            <div className="flex flex-col gap-0.5">
-                              <button
-                                type="button"
-                                onClick={() => moveUp(index)}
-                                disabled={index === 0}
-                                className={`p-0.5 rounded transition-colors ${
-                                  index === 0
-                                    ? 'text-gray-300 cursor-not-allowed'
-                                    : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                                }`}
-                              >
-                                <ChevronUp className="w-4 h-4" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => moveDown(index)}
-                                disabled={index === participants.length - 1}
-                                className={`p-0.5 rounded transition-colors ${
-                                  index === participants.length - 1
-                                    ? 'text-gray-300 cursor-not-allowed'
-                                    : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                                }`}
-                              >
-                                <ChevronDown className="w-4 h-4" />
-                              </button>
+                            {/* Version desktop - en ligne */}
+                            <div className="hidden sm:flex items-center gap-3">
+                              <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
+                                {participant.order}
+                              </span>
+
+                              {isEditing && (
+                                <div className="flex flex-col gap-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => moveUp(index)}
+                                    disabled={index === 0}
+                                    className={`p-0.5 rounded transition-colors ${
+                                      index === 0
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                                    }`}
+                                  >
+                                    <ChevronUp className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => moveDown(index)}
+                                    disabled={index === participants.length - 1}
+                                    className={`p-0.5 rounded transition-colors ${
+                                      index === participants.length - 1
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                                    }`}
+                                  >
+                                    <ChevronDown className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              )}
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-amber-600 text-sm">
+                                    #{order.numero}
+                                  </span>
+                                  <span className="text-gray-900 font-medium text-sm truncate">
+                                    {order.client.prenom} {order.client.nom}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {isEditing ? (
+                                <Input
+                                  placeholder="Rôle (ex: Marié)"
+                                  value={participant.role}
+                                  onChange={(e) => updateRole(participant.contractId, e.target.value)}
+                                  className="w-40 text-sm h-8"
+                                />
+                              ) : (
+                                participant.role && (
+                                  <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+                                    {participant.role}
+                                  </span>
+                                )
+                              )}
+
+                              {isEditing && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeParticipant(participant.contractId)}
+                                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Ajouter des commandes - seulement en mode édition */}
+              {isEditing && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    Ajouter des commandes
+                  </label>
+
+                  {/* Barre de recherche */}
+                  <div className="relative mb-3">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Rechercher par nom, numéro, téléphone..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-gray-50 border-gray-200"
+                    />
+                  </div>
+
+                  {/* Liste des commandes disponibles */}
+                  <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-xl">
+                    {filteredOrders.length === 0 ? (
+                      <div className="p-4 text-center text-gray-500 text-sm">
+                        {searchQuery ? 'Aucune commande trouvée' : 'Toutes les commandes sont déjà dans la liste'}
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-gray-100">
+                        {filteredOrders.map((order) => (
+                          <button
+                            key={order.id}
+                            type="button"
+                            onClick={() => addParticipant(order.id)}
+                            className="w-full flex items-center gap-3 p-3 text-left transition-colors hover:bg-amber-50"
+                          >
+                            {/* Icône d'ajout */}
+                            <div className="w-5 h-5 rounded border-2 border-dashed border-gray-300 flex items-center justify-center flex-shrink-0 text-gray-400">
+                              +
                             </div>
 
                             {/* Info commande */}
@@ -366,111 +565,72 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                                   {order.client.prenom} {order.client.nom}
                                 </span>
                               </div>
+                              {order.client.telephone && (
+                                <div className="text-xs text-gray-500 truncate">
+                                  {order.client.telephone}
+                                </div>
+                              )}
                             </div>
-
-                            {/* Champ rôle */}
-                            <Input
-                              placeholder="Rôle (ex: Marié)"
-                              value={participant.role}
-                              onChange={(e) => updateRole(participant.contractId, e.target.value)}
-                              className="w-40 text-sm h-8"
-                            />
-
-                            {/* Bouton supprimer */}
-                            <button
-                              type="button"
-                              onClick={() => removeParticipant(participant.contractId)}
-                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-
-              {/* Ajouter des commandes */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                  Ajouter des commandes
-                </label>
-
-                {/* Barre de recherche */}
-                <div className="relative mb-3">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Rechercher par nom, numéro, téléphone..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-gray-50 border-gray-200"
-                  />
                 </div>
-
-                {/* Liste des commandes disponibles */}
-                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-xl">
-                  {filteredOrders.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500 text-sm">
-                      {searchQuery ? 'Aucune commande trouvée' : 'Toutes les commandes sont déjà dans la liste'}
-                    </div>
-                  ) : (
-                    <div className="divide-y divide-gray-100">
-                      {filteredOrders.map((order) => (
-                        <button
-                          key={order.id}
-                          type="button"
-                          onClick={() => addParticipant(order.id)}
-                          className="w-full flex items-center gap-3 p-3 text-left transition-colors hover:bg-amber-50"
-                        >
-                          {/* Icône d'ajout */}
-                          <div className="w-5 h-5 rounded border-2 border-dashed border-gray-300 flex items-center justify-center flex-shrink-0 text-gray-400">
-                            +
-                          </div>
-
-                          {/* Info commande */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-amber-600 text-sm">
-                                #{order.numero}
-                              </span>
-                              <span className="text-gray-900 font-medium text-sm truncate">
-                                {order.client.prenom} {order.client.nom}
-                              </span>
-                            </div>
-                            {order.client.telephone && (
-                              <div className="text-xs text-gray-500 truncate">
-                                {order.client.telephone}
-                              </div>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-3 mt-6">
-              <Button
-                type="button"
-                onClick={onClose}
-                variant="outline"
-                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3"
-              >
-                Annuler
-              </Button>
-              <Button
-                type="submit"
-                disabled={!listName.trim() || isLoading}
-                className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl py-3 shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                {isLoading ? 'Enregistrement...' : 'Enregistrer'}
-              </Button>
-            </div>
+            {/* Actions - seulement en mode édition */}
+            {isEditing && (
+              <div className="flex gap-3 mt-6">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    // Réinitialiser les valeurs et quitter le mode édition
+                    if (list) {
+                      setListName(list.name);
+                      setTelephone(list.telephone || '');
+                      setDateEvenement(list.dateEvenement ? new Date(list.dateEvenement).toISOString().split('T')[0] : '');
+                      setNotes(list.description || '');
+                      if (list.participants && list.participants.length > 0) {
+                        setParticipants(list.participants.map(p => ({
+                          contractId: p.contractId,
+                          role: p.role || '',
+                          order: p.order
+                        })));
+                      }
+                    }
+                    setIsEditing(false);
+                  }}
+                  variant="outline"
+                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={!listName.trim() || isLoading}
+                  className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl py-3 shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  {isLoading ? 'Enregistrement...' : 'Enregistrer'}
+                </Button>
+              </div>
+            )}
+
+            {/* Bouton de suppression */}
+            {!isEditing && (
+              <div className="border-t border-gray-200 pt-6 mt-6 flex justify-center">
+                <Button
+                  type="button"
+                  onClick={handleDeleteList}
+                  variant="ghost"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors duration-200 flex items-center gap-2 text-sm"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Supprimer cette liste</span>
+                </Button>
+              </div>
+            )}
           </form>
         </div>
       </div>

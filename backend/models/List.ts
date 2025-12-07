@@ -17,6 +17,7 @@ export interface IList {
   color?: string; // Couleur pour identifier visuellement la liste
   contractIds: string[]; // IDs des contrats associés (legacy, pour compatibilité)
   participants: IListParticipant[]; // Nouvelle structure avec rôles
+  createdBy?: string; // Nom de l'utilisateur qui a créé la liste
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,7 +64,11 @@ const listSchema = new Schema<IListDocument>({
     type: String,
     ref: 'RentalContract'
   }],
-  participants: [listParticipantSchema]
+  participants: [listParticipantSchema],
+  createdBy: {
+    type: String,
+    trim: true
+  }
 }, {
   timestamps: true // Ajoute createdAt et updatedAt automatiquement
 });

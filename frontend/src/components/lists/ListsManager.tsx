@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { List, ListParticipant } from '@/types/list';
 import { Order } from '@/types/order';
-import { useLists, useDeleteList, useRemoveContractFromList } from '@/hooks/useLists';
+import { useLists, useRemoveContractFromList } from '@/hooks/useLists';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, FolderOpen, ChevronRight, ChevronDown, X, Search, Eye, Calendar, Phone, Pencil } from 'lucide-react';
+import { Users, ChevronRight, ChevronDown, Search, Eye, Calendar, Phone } from 'lucide-react';
 import { EditListModal } from './EditListModal';
 
 interface ListsManagerProps {
@@ -16,19 +16,11 @@ interface ListsManagerProps {
 
 export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerProps) {
   const { data: lists = [], isLoading } = useLists();
-  const deleteListMutation = useDeleteList();
   const removeContractMutation = useRemoveContractFromList();
 
   const [expandedListId, setExpandedListId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingList, setEditingList] = useState<List | null>(null);
-
-  const handleDeleteList = async (listId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette liste ?')) {
-      await deleteListMutation.mutateAsync(listId);
-    }
-  };
 
   const handleRemoveContract = async (listId: string, contractId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -124,7 +116,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
           {/* Liste des listes */}
           {filteredLists.length === 0 ? (
             <div className="border border-gray-200/50 rounded-xl p-8 text-center">
-              <FolderOpen className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+              <Users className="w-16 h-16 mx-auto text-gray-300 mb-4" />
               <div className="text-base sm:text-lg font-medium text-gray-600 mb-2">
                 {searchQuery ? 'Aucune liste trouvée pour cette recherche' : 'Aucune liste pour le moment'}
               </div>
@@ -197,36 +189,15 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       </div>
 
                       {/* Actions */}
-                      <div className="col-span-2 flex justify-center items-center gap-1">
+                      <div className="col-span-2 flex justify-center items-center">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={(e) => handleEditList(list, e)}
-                          className="h-8 w-8 p-0 text-gray-500 hover:text-amber-600 hover:bg-amber-50"
-                          title="Modifier la liste"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExpand(list._id);
-                          }}
                           className="h-8 w-8 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                          title="Voir les commandes"
+                          title="Voir la liste"
                         >
                           <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => handleDeleteList(list._id, e)}
-                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                          title="Supprimer la liste"
-                        >
-                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -276,35 +247,15 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       </div>
 
                       {/* Actions mobile */}
-                      <div className="flex gap-2 pt-4 border-t border-gray-200/50">
+                      <div className="pt-4 border-t border-gray-200/50">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={(e) => handleEditList(list, e)}
-                          className="flex-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium min-h-[48px]"
-                        >
-                          <Pencil className="w-4 h-4 mr-2" />
-                          <span className="text-sm">Modifier</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExpand(list._id);
-                          }}
-                          className="flex-1 bg-white border-amber-300 text-amber-600 hover:bg-amber-50 rounded-xl py-3 font-medium min-h-[48px]"
+                          className="w-full bg-white border-amber-300 text-amber-600 hover:bg-amber-50 rounded-xl py-3 font-medium min-h-[48px]"
                         >
                           <Eye className="w-4 h-4 mr-2" />
-                          <span className="text-sm">{isExpanded ? 'Masquer' : 'Voir'}</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => handleDeleteList(list._id, e)}
-                          className="bg-white border-red-300 text-red-600 hover:bg-red-50 rounded-xl py-3 font-medium min-h-[48px] px-4"
-                        >
-                          <Trash2 className="w-5 h-5" />
+                          <span className="text-sm">Voir la liste</span>
                         </Button>
                       </div>
                     </div>
@@ -314,7 +265,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                       <div className="border-t border-gray-200 bg-gray-50/50">
                         {listOrders.length === 0 ? (
                           <div className="p-6 text-center text-gray-500 text-sm">
-                            <FolderOpen className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                            <Users className="w-10 h-10 mx-auto text-gray-300 mb-2" />
                             Aucune commande dans cette liste.
                             <br />
                             <span className="text-xs">Cliquez sur "Modifier" pour ajouter des commandes.</span>
@@ -330,38 +281,68 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                                   onViewOrder(order);
                                 }}
                               >
-                                <div className="flex items-center gap-3 mb-1">
-                                  {/* Numéro de participant */}
-                                  <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
-                                    {order.participant?.order || '?'}
-                                  </span>
-                                  <span className="font-semibold text-amber-600 hover:underline">
-                                    #{order.numero}
-                                  </span>
-                                  <span className="text-gray-400">•</span>
-                                  <span className="font-medium text-gray-900">
-                                    {order.client.prenom} {order.client.nom}
-                                  </span>
-                                  {/* Rôle du participant */}
-                                  {order.participant?.role && (
-                                    <>
-                                      <span className="text-gray-400">•</span>
+                                {/* Version mobile - en colonnes */}
+                                <div className="flex flex-col gap-1 sm:hidden">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-amber-600">
+                                      #{order.numero}
+                                    </span>
+                                    {order.participant?.role && (
                                       <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
                                         {order.participant.role}
                                       </span>
-                                    </>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-4 text-sm text-gray-500 ml-10">
-                                  {order.client.telephone && (
+                                    )}
+                                  </div>
+                                  <div className="font-medium text-gray-900 text-left">
+                                    {order.client.prenom} {order.client.nom}
+                                  </div>
+                                  <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                                    {order.client.telephone && (
+                                      <div className="flex items-center gap-1">
+                                        <Phone className="w-3 h-3" />
+                                        <span>{order.client.telephone}</span>
+                                      </div>
+                                    )}
                                     <div className="flex items-center gap-1">
-                                      <Phone className="w-3 h-3" />
-                                      <span>{order.client.telephone}</span>
+                                      <Calendar className="w-3 h-3" />
+                                      <span>{formatDate(order.dateLivraison || order.dateCreation)}</span>
                                     </div>
-                                  )}
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" />
-                                    <span>{formatDate(order.dateLivraison || order.dateCreation)}</span>
+                                  </div>
+                                </div>
+
+                                {/* Version desktop - en ligne */}
+                                <div className="hidden sm:block">
+                                  <div className="flex items-center gap-3 mb-1">
+                                    <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
+                                      {order.participant?.order || '?'}
+                                    </span>
+                                    <span className="font-semibold text-amber-600 hover:underline">
+                                      #{order.numero}
+                                    </span>
+                                    <span className="text-gray-400">•</span>
+                                    <span className="font-medium text-gray-900">
+                                      {order.client.prenom} {order.client.nom}
+                                    </span>
+                                    {order.participant?.role && (
+                                      <>
+                                        <span className="text-gray-400">•</span>
+                                        <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+                                          {order.participant.role}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-4 text-sm text-gray-500 ml-10">
+                                    {order.client.telephone && (
+                                      <div className="flex items-center gap-1">
+                                        <Phone className="w-3 h-3" />
+                                        <span>{order.client.telephone}</span>
+                                      </div>
+                                    )}
+                                    <div className="flex items-center gap-1">
+                                      <Calendar className="w-3 h-3" />
+                                      <span>{formatDate(order.dateLivraison || order.dateCreation)}</span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
