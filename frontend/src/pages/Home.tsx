@@ -391,6 +391,7 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
       <CreateListModal
         isOpen={isCreatingList}
         onClose={() => setIsCreatingList(false)}
+        orders={orders}
       />
     </div>
   );
