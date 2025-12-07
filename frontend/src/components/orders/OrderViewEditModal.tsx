@@ -16,12 +16,16 @@ import {
   Euro,
   FileText,
   X,
-  Trash2
+  Trash2,
+  FolderPlus,
+  Check
 } from 'lucide-react';
 import { Order, OrderItem } from '@/types/order';
 import { RentalContract } from '@/types/rental-contract';
 import { EmailButton } from '@/components/ui/EmailButton';
 import { formatReference } from '@/utils/formatters';
+import { useLists, useAddContractToList, useRemoveContractFromList } from '@/hooks/useLists';
+import toast from 'react-hot-toast';
 
 interface OrderViewEditModalProps {
   isOpen: boolean;
@@ -50,6 +54,12 @@ export function OrderViewEditModal({
 }: OrderViewEditModalProps) {
   const [formData, setFormData] = useState<Partial<Order>>({});
   const [displayOrder, setDisplayOrder] = useState<Order | null>(order);
+  const [showListDropdown, setShowListDropdown] = useState(false);
+
+  // Hooks pour les listes
+  const { data: lists = [] } = useLists();
+  const addToListMutation = useAddContractToList();
+  const removeFromListMutation = useRemoveContractFromList();
 
   // Synchroniser displayOrder avec order - toujours mettre à jour
   useEffect(() => {
@@ -183,7 +193,7 @@ export function OrderViewEditModal({
 
   const handleDeleteItem = async (itemId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
-    
+
     try {
       // Supprimer l'article de la liste locale
       const updatedItems = formData.items?.filter(item => item.id !== itemId) || displayOrder.items.filter(item => item.id !== itemId);
@@ -191,10 +201,36 @@ export function OrderViewEditModal({
         ...prev,
         items: updatedItems
       }));
-      
+
       // TODO: Appeler l'API pour mettre à jour le backend et les stocks
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
+    }
+  };
+
+  // Vérifier si la commande est dans une liste
+  const isInList = (listId: string) => {
+    const list = lists.find(l => l._id === listId);
+    return list?.contractIds?.includes(displayOrder?.id || '') || false;
+  };
+
+  // Ajouter ou retirer la commande d'une liste
+  const handleToggleList = async (listId: string) => {
+    if (!displayOrder) return;
+
+    try {
+      if (isInList(listId)) {
+        await removeFromListMutation.mutateAsync({ listId, contractId: displayOrder.id });
+        const listName = lists.find(l => l._id === listId)?.name;
+        toast.success(`Retirée de "${listName}"`);
+      } else {
+        await addToListMutation.mutateAsync({ listId, contractId: displayOrder.id });
+        const listName = lists.find(l => l._id === listId)?.name;
+        toast.success(`Ajoutée à "${listName}"`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la modification de la liste:', error);
+      toast.error('Erreur lors de la modification');
     }
   };
 
@@ -849,6 +885,48 @@ export function OrderViewEditModal({
               </div>
             )}
           </div>
+
+          {/* Ajouter à une liste */}
+          {!isEditing && lists.length > 0 && (
+            <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
+                <FolderPlus className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+                Listes
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {lists.map((list) => {
+                  const isSelected = isInList(list._id);
+                  return (
+                    <button
+                      key={list._id}
+                      onClick={() => handleToggleList(list._id)}
+                      disabled={addToListMutation.isPending || removeFromListMutation.isPending}
+                      className={`
+                        inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                        ${isSelected
+                          ? 'bg-amber-100 text-amber-800 border-2 border-amber-400 hover:bg-amber-200'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:border-amber-400 hover:bg-amber-50'
+                        }
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                      `}
+                    >
+                      <div
+                        className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: list.color || '#f59e0b' }}
+                      />
+                      <span>{list.name}</span>
+                      {isSelected && <Check className="w-4 h-4 text-amber-600" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {lists.length === 0 && (
+                <p className="text-sm text-gray-500">
+                  Aucune liste créée. Créez une liste depuis l'onglet "Listes".
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Bouton de suppression */}
           {onDelete && !isEditing && (

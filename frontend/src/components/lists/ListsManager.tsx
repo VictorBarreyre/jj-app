@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { List } from '@/types/list';
 import { Order } from '@/types/order';
-import { useLists, useCreateList, useDeleteList, useRemoveContractFromList } from '@/hooks/useLists';
+import { useLists, useDeleteList, useRemoveContractFromList } from '@/hooks/useLists';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -11,37 +11,15 @@ interface ListsManagerProps {
   orders: Order[];
   onViewOrder: (order: Order) => void;
   onEditOrder: (order: Order) => void;
-  isCreating?: boolean;
-  onCreatingChange?: (isCreating: boolean) => void;
 }
 
-export function ListsManager({ orders, onViewOrder, onEditOrder, isCreating: externalIsCreating, onCreatingChange }: ListsManagerProps) {
+export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerProps) {
   const { data: lists = [], isLoading } = useLists();
-  const createListMutation = useCreateList();
   const deleteListMutation = useDeleteList();
   const removeContractMutation = useRemoveContractFromList();
 
-  const [internalIsCreating, setInternalIsCreating] = useState(false);
-  const [newListName, setNewListName] = useState('');
-
   const [expandedListId, setExpandedListId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Utiliser le state externe si fourni, sinon le state interne
-  const isCreating = externalIsCreating !== undefined ? externalIsCreating : internalIsCreating;
-  const setIsCreating = onCreatingChange || setInternalIsCreating;
-
-  const handleCreateList = async () => {
-    if (!newListName.trim()) return;
-
-    try {
-      await createListMutation.mutateAsync({ name: newListName.trim() });
-      setNewListName('');
-      setIsCreating(false);
-    } catch (error) {
-      console.error('Erreur lors de la création:', error);
-    }
-  };
 
   const handleDeleteList = async (listId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -103,40 +81,6 @@ export function ListsManager({ orders, onViewOrder, onEditOrder, isCreating: ext
             />
           </div>
         </div>
-
-        {/* Formulaire de création */}
-        {isCreating && (
-          <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
-            <div className="flex items-center gap-3">
-              <Input
-                placeholder="Nom de la liste (ex: Mariage Dupont)"
-                value={newListName}
-                onChange={(e) => setNewListName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleCreateList()}
-                className="flex-1"
-                autoFocus
-              />
-              <Button
-                onClick={handleCreateList}
-                disabled={!newListName.trim() || createListMutation.isPending}
-                size="sm"
-                className="bg-amber-500 hover:bg-amber-600 text-white"
-              >
-                Créer
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsCreating(false);
-                  setNewListName('');
-                }}
-                variant="ghost"
-                size="sm"
-              >
-                Annuler
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Contenu de la liste */}

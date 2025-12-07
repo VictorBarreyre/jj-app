@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { OrdersList } from '../components/home/OrdersList';
 import { OrderViewEditModal } from '../components/orders/OrderViewEditModal';
 import { ListsManager } from '../components/lists/ListsManager';
+import { CreateListModal } from '../components/lists/CreateListModal';
 import { Order } from '@/types/order';
 import { useOrders, useUpdateOrder, useDeleteOrder } from '@/hooks/useOrders';
 import { useLists } from '@/hooks/useLists';
@@ -367,8 +368,6 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
               orders={orders}
               onViewOrder={handleViewOrder}
               onEditOrder={handleEditOrder}
-              isCreating={isCreatingList}
-              onCreatingChange={setIsCreatingList}
             />
           )}
         </div>
@@ -386,6 +385,12 @@ export function Home({ onCreateNew, onViewOrder, onEditOrder }: HomeProps) {
         onEditOrder={onEditOrder}
         onUpdateParticipantReturn={handleUpdateParticipantReturn}
         onDelete={handleDeleteOrder}
+      />
+
+      {/* Modal de création de liste */}
+      <CreateListModal
+        isOpen={isCreatingList}
+        onClose={() => setIsCreatingList(false)}
       />
     </div>
   );
