@@ -152,7 +152,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
               {/* Informations principales */}
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 {/* Nom de la liste */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-3">
                   <label htmlFor="listName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                     Nom de la liste
                   </label>
@@ -183,7 +183,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                 </div>
 
                 {/* Date d'événement */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
                   <label htmlFor="dateEvenement" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4" />
                     Date
