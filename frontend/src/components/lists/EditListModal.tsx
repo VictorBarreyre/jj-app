@@ -269,8 +269,8 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
                 {/* Téléphone */}
                 <div className="md:col-span-2">
-                  <label htmlFor="editTelephone" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                    <Phone className="w-4 h-4 inline mr-1" />
+                  <label htmlFor="editTelephone" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
+                    <Phone className="w-4 h-4" />
                     Téléphone
                   </label>
                   <Input
@@ -285,8 +285,8 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
                 {/* Date d'événement */}
                 <div className="md:col-span-1">
-                  <label htmlFor="editDateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                    <Calendar className="w-4 h-4 inline mr-1" />
+                  <label htmlFor="editDateEvenement" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="w-4 h-4" />
                     Date
                   </label>
                   <Input

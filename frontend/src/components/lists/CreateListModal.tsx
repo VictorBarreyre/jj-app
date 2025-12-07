@@ -168,8 +168,8 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
 
                 {/* Téléphone */}
                 <div className="md:col-span-2">
-                  <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                    <Phone className="w-4 h-4 inline mr-1" />
+                  <label htmlFor="telephone" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
+                    <Phone className="w-4 h-4" />
                     Téléphone
                   </label>
                   <Input
@@ -184,8 +184,8 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
 
                 {/* Date d'événement */}
                 <div className="md:col-span-1">
-                  <label htmlFor="dateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                    <Calendar className="w-4 h-4 inline mr-1" />
+                  <label htmlFor="dateEvenement" className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
+                    <Calendar className="w-4 h-4" />
                     Date
                   </label>
                   <Input
