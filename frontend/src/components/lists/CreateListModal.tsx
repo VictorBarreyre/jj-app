@@ -150,9 +150,9 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
               {/* Informations principales */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 {/* Nom de la liste */}
-                <div>
+                <div className="md:col-span-3">
                   <label htmlFor="listName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                     Nom de la liste
                   </label>
@@ -167,15 +167,15 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                 </div>
 
                 {/* Téléphone */}
-                <div>
+                <div className="md:col-span-2">
                   <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                     <Phone className="w-4 h-4 inline mr-1" />
-                    Téléphone de contact
+                    Téléphone
                   </label>
                   <Input
                     id="telephone"
                     type="tel"
-                    placeholder="Ex: 06 12 34 56 78"
+                    placeholder="06 12 34 56 78"
                     value={telephone}
                     onChange={(e) => setTelephone(e.target.value)}
                     className="w-full"
@@ -183,7 +183,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                 </div>
 
                 {/* Date d'événement */}
-                <div>
+                <div className="md:col-span-1">
                   <label htmlFor="dateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                     <Calendar className="w-4 h-4 inline mr-1" />
                     Date
@@ -193,7 +193,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                     type="date"
                     value={dateEvenement}
                     onChange={(e) => setDateEvenement(e.target.value)}
-                    className="w-40"
+                    className="w-full"
                   />
                 </div>
               </div>
