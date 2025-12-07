@@ -166,21 +166,6 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                   />
                 </div>
 
-                {/* Date d'événement */}
-                <div>
-                  <label htmlFor="dateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                    <Calendar className="w-4 h-4 inline mr-1" />
-                    Date de l'événement
-                  </label>
-                  <Input
-                    id="dateEvenement"
-                    type="date"
-                    value={dateEvenement}
-                    onChange={(e) => setDateEvenement(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-
                 {/* Téléphone */}
                 <div>
                   <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 mb-2 text-left">
@@ -194,6 +179,21 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                     value={telephone}
                     onChange={(e) => setTelephone(e.target.value)}
                     className="w-full"
+                  />
+                </div>
+
+                {/* Date d'événement */}
+                <div>
+                  <label htmlFor="dateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <Calendar className="w-4 h-4 inline mr-1" />
+                    Date
+                  </label>
+                  <Input
+                    id="dateEvenement"
+                    type="date"
+                    value={dateEvenement}
+                    onChange={(e) => setDateEvenement(e.target.value)}
+                    className="w-32"
                   />
                 </div>
               </div>
