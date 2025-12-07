@@ -79,10 +79,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       status: 'brouillon'
     };
 
-    console.log('🔍 RentalContractForm - initialData.client:', initialData?.client);
-    console.log('🔍 RentalContractForm - initialData.paiementArrhes:', initialData?.paiementArrhes);
-    console.log('🔍 RentalContractForm - initialData.paiementSolde:', initialData?.paiementSolde);
-
     // Utiliser le prix auto-calculé si tarifLocation n'est pas défini
     const tarifToUse = initialData?.tarifLocation ?? autoCalculatedPrice;
 
@@ -100,12 +96,6 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
       // Appliquer le tarif calculé automatiquement si pas défini
       tarifLocation: tarifToUse
     };
-
-    console.log('🔍 RentalContractForm - merged client:', mergedData.client);
-    console.log('🔍 RentalContractForm - merged paiementArrhes:', mergedData.paiementArrhes);
-    console.log('🔍 RentalContractForm - merged paiementSolde:', mergedData.paiementSolde);
-    console.log('🔍 RentalContractForm - calculatedPrice:', autoCalculatedPrice);
-    console.log('🔍 RentalContractForm - tarifLocation used:', tarifToUse);
 
     return mergedData;
   });

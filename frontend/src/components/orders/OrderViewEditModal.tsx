@@ -99,8 +99,6 @@ export function OrderViewEditModal({
 
   // Handler local pour la mise à jour optimiste
   const handleLocalParticipantReturn = async (orderId: string, participantIndex: number, returned: boolean) => {
-    console.log('🔄 handleLocalParticipantReturn appelé:', { orderId, participantIndex, returned });
-
     // Mise à jour locale immédiate
     if (displayOrder.type === 'groupe' && displayOrder.groupDetails?.participants) {
       const updatedParticipants = displayOrder.groupDetails.participants.map((p, idx) =>
@@ -113,7 +111,6 @@ export function OrderViewEditModal({
           participants: updatedParticipants
         }
       };
-      console.log('✅ Nouveau displayOrder (groupe):', newDisplayOrder);
       setDisplayOrder(newDisplayOrder);
     } else if (displayOrder.type === 'individuel' && participantIndex === 0) {
       const newDisplayOrder = { ...displayOrder, rendu: returned };
@@ -740,12 +737,6 @@ export function OrderViewEditModal({
                                 onClick={() => {
                                   const isOrderReturned = displayOrder.status === 'rendu' || displayOrder.status === 'rendue';
                                   const newState = !isOrderReturned;
-                                  console.log('🎛️ SWITCH CLICK:', {
-                                    currentStatus: displayOrder.status,
-                                    isOrderReturned,
-                                    newState,
-                                    id: displayOrder.id
-                                  });
                                   handleLocalParticipantReturn(displayOrder.id, 0, newState);
                                 }}
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${

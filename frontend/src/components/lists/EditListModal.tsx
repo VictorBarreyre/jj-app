@@ -64,9 +64,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       let skippedNoCombination = 0;
       const newPrices: Record<string, number> = {};
 
-      console.log(`=== APPLICATION TARIF PRÉFÉRENTIEL ===`);
-      console.log(`Nombre de participants: ${participants.length}, groupSize utilisé: ${groupSize}`);
-
       for (const p of participants) {
         const order = orders.find(o => o.id === p.contractId);
 
@@ -78,7 +75,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
         );
 
         if (!hasTenue) {
-          console.log(`❌ Commande ${order?.numero || p.contractId}: pas de tenue ou tenue vide`);
           skippedNoTenue++;
           continue;
         }
@@ -87,37 +83,25 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
         const prixStandard = calculateTenuePrice(order.tenue, 1);
         const prixGroupe = calculateTenuePrice(order.tenue, groupSize);
 
-        console.log(`📦 Commande ${order.numero}:`);
-        console.log(`   Veste: ${order.tenue.veste?.reference}`);
-        console.log(`   Gilet: ${order.tenue.gilet?.reference}`);
-        console.log(`   Pantalon: ${order.tenue.pantalon?.reference}`);
-        console.log(`   Prix actuel: ${order.tarifLocation}€`);
-        console.log(`   Prix standard calculé: ${prixStandard}€`);
-        console.log(`   Prix groupe calculé: ${prixGroupe}€`);
-
         if (prixGroupe === undefined) {
-          console.log(`   ⚠️ Impossible de calculer le prix groupe (combinaison non trouvée)`);
           skippedNoCombination++;
           continue;
         }
 
         // Si le prix groupe est le même que le standard, pas de réduction possible
         if (prixGroupe === prixStandard) {
-          console.log(`   ℹ️ Pas de réduction groupe pour cette combinaison`);
           skippedSamePrice++;
           continue;
         }
 
         // Si le prix actuel est déjà le prix groupe
         if (prixGroupe === order.tarifLocation) {
-          console.log(`   ✓ Prix groupe déjà appliqué`);
           skippedSamePrice++;
           newPrices[order.id] = prixGroupe; // Garder le prix dans localPrices pour l'affichage
           continue;
         }
 
         // Appliquer le nouveau prix
-        console.log(`   🔄 Mise à jour: ${order.tarifLocation}€ → ${prixGroupe}€`);
         await rentalContractApi.update(order.id, { tarifLocation: prixGroupe });
         newPrices[order.id] = prixGroupe;
         updatedCount++;
@@ -128,12 +112,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
       // Rafraîchir les données en arrière-plan
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-
-      console.log(`=== RÉSULTAT ===`);
-      console.log(`✓ Mis à jour: ${updatedCount}`);
-      console.log(`○ Déjà au prix groupe: ${skippedSamePrice}`);
-      console.log(`○ Sans tenue: ${skippedNoTenue}`);
-      console.log(`○ Sans combinaison: ${skippedNoCombination}`);
 
       // Déterminer le résultat à afficher
       const hasGroupPriceApplied = updatedCount > 0 || Object.keys(newPrices).length > 0;
@@ -169,8 +147,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       let updatedCount = 0;
       const newPrices: Record<string, number> = {};
 
-      console.log(`=== RETOUR AU TARIF NORMAL ===`);
-
       for (const p of participants) {
         const order = orders.find(o => o.id === p.contractId);
 
@@ -191,21 +167,14 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
         // Prix actuel (depuis localPrices ou order)
         const currentPrice = localPrices[order.id] ?? order.tarifLocation;
 
-        console.log(`📦 Commande ${order.numero}:`);
-        console.log(`   Prix actuel: ${currentPrice}€`);
-        console.log(`   Prix standard: ${prixStandard}€`);
-
         if (prixStandard === undefined) {
-          console.log(`   ⚠️ Prix standard non calculable`);
           continue;
         }
 
         if (prixStandard === currentPrice) {
-          console.log(`   ✓ Déjà au prix standard`);
           continue;
         }
 
-        console.log(`   🔄 Mise à jour: ${currentPrice}€ → ${prixStandard}€`);
         await rentalContractApi.update(order.id, { tarifLocation: prixStandard });
         newPrices[order.id] = prixStandard;
         updatedCount++;
@@ -216,8 +185,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
       // Rafraîchir les données en arrière-plan
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-
-      console.log(`=== RÉSULTAT: ${updatedCount} commande(s) mise(s) à jour ===`);
 
       if (updatedCount > 0) {
         toast.success(`Tarif normal appliqué à ${updatedCount} commande${updatedCount > 1 ? 's' : ''}`);
@@ -346,9 +313,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       let checkableOrders = 0;
       const detectedOriginalPrices: Record<string, number> = {};
 
-      console.log(`=== DÉTECTION TARIF PRÉFÉRENTIEL À L'OUVERTURE ===`);
-      console.log(`Nombre de participants: ${participantsList.length}`);
-
       for (const p of participantsList) {
         const order = orders.find(o => o.id === p.contractId);
         if (!order) continue;
@@ -368,19 +332,15 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
         checkableOrders++;
 
-        console.log(`📦 Commande ${order.numero}: actuel=${order.tarifLocation}€, standard=${prixStandard}€, groupe=${prixGroupe}€`);
-
         // Si le prix actuel correspond au prix groupe ET le prix groupe est différent du standard
         if (order.tarifLocation === prixGroupe && prixGroupe !== prixStandard) {
           groupPricingCount++;
           detectedOriginalPrices[order.id] = prixStandard; // Stocker le prix standard comme "original"
-          console.log(`   ✓ Tarif préférentiel détecté`);
         }
       }
 
       // Si au moins une commande a le tarif préférentiel appliqué, considérer que c'est actif
       const isGroupPricingApplied = groupPricingCount > 0;
-      console.log(`=== RÉSULTAT: ${groupPricingCount}/${checkableOrders} commandes avec tarif préférentiel ===`);
 
       setHasGroupPricingApplied(isGroupPricingApplied);
       setOriginalPrices(isGroupPricingApplied ? detectedOriginalPrices : {});
