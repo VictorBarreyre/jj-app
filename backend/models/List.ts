@@ -1,18 +1,33 @@
 import { Schema, model, Document } from 'mongoose';
 
+// Interface pour un participant dans une liste
+export interface IListParticipant {
+  contractId: string;
+  role?: string; // Ex: "Marié", "Père du marié", "Témoin"
+  order: number; // Position dans la liste (1, 2, 3...)
+}
+
 // Interface pour une liste de commandes
 export interface IList {
   numero: string; // Numéro unique de la liste (ex: L-2025-001)
   name: string;
   description?: string;
   color?: string; // Couleur pour identifier visuellement la liste
-  contractIds: string[]; // IDs des contrats associés
+  contractIds: string[]; // IDs des contrats associés (legacy, pour compatibilité)
+  participants: IListParticipant[]; // Nouvelle structure avec rôles
   createdAt: Date;
   updatedAt: Date;
 }
 
 // Interface pour le document MongoDB
 export interface IListDocument extends IList, Document {}
+
+// Schéma pour un participant
+const listParticipantSchema = new Schema<IListParticipant>({
+  contractId: { type: String, required: true },
+  role: { type: String, trim: true },
+  order: { type: Number, required: true }
+}, { _id: false });
 
 // Schéma MongoDB
 const listSchema = new Schema<IListDocument>({
@@ -38,7 +53,8 @@ const listSchema = new Schema<IListDocument>({
   contractIds: [{
     type: String,
     ref: 'RentalContract'
-  }]
+  }],
+  participants: [listParticipantSchema]
 }, {
   timestamps: true // Ajoute createdAt et updatedAt automatiquement
 });

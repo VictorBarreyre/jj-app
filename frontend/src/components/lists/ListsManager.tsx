@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { List } from '@/types/list';
+import { List, ListParticipant } from '@/types/list';
 import { Order } from '@/types/order';
 import { useLists, useDeleteList, useRemoveContractFromList } from '@/hooks/useLists';
 import { Button } from '@/components/ui/button';
@@ -44,9 +44,15 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
     setExpandedListId(expandedListId === listId ? null : listId);
   };
 
-  // Récupérer les commandes d'une liste
-  const getOrdersForList = (list: List): Order[] => {
-    return orders.filter(order => list.contractIds.includes(order.id));
+  // Récupérer les commandes d'une liste avec leurs infos de participant
+  const getOrdersForList = (list: List): (Order & { participant?: ListParticipant })[] => {
+    return orders
+      .filter(order => list.contractIds.includes(order.id))
+      .map(order => {
+        const participant = list.participants?.find(p => p.contractId === order.id);
+        return { ...order, participant };
+      })
+      .sort((a, b) => (a.participant?.order || 999) - (b.participant?.order || 999));
   };
 
   const formatDate = (dateString: string | Date) => {
@@ -282,6 +288,10 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                                 }}
                               >
                                 <div className="flex items-center gap-3 mb-1">
+                                  {/* Numéro de participant */}
+                                  <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
+                                    {order.participant?.order || '?'}
+                                  </span>
                                   <span className="font-semibold text-amber-600 hover:underline">
                                     #{order.numero}
                                   </span>
@@ -289,8 +299,17 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                                   <span className="font-medium text-gray-900">
                                     {order.client.prenom} {order.client.nom}
                                   </span>
+                                  {/* Rôle du participant */}
+                                  {order.participant?.role && (
+                                    <>
+                                      <span className="text-gray-400">•</span>
+                                      <span className="text-sm text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">
+                                        {order.participant.role}
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
-                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                <div className="flex items-center gap-4 text-sm text-gray-500 ml-10">
                                   {order.client.telephone && (
                                     <div className="flex items-center gap-1">
                                       <Phone className="w-3 h-3" />
@@ -299,7 +318,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                                   )}
                                   <div className="flex items-center gap-1">
                                     <Calendar className="w-3 h-3" />
-                                    <span>{formatDate(order.dateEvenement || order.dateCreation)}</span>
+                                    <span>{formatDate(order.dateLivraison || order.dateCreation)}</span>
                                   </div>
                                 </div>
                               </div>

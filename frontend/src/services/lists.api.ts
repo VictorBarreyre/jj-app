@@ -1,4 +1,4 @@
-import { List, CreateListRequest, UpdateListRequest } from '@/types/list';
+import { List, CreateListRequest, UpdateListRequest, ListParticipant } from '@/types/list';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -115,6 +115,36 @@ class ListsApi {
 
     if (!response.ok) {
       throw new Error('Erreur lors de la récupération des listes');
+    }
+
+    return response.json();
+  }
+
+  // Mettre à jour le rôle d'un participant
+  async updateParticipantRole(listId: string, contractId: string, role: string): Promise<List> {
+    const response = await fetch(`${API_BASE}/lists/${listId}/participants/${contractId}/role`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ role })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la mise à jour du rôle');
+    }
+
+    return response.json();
+  }
+
+  // Mettre à jour tous les participants d'une liste (avec rôles et ordres)
+  async updateParticipants(listId: string, participants: ListParticipant[]): Promise<List> {
+    const response = await fetch(`${API_BASE}/lists/${listId}`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ participants })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la mise à jour des participants');
     }
 
     return response.json();

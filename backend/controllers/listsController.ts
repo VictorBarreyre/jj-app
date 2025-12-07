@@ -68,7 +68,8 @@ export const createList = async (req: Request, res: Response) => {
       name: name.trim(),
       description: description?.trim(),
       color: color || '#f59e0b',
-      contractIds: []
+      contractIds: [],
+      participants: []
     });
 
     const savedList = await newList.save();
@@ -82,7 +83,7 @@ export const createList = async (req: Request, res: Response) => {
 // Mettre à jour une liste
 export const updateList = async (req: Request, res: Response) => {
   try {
-    const { name, description, color } = req.body;
+    const { name, description, color, participants } = req.body;
 
     const list = await ListModel.findById(req.params.id);
     if (!list) {
@@ -92,6 +93,13 @@ export const updateList = async (req: Request, res: Response) => {
     if (name) list.name = name.trim();
     if (description !== undefined) list.description = description?.trim();
     if (color) list.color = color;
+
+    // Mise à jour des participants (avec rôles)
+    if (participants !== undefined) {
+      list.participants = participants;
+      // Synchroniser contractIds avec participants
+      list.contractIds = participants.map((p: { contractId: string }) => p.contractId);
+    }
 
     const updatedList = await list.save();
     res.json(updatedList);
@@ -119,6 +127,7 @@ export const deleteList = async (req: Request, res: Response) => {
 export const addContractToList = async (req: Request, res: Response) => {
   try {
     const { listId, contractId } = req.params;
+    const { role } = req.body || {};
 
     const list = await ListModel.findById(listId);
     if (!list) {
@@ -128,6 +137,18 @@ export const addContractToList = async (req: Request, res: Response) => {
     // Vérifier si le contrat n'est pas déjà dans la liste
     if (!list.contractIds.includes(contractId)) {
       list.contractIds.push(contractId);
+
+      // Ajouter aux participants avec ordre et rôle optionnel
+      const nextOrder = (list.participants?.length || 0) + 1;
+      if (!list.participants) {
+        list.participants = [];
+      }
+      list.participants.push({
+        contractId,
+        role: role || '',
+        order: nextOrder
+      });
+
       await list.save();
     }
 
@@ -149,11 +170,49 @@ export const removeContractFromList = async (req: Request, res: Response) => {
     }
 
     list.contractIds = list.contractIds.filter(id => id !== contractId);
+
+    // Retirer des participants et réorganiser les ordres
+    if (list.participants) {
+      list.participants = list.participants
+        .filter(p => p.contractId !== contractId)
+        .map((p, index) => ({ ...p, order: index + 1 }));
+    }
+
     await list.save();
 
     res.json(list);
   } catch (error) {
     console.error('Erreur lors du retrait du contrat de la liste:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+// Mettre à jour le rôle d'un participant
+export const updateParticipantRole = async (req: Request, res: Response) => {
+  try {
+    const { listId, contractId } = req.params;
+    const { role } = req.body;
+
+    const list = await ListModel.findById(listId);
+    if (!list) {
+      return res.status(404).json({ message: 'Liste non trouvée' });
+    }
+
+    if (!list.participants) {
+      return res.status(404).json({ message: 'Participant non trouvé' });
+    }
+
+    const participantIndex = list.participants.findIndex(p => p.contractId === contractId);
+    if (participantIndex === -1) {
+      return res.status(404).json({ message: 'Participant non trouvé dans cette liste' });
+    }
+
+    list.participants[participantIndex].role = role || '';
+    await list.save();
+
+    res.json(list);
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du rôle:', error);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };

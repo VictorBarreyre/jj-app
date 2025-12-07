@@ -1,3 +1,10 @@
+// Interface pour un participant dans une liste
+export interface ListParticipant {
+  contractId: string;
+  role?: string; // Ex: "Marié", "Père du marié", "Témoin"
+  order: number; // Position dans la liste (1, 2, 3...)
+}
+
 // Interface pour une liste de commandes
 export interface List {
   _id: string;
@@ -6,6 +13,7 @@ export interface List {
   description?: string;
   color: string;
   contractIds: string[];
+  participants?: ListParticipant[]; // Structure avec rôles
   createdAt: string;
   updatedAt: string;
 }
@@ -22,4 +30,5 @@ export interface UpdateListRequest {
   name?: string;
   description?: string;
   color?: string;
+  participants?: ListParticipant[];
 }

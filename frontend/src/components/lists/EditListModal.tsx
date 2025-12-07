@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, FolderOpen, Search, Check, Pencil } from 'lucide-react';
-import { useUpdateList, useAddContractToList, useRemoveContractFromList } from '@/hooks/useLists';
+import { X, FolderOpen, Search, Check, Pencil, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
+import { useUpdateList } from '@/hooks/useLists';
 import { Order } from '@/types/order';
-import { List } from '@/types/list';
+import { List, ListParticipant } from '@/types/list';
 import toast from 'react-hot-toast';
 
 interface EditListModalProps {
@@ -14,20 +14,43 @@ interface EditListModalProps {
   orders: Order[];
 }
 
+interface ParticipantState {
+  contractId: string;
+  role: string;
+  order: number;
+}
+
 export function EditListModal({ isOpen, onClose, list, orders }: EditListModalProps) {
   const [listName, setListName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set());
+  const [participants, setParticipants] = useState<ParticipantState[]>([]);
   const updateListMutation = useUpdateList();
-  const addContractMutation = useAddContractToList();
-  const removeContractMutation = useRemoveContractFromList();
 
   // Initialiser le formulaire quand la modale s'ouvre ou quand la liste change
   useEffect(() => {
     if (isOpen && list) {
       setListName(list.name);
       setSearchQuery('');
-      setSelectedOrderIds(new Set(list.contractIds || []));
+
+      // Initialiser les participants à partir de la liste existante
+      if (list.participants && list.participants.length > 0) {
+        setParticipants(
+          list.participants.map(p => ({
+            contractId: p.contractId,
+            role: p.role || '',
+            order: p.order
+          }))
+        );
+      } else {
+        // Fallback: créer des participants à partir de contractIds
+        setParticipants(
+          (list.contractIds || []).map((id, index) => ({
+            contractId: id,
+            role: '',
+            order: index + 1
+          }))
+        );
+      }
     }
   }, [isOpen, list]);
 
@@ -52,28 +75,61 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
     };
   }, [isOpen, onClose]);
 
-  // Filtrer les commandes par recherche
+  // Filtrer les commandes par recherche (exclure celles déjà sélectionnées)
+  const selectedIds = new Set(participants.map(p => p.contractId));
+
   const filteredOrders = useMemo(() => {
-    if (!searchQuery.trim()) return orders;
+    const availableOrders = orders.filter(order => !selectedIds.has(order.id));
+    if (!searchQuery.trim()) return availableOrders;
     const query = searchQuery.toLowerCase().trim();
-    return orders.filter(order =>
+    return availableOrders.filter(order =>
       order.client.nom.toLowerCase().includes(query) ||
       order.client.prenom.toLowerCase().includes(query) ||
       order.numero?.toLowerCase().includes(query) ||
       order.client.telephone?.toLowerCase().includes(query)
     );
-  }, [orders, searchQuery]);
+  }, [orders, searchQuery, selectedIds]);
 
-  const toggleOrderSelection = (orderId: string) => {
-    setSelectedOrderIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(orderId)) {
-        newSet.delete(orderId);
-      } else {
-        newSet.add(orderId);
-      }
-      return newSet;
-    });
+  // Ajouter une commande à la liste
+  const addParticipant = (orderId: string) => {
+    const nextOrder = participants.length + 1;
+    setParticipants([...participants, { contractId: orderId, role: '', order: nextOrder }]);
+  };
+
+  // Retirer une commande de la liste
+  const removeParticipant = (contractId: string) => {
+    const newParticipants = participants
+      .filter(p => p.contractId !== contractId)
+      .map((p, index) => ({ ...p, order: index + 1 }));
+    setParticipants(newParticipants);
+  };
+
+  // Mettre à jour le rôle d'un participant
+  const updateRole = (contractId: string, role: string) => {
+    setParticipants(participants.map(p =>
+      p.contractId === contractId ? { ...p, role } : p
+    ));
+  };
+
+  // Déplacer un participant vers le haut
+  const moveUp = (index: number) => {
+    if (index === 0) return;
+    const newParticipants = [...participants];
+    [newParticipants[index - 1], newParticipants[index]] = [newParticipants[index], newParticipants[index - 1]];
+    setParticipants(newParticipants.map((p, i) => ({ ...p, order: i + 1 })));
+  };
+
+  // Déplacer un participant vers le bas
+  const moveDown = (index: number) => {
+    if (index === participants.length - 1) return;
+    const newParticipants = [...participants];
+    [newParticipants[index], newParticipants[index + 1]] = [newParticipants[index + 1], newParticipants[index]];
+    setParticipants(newParticipants.map((p, i) => ({ ...p, order: i + 1 })));
+  };
+
+  // Récupérer les infos d'une commande par ID
+  const getOrderById = (contractId: string): Order | undefined => {
+    return orders.find(o => o.id === contractId);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,34 +137,19 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
     if (!listName.trim() || !list) return;
 
     try {
-      // Mettre à jour le nom si changé
-      if (listName.trim() !== list.name) {
-        await updateListMutation.mutateAsync({
-          id: list._id,
-          data: { name: listName.trim() }
-        });
-      }
+      // Mettre à jour la liste avec le nom et les participants
+      await updateListMutation.mutateAsync({
+        id: list._id,
+        data: {
+          name: listName.trim(),
+          participants: participants.map(p => ({
+            contractId: p.contractId,
+            role: p.role,
+            order: p.order
+          }))
+        }
+      });
 
-      // Calculer les différences pour les commandes
-      const currentIds = new Set(list.contractIds || []);
-      const newIds = selectedOrderIds;
-
-      // Commandes à ajouter
-      const toAdd = Array.from(newIds).filter(id => !currentIds.has(id));
-      // Commandes à retirer
-      const toRemove = Array.from(currentIds).filter(id => !newIds.has(id));
-
-      // Exécuter les ajouts
-      for (const contractId of toAdd) {
-        await addContractMutation.mutateAsync({ listId: list._id, contractId });
-      }
-
-      // Exécuter les retraits
-      for (const contractId of toRemove) {
-        await removeContractMutation.mutateAsync({ listId: list._id, contractId });
-      }
-
-      toast.success('Liste mise à jour');
       onClose();
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error);
@@ -118,7 +159,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
   if (!isOpen || !list) return null;
 
-  const isLoading = updateListMutation.isPending || addContractMutation.isPending || removeContractMutation.isPending;
+  const isLoading = updateListMutation.isPending;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -154,7 +195,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
 
           {/* Content */}
           <form onSubmit={handleSubmit} className="p-6">
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Nom de la liste */}
               <div>
                 <label htmlFor="editListName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
@@ -170,10 +211,102 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                 />
               </div>
 
-              {/* Sélection des commandes */}
+              {/* Participants actuels */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                  Commandes dans la liste
+                  Participants ({participants.length})
+                </label>
+
+                {participants.length === 0 ? (
+                  <div className="border border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500 text-sm">
+                    <FolderOpen className="w-8 h-8 mx-auto text-gray-300 mb-2" />
+                    Aucun participant. Ajoutez des commandes ci-dessous.
+                  </div>
+                ) : (
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="divide-y divide-gray-100">
+                      {participants.map((participant, index) => {
+                        const order = getOrderById(participant.contractId);
+                        if (!order) return null;
+
+                        return (
+                          <div
+                            key={participant.contractId}
+                            className="flex items-center gap-3 p-3 bg-white hover:bg-gray-50 transition-colors"
+                          >
+                            {/* Numéro d'ordre */}
+                            <span className="w-7 h-7 flex-shrink-0 rounded-full bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">
+                              {participant.order}
+                            </span>
+
+                            {/* Boutons de réorganisation */}
+                            <div className="flex flex-col gap-0.5">
+                              <button
+                                type="button"
+                                onClick={() => moveUp(index)}
+                                disabled={index === 0}
+                                className={`p-0.5 rounded transition-colors ${
+                                  index === 0
+                                    ? 'text-gray-300 cursor-not-allowed'
+                                    : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                                }`}
+                              >
+                                <ChevronUp className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveDown(index)}
+                                disabled={index === participants.length - 1}
+                                className={`p-0.5 rounded transition-colors ${
+                                  index === participants.length - 1
+                                    ? 'text-gray-300 cursor-not-allowed'
+                                    : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                                }`}
+                              >
+                                <ChevronDown className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            {/* Info commande */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-amber-600 text-sm">
+                                  #{order.numero}
+                                </span>
+                                <span className="text-gray-900 font-medium text-sm truncate">
+                                  {order.client.prenom} {order.client.nom}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Champ rôle */}
+                            <Input
+                              placeholder="Rôle (ex: Marié)"
+                              value={participant.role}
+                              onChange={(e) => updateRole(participant.contractId, e.target.value)}
+                              className="w-40 text-sm h-8"
+                            />
+
+                            {/* Bouton supprimer */}
+                            <button
+                              type="button"
+                              onClick={() => removeParticipant(participant.contractId)}
+                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Ajouter des commandes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                  Ajouter des commandes
                 </label>
 
                 {/* Barre de recherche */}
@@ -187,60 +320,46 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                   />
                 </div>
 
-                {/* Liste des commandes */}
-                <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-xl">
+                {/* Liste des commandes disponibles */}
+                <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-xl">
                   {filteredOrders.length === 0 ? (
                     <div className="p-4 text-center text-gray-500 text-sm">
-                      {searchQuery ? 'Aucune commande trouvée' : 'Aucune commande disponible'}
+                      {searchQuery ? 'Aucune commande trouvée' : 'Toutes les commandes sont déjà dans la liste'}
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-100">
-                      {filteredOrders.map((order) => {
-                        const isSelected = selectedOrderIds.has(order.id);
-                        return (
-                          <button
-                            key={order.id}
-                            type="button"
-                            onClick={() => toggleOrderSelection(order.id)}
-                            className={`w-full flex items-center gap-3 p-3 text-left transition-colors hover:bg-gray-50 ${
-                              isSelected ? 'bg-amber-50' : ''
-                            }`}
-                          >
-                            {/* Checkbox */}
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                              isSelected
-                                ? 'bg-amber-500 border-amber-500'
-                                : 'border-gray-300 bg-white'
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
+                      {filteredOrders.map((order) => (
+                        <button
+                          key={order.id}
+                          type="button"
+                          onClick={() => addParticipant(order.id)}
+                          className="w-full flex items-center gap-3 p-3 text-left transition-colors hover:bg-amber-50"
+                        >
+                          {/* Icône d'ajout */}
+                          <div className="w-5 h-5 rounded border-2 border-dashed border-gray-300 flex items-center justify-center flex-shrink-0 text-gray-400">
+                            +
+                          </div>
 
-                            {/* Info commande */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-semibold text-amber-600 text-sm">
-                                  #{order.numero}
-                                </span>
-                                <span className="text-gray-900 font-medium text-sm truncate">
-                                  {order.client.prenom} {order.client.nom}
-                                </span>
-                              </div>
-                              {order.client.telephone && (
-                                <div className="text-xs text-gray-500 truncate">
-                                  {order.client.telephone}
-                                </div>
-                              )}
+                          {/* Info commande */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-amber-600 text-sm">
+                                #{order.numero}
+                              </span>
+                              <span className="text-gray-900 font-medium text-sm truncate">
+                                {order.client.prenom} {order.client.nom}
+                              </span>
                             </div>
-                          </button>
-                        );
-                      })}
+                            {order.client.telephone && (
+                              <div className="text-xs text-gray-500 truncate">
+                                {order.client.telephone}
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      ))}
                     </div>
                   )}
-                </div>
-
-                {/* Compteur de sélection */}
-                <div className="mt-2 text-sm text-gray-600 text-left">
-                  {selectedOrderIds.size} commande{selectedOrderIds.size > 1 ? 's' : ''} dans la liste
                 </div>
               </div>
             </div>

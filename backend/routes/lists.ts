@@ -7,7 +7,8 @@ import {
   deleteList,
   addContractToList,
   removeContractFromList,
-  getListsForContract
+  getListsForContract,
+  updateParticipantRole
 } from '../controllers/listsController';
 
 const router = Router();
@@ -22,6 +23,9 @@ router.delete('/:id', deleteList);
 // Routes pour gérer les contrats dans les listes
 router.post('/:listId/contracts/:contractId', addContractToList);
 router.delete('/:listId/contracts/:contractId', removeContractFromList);
+
+// Route pour mettre à jour le rôle d'un participant
+router.put('/:listId/participants/:contractId/role', updateParticipantRole);
 
 // Route pour récupérer les listes d'un contrat spécifique
 router.get('/contract/:contractId', getListsForContract);

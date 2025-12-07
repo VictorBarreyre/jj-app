@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { listsApi } from '@/services/lists.api';
-import { CreateListRequest, UpdateListRequest } from '@/types/list';
+import { CreateListRequest, UpdateListRequest, ListParticipant } from '@/types/list';
 import toast from 'react-hot-toast';
 
 // Hook pour récupérer toutes les listes
@@ -110,5 +110,38 @@ export function useListsForContract(contractId: string) {
     queryKey: ['lists', 'contract', contractId],
     queryFn: () => listsApi.getListsForContract(contractId),
     enabled: !!contractId
+  });
+}
+
+// Hook pour mettre à jour le rôle d'un participant
+export function useUpdateParticipantRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ listId, contractId, role }: { listId: string; contractId: string; role: string }) =>
+      listsApi.updateParticipantRole(listId, contractId, role),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lists'] });
+    },
+    onError: () => {
+      toast.error('Erreur lors de la mise à jour du rôle');
+    }
+  });
+}
+
+// Hook pour mettre à jour tous les participants d'une liste
+export function useUpdateParticipants() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ listId, participants }: { listId: string; participants: ListParticipant[] }) =>
+      listsApi.updateParticipants(listId, participants),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lists'] });
+      toast.success('Liste mise à jour');
+    },
+    onError: () => {
+      toast.error('Erreur lors de la mise à jour des participants');
+    }
   });
 }
