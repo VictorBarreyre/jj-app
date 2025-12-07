@@ -788,7 +788,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                         className="text-[10px] sm:text-sm text-gray-900 underline hover:text-gray-700 disabled:opacity-50"
                         title="Cliquer pour revenir au tarif normal"
                       >
-                        {isApplyingGroupPricing ? 'Application...' : 'Tarif préférentiel appliqué'}
+                        {isApplyingGroupPricing ? '...' : <><span className="sm:hidden">Tarif appliqué</span><span className="hidden sm:inline">Tarif préférentiel appliqué</span></>}
                       </button>
                     ) : (
                       <button
@@ -797,7 +797,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                         disabled={isApplyingGroupPricing}
                         className="text-[10px] sm:text-sm text-gray-900 underline hover:text-gray-700 disabled:opacity-50"
                       >
-                        {isApplyingGroupPricing ? 'Application...' : 'Appliquer le tarif préférentiel'}
+                        {isApplyingGroupPricing ? '...' : <><span className="sm:hidden">Appliquer le tarif</span><span className="hidden sm:inline">Appliquer le tarif préférentiel</span></>}
                       </button>
                     )}
                   </div>
