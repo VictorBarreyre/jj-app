@@ -316,20 +316,8 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                                       <span>{order.client.telephone}</span>
                                     </div>
                                   )}
-                                  {/* Bouton voir et prix */}
-                                  <div className="flex items-center justify-end gap-3 mt-2 pt-2 border-t border-gray-100">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        onViewOrder(order);
-                                      }}
-                                      className="h-8 px-3 text-amber-600 hover:bg-amber-50"
-                                    >
-                                      <Eye className="w-4 h-4 mr-1" />
-                                      <span className="text-xs">Voir</span>
-                                    </Button>
+                                  {/* Prix */}
+                                  <div className="flex items-center justify-end mt-2 pt-2 border-t border-gray-100">
                                     <span className="font-semibold text-amber-600">
                                       {formatPrice(order.tarifLocation || 0)}
                                     </span>
