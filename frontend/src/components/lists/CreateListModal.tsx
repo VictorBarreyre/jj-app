@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, FolderPlus, Search, Check, Phone, Calendar } from 'lucide-react';
+import { X, Search, Check, Phone, Calendar } from 'lucide-react';
 import { useCreateList, useAddContractToList } from '@/hooks/useLists';
 import { Order } from '@/types/order';
 import toast from 'react-hot-toast';
@@ -127,21 +127,18 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-t-2xl p-6">
+          <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <FolderPlus className="w-6 h-6 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-white">Nouvelle liste</h2>
-              </div>
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-left">
+                Nouvelle liste
+              </h2>
               <Button
                 onClick={onClose}
                 variant="ghost"
                 size="sm"
-                className="h-10 w-10 p-0 text-white/80 hover:text-white hover:bg-white/20"
+                className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
           </div>
