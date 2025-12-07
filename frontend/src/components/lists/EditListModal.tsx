@@ -263,6 +263,17 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
     }, 0);
   }, [participants, orders, localPrices]);
 
+  // Calculer le prix total original (avant réduction groupe)
+  // Pour chaque participant: si on a un prix original stocké, l'utiliser, sinon prendre le prix actuel
+  const originalTotalPrice = useMemo(() => {
+    return participants.reduce((total, p) => {
+      const order = orders.find(o => o.id === p.contractId);
+      // Utiliser le prix original s'il existe (pour les commandes avec réduction), sinon le prix actuel
+      const price = originalPrices[p.contractId] ?? localPrices[p.contractId] ?? order?.tarifLocation ?? 0;
+      return total + price;
+    }, 0);
+  }, [participants, orders, localPrices, originalPrices]);
+
   // Formater le prix
   const formatPrice = (price: number): string => {
     return `${price}€`;
@@ -830,9 +841,9 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     <div className="flex justify-between text-left">
                       <span className="font-semibold text-gray-900 text-left">Total:</span>
                       <div className="text-right">
-                        {hasGroupPricingApplied && Object.keys(originalPrices).length > 0 && (
+                        {hasGroupPricingApplied && originalTotalPrice > totalPrice && (
                           <span className="text-sm text-gray-400 line-through mr-2">
-                            {formatPrice(Object.values(originalPrices).reduce((sum, p) => sum + p, 0))}
+                            {formatPrice(originalTotalPrice)}
                           </span>
                         )}
                         <span className="font-bold text-base text-amber-600">{formatPrice(totalPrice)}</span>
