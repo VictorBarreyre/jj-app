@@ -239,6 +239,13 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            {/* Métadonnées */}
+            <div className="mt-3 text-xs text-gray-500 space-y-1 text-left">
+              <div>Créée le {new Date(list.createdAt).toLocaleDateString('fr-FR')}</div>
+              {list.updatedAt && list.updatedAt !== list.createdAt && (
+                <div>Modifiée le {new Date(list.updatedAt).toLocaleDateString('fr-FR')}</div>
+              )}
+            </div>
           </div>
 
           {/* Content */}
