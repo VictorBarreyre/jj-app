@@ -303,50 +303,90 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
       setNotes(list.description || '');
       setSearchQuery('');
       setIsEditing(false); // Toujours ouvrir en mode visualisation
-      setOriginalPrices({}); // Réinitialiser les prix originaux
       setLocalPrices({}); // Réinitialiser les prix locaux
 
       // Initialiser les participants à partir de la liste existante
-      const participantCount = list.participants?.length || list.contractIds?.length || 0;
-
-      // Vérifier si le tarif préférentiel est déjà appliqué en comparant les prix
-      // On ne peut pas simplement se baser sur le nombre de participants
-      setHasGroupPricingApplied(false); // On commence par false, sera mis à jour si nécessaire
-
+      let participantsList: ParticipantState[] = [];
       if (list.participants && list.participants.length > 0) {
-        setParticipants(
-          list.participants.map(p => ({
-            contractId: p.contractId,
-            role: p.role || '',
-            order: p.order
-          }))
-        );
+        participantsList = list.participants.map(p => ({
+          contractId: p.contractId,
+          role: p.role || '',
+          order: p.order
+        }));
       } else {
         // Fallback: créer des participants à partir de contractIds
-        setParticipants(
-          (list.contractIds || []).map((id, index) => ({
-            contractId: id,
-            role: '',
-            order: index + 1
-          }))
-        );
+        participantsList = (list.contractIds || []).map((id, index) => ({
+          contractId: id,
+          role: '',
+          order: index + 1
+        }));
       }
+      setParticipants(participantsList);
+
+      // Détecter si le tarif préférentiel est déjà appliqué
+      // en comparant les prix actuels avec les prix groupe calculés
+      const groupSize = Math.max(participantsList.length, GROUP_THRESHOLD);
+      let groupPricingCount = 0;
+      let checkableOrders = 0;
+      const detectedOriginalPrices: Record<string, number> = {};
+
+      console.log(`=== DÉTECTION TARIF PRÉFÉRENTIEL À L'OUVERTURE ===`);
+      console.log(`Nombre de participants: ${participantsList.length}`);
+
+      for (const p of participantsList) {
+        const order = orders.find(o => o.id === p.contractId);
+        if (!order) continue;
+
+        const hasTenue = order.tenue && (
+          order.tenue.veste?.reference ||
+          order.tenue.gilet?.reference ||
+          order.tenue.pantalon?.reference
+        );
+
+        if (!hasTenue || !order.tarifLocation) continue;
+
+        const prixStandard = calculateTenuePrice(order.tenue, 1);
+        const prixGroupe = calculateTenuePrice(order.tenue, groupSize);
+
+        if (prixStandard === undefined || prixGroupe === undefined) continue;
+
+        checkableOrders++;
+
+        console.log(`📦 Commande ${order.numero}: actuel=${order.tarifLocation}€, standard=${prixStandard}€, groupe=${prixGroupe}€`);
+
+        // Si le prix actuel correspond au prix groupe ET le prix groupe est différent du standard
+        if (order.tarifLocation === prixGroupe && prixGroupe !== prixStandard) {
+          groupPricingCount++;
+          detectedOriginalPrices[order.id] = prixStandard; // Stocker le prix standard comme "original"
+          console.log(`   ✓ Tarif préférentiel détecté`);
+        }
+      }
+
+      // Si au moins une commande a le tarif préférentiel appliqué, considérer que c'est actif
+      const isGroupPricingApplied = groupPricingCount > 0;
+      console.log(`=== RÉSULTAT: ${groupPricingCount}/${checkableOrders} commandes avec tarif préférentiel ===`);
+
+      setHasGroupPricingApplied(isGroupPricingApplied);
+      setOriginalPrices(isGroupPricingApplied ? detectedOriginalPrices : {});
+
+      // Initialiser le ref avec le nombre actuel de participants pour éviter le déclenchement automatique à l'ouverture
+      prevParticipantsCountRef.current = participantsList.length;
     }
-  }, [isOpen, list]);
+  }, [isOpen, list, orders]);
 
   // Appliquer automatiquement le tarif préférentiel quand on atteint 6+ participants
+  // Ne se déclenche que lors d'ajouts de participants (pas à l'ouverture du modal)
   useEffect(() => {
     const prevCount = prevParticipantsCountRef.current;
     const currentCount = participants.length;
 
-    // Si on vient de passer de <6 à >=6 participants, appliquer automatiquement
-    if (prevCount < GROUP_THRESHOLD && currentCount >= GROUP_THRESHOLD && !isApplyingGroupPricing) {
+    // Si on vient de passer de <6 à >=6 participants ET que le tarif n'est pas déjà appliqué
+    if (prevCount < GROUP_THRESHOLD && currentCount >= GROUP_THRESHOLD && !isApplyingGroupPricing && !hasGroupPricingApplied) {
       handleApplyGroupPricing();
-      setHasGroupPricingApplied(true);
     }
 
     prevParticipantsCountRef.current = currentCount;
-  }, [participants.length]);
+  }, [participants.length, hasGroupPricingApplied]);
 
   // Gestion de la touche Escape
   useEffect(() => {
