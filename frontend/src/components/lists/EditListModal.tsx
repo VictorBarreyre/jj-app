@@ -273,26 +273,13 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     <Calendar className="w-4 h-4 inline mr-1" />
                     Date de l'événement
                   </label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      id="editDateEvenement"
-                      type="date"
-                      value={dateEvenement}
-                      onChange={(e) => setDateEvenement(e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                  {suggestedEventDate && suggestedEventDate !== dateEvenement && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={useSuggestedDate}
-                      className="text-xs whitespace-nowrap border-amber-300 text-amber-600 hover:bg-amber-50 mt-1"
-                    >
-                      Utiliser {formatDateDisplay(suggestedEventDate)}
-                    </Button>
-                  )}
+                  <Input
+                    id="editDateEvenement"
+                    type="date"
+                    value={dateEvenement}
+                    onChange={(e) => setDateEvenement(e.target.value)}
+                    className="w-full"
+                  />
                 </div>
 
                 {/* Téléphone */}
