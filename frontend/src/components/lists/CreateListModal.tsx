@@ -112,16 +112,6 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
 
   if (!isOpen) return null;
 
-  const formatDateDisplay = (dateStr: string) => {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  };
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
@@ -160,7 +150,7 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
               {/* Informations principales */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Nom de la liste */}
                 <div>
                   <label htmlFor="listName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
@@ -173,6 +163,21 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                     onChange={(e) => setListName(e.target.value)}
                     className="w-full text-lg font-semibold"
                     autoFocus
+                  />
+                </div>
+
+                {/* Date d'événement */}
+                <div>
+                  <label htmlFor="dateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <Calendar className="w-4 h-4 inline mr-1" />
+                    Date de l'événement
+                  </label>
+                  <Input
+                    id="dateEvenement"
+                    type="date"
+                    value={dateEvenement}
+                    onChange={(e) => setDateEvenement(e.target.value)}
+                    className="w-full"
                   />
                 </div>
 
@@ -191,26 +196,6 @@ export function CreateListModal({ isOpen, onClose, orders }: CreateListModalProp
                     className="w-full"
                   />
                 </div>
-              </div>
-
-              {/* Date d'événement */}
-              <div>
-                <label htmlFor="dateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                  <Calendar className="w-4 h-4 inline mr-1" />
-                  Date de l'événement <span className="text-gray-400 font-normal">(optionnel)</span>
-                </label>
-                <Input
-                  id="dateEvenement"
-                  type="date"
-                  value={dateEvenement}
-                  onChange={(e) => setDateEvenement(e.target.value)}
-                  className="w-full md:w-1/2"
-                />
-                {dateEvenement && (
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    {formatDateDisplay(dateEvenement)}
-                  </p>
-                )}
               </div>
 
               {/* Sélection des commandes */}

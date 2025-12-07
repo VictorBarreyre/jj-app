@@ -231,7 +231,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                   <Pencil className="w-6 h-6 text-white" />
                 </div>
-                <div>
+                <div className="text-left">
                   <div className="text-amber-100 text-sm font-medium">Liste #{list.numero}</div>
                   <h2 className="text-2xl font-bold text-white">{list.name}</h2>
                 </div>
@@ -251,7 +251,7 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
               {/* Informations principales */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Nom de la liste */}
                 <div>
                   <label htmlFor="editListName" className="block text-sm font-medium text-gray-700 mb-2 text-left">
@@ -265,6 +265,34 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     className="w-full text-lg font-semibold"
                     autoFocus
                   />
+                </div>
+
+                {/* Date d'événement */}
+                <div>
+                  <label htmlFor="editDateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <Calendar className="w-4 h-4 inline mr-1" />
+                    Date de l'événement
+                  </label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      id="editDateEvenement"
+                      type="date"
+                      value={dateEvenement}
+                      onChange={(e) => setDateEvenement(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  {suggestedEventDate && suggestedEventDate !== dateEvenement && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={useSuggestedDate}
+                      className="text-xs whitespace-nowrap border-amber-300 text-amber-600 hover:bg-amber-50 mt-1"
+                    >
+                      Utiliser {formatDateDisplay(suggestedEventDate)}
+                    </Button>
+                  )}
                 </div>
 
                 {/* Téléphone */}
@@ -282,39 +310,6 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                     className="w-full"
                   />
                 </div>
-              </div>
-
-              {/* Date d'événement */}
-              <div>
-                <label htmlFor="editDateEvenement" className="block text-sm font-medium text-gray-700 mb-2 text-left">
-                  <Calendar className="w-4 h-4 inline mr-1" />
-                  Date de l'événement
-                </label>
-                <div className="flex gap-2 items-center">
-                  <Input
-                    id="editDateEvenement"
-                    type="date"
-                    value={dateEvenement}
-                    onChange={(e) => setDateEvenement(e.target.value)}
-                    className="flex-1"
-                  />
-                  {suggestedEventDate && suggestedEventDate !== dateEvenement && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={useSuggestedDate}
-                      className="text-xs whitespace-nowrap border-amber-300 text-amber-600 hover:bg-amber-50"
-                    >
-                      Utiliser {formatDateDisplay(suggestedEventDate)}
-                    </Button>
-                  )}
-                </div>
-                {dateEvenement && (
-                  <p className="text-sm text-gray-500 mt-1 text-left">
-                    {formatDateDisplay(dateEvenement)}
-                  </p>
-                )}
               </div>
 
               {/* Participants actuels */}
