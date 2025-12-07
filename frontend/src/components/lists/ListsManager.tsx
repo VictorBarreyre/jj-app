@@ -97,7 +97,7 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
           {/* Version desktop - En-tête du tableau */}
           <div className="hidden md:grid grid-cols-12 gap-4 px-3 lg:px-4 py-3 bg-gray-50/50 font-semibold text-xs lg:text-sm text-gray-700 border border-gray-200/50 rounded-xl mb-4">
             <div className="col-span-5 text-left">N° / Nom de la liste</div>
-            <div className="col-span-3 text-left">Description</div>
+            <div className="col-span-3 text-left">Date de création</div>
             <div className="col-span-2 text-center">Commandes</div>
             <div className="col-span-2 text-center">Actions</div>
           </div>
@@ -147,9 +147,10 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                         <span className="font-semibold text-gray-900">{list.name}</span>
                       </div>
 
-                      {/* Description */}
-                      <div className="col-span-3 text-sm text-gray-600 flex items-center">
-                        {list.description || '-'}
+                      {/* Date de création */}
+                      <div className="col-span-3 text-sm text-gray-600 flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        {formatDate(list.createdAt)}
                       </div>
 
                       {/* Nombre de commandes */}
@@ -219,9 +220,11 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                         </Badge>
                       </div>
 
-                      {list.description && (
-                        <p className="text-sm text-gray-600 mb-3">{list.description}</p>
-                      )}
+                      {/* Date de création */}
+                      <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                        <Calendar className="w-4 h-4" />
+                        <span>Créée le {formatDate(list.createdAt)}</span>
+                      </div>
 
                       {/* Actions mobile */}
                       <div className="flex gap-2 pt-4 border-t border-gray-200/50">
