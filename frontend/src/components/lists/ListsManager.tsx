@@ -53,8 +53,13 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
   };
 
   // Formater le prix
-  const formatPrice = (price: number): string => {
-    return `${price}€`;
+  const formatPrice = (price: number | string | undefined): string => {
+    if (price === undefined || price === null) return '0€';
+    // Convertir en nombre si c'est une string (et enlever tout € existant)
+    const numPrice = typeof price === 'string'
+      ? parseFloat(price.replace(/€/g, '').trim())
+      : price;
+    return isNaN(numPrice) ? '0€' : `${numPrice}€`;
   };
 
   const formatDate = (dateString: string | Date) => {

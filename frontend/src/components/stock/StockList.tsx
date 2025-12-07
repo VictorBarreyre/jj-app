@@ -9,8 +9,7 @@ import {
   History,
   TrendingUp,
   TrendingDown,
-  Trash2,
-  Euro
+  Trash2
 } from 'lucide-react';
 
 export interface StockListProps {
@@ -107,8 +106,7 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                   <div>
                     <div className="text-xs text-gray-500 mb-1">Prix</div>
                     <div className="flex items-center">
-                      <Euro className="w-3 h-3 text-green-600 mr-1" />
-                      <span className="font-bold text-sm text-gray-900">{item.prix ? `${item.prix}€` : '-'}</span>
+                      <span className="font-bold text-sm text-green-600">{item.prix ? `${item.prix}€` : '-'}</span>
                     </div>
                   </div>
                   <div>
@@ -223,12 +221,9 @@ export function StockList({ items, loading, onEdit, onViewMovements, onAddNew, o
                               </div>
                             </td>
                             <td className="px-4 lg:px-6 py-3 lg:py-4">
-                              <div className="flex items-center">
-                                <Euro className="w-4 h-4 text-green-600 mr-1" />
-                                <span className="font-semibold text-gray-900 text-sm lg:text-base">
-                                  {item.prix ? `${item.prix}€` : '-'}
-                                </span>
-                              </div>
+                              <span className="font-semibold text-green-600 text-sm lg:text-base">
+                                {item.prix ? `${item.prix}€` : '-'}
+                              </span>
                             </td>
                             <td className="px-4 lg:px-6 py-3 lg:py-4">
                               <div className="flex items-center">

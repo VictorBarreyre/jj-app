@@ -275,8 +275,13 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
   }, [participants, orders, localPrices, originalPrices]);
 
   // Formater le prix
-  const formatPrice = (price: number): string => {
-    return `${price}€`;
+  const formatPrice = (price: number | string | undefined): string => {
+    if (price === undefined || price === null) return '0€';
+    // Convertir en nombre si c'est une string (et enlever tout € existant)
+    const numPrice = typeof price === 'string'
+      ? parseFloat(price.replace(/€/g, '').trim())
+      : price;
+    return isNaN(numPrice) ? '0€' : `${numPrice}€`;
   };
 
   // Calculer la date d'événement la plus commune à partir des commandes
@@ -859,12 +864,12 @@ export function EditListModal({ isOpen, onClose, list, orders }: EditListModalPr
                         const originalPrice = originalPrices[p.contractId];
                         const hasDiscount = hasGroupPricingApplied && originalPrice && originalPrice !== currentPrice;
                         return (
-                          <div key={p.contractId} className="flex justify-between text-sm text-gray-600">
-                            <span className="text-left">
+                          <div key={p.contractId} className="flex justify-between items-center text-xs sm:text-sm text-gray-600">
+                            <span className="text-left truncate mr-2">
                               #{order.numero} - {order.client.prenom} {order.client.nom}
                               {p.role && <span className="text-amber-600 ml-1">({p.role})</span>}
                             </span>
-                            <div className="text-right">
+                            <div className="flex-shrink-0 text-left sm:text-right">
                               {hasDiscount && (
                                 <span className="text-gray-400 line-through mr-2">
                                   {formatPrice(originalPrice)}

@@ -479,40 +479,40 @@ export function OrderViewEditModal({
             </h2>
             
             {/* Informations principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
               <div className="text-left">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   {displayOrder.type === 'groupe' ? 'Groupe' : 'Client'}
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">
                   {displayOrder.type === 'groupe' ? `Groupe ${displayOrder.client.nom}` : `${displayOrder.client.nom} ${displayOrder.client.prenom || ''}`}
                 </p>
               </div>
-              
+
               <div className="text-left">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   {displayOrder.type === 'groupe' ? 'Participants' : 'Téléphone'}
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">
-                  {displayOrder.type === 'groupe' 
-                    ? `${displayOrder.participantCount || 1} personne${(displayOrder.participantCount || 1) > 1 ? 's' : ''}` 
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">
+                  {displayOrder.type === 'groupe'
+                    ? `${displayOrder.participantCount || 1} personne${(displayOrder.participantCount || 1) > 1 ? 's' : ''}`
                     : displayOrder.client.telephone || 'Non renseigné'
                   }
                 </p>
               </div>
-              
+
               <div className="text-left">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Vendeur
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">{displayOrder.createdBy || 'Non renseigné'}</p>
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">{displayOrder.createdBy || 'Non renseigné'}</p>
               </div>
-              
+
               <div className="text-left">
-                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Date événement
                 </span>
-                <p className="font-semibold text-gray-900 text-sm">
+                <p className="font-semibold text-gray-900 text-xs sm:text-sm">
                   {displayOrder.dateLivraison ? formatDate(displayOrder.dateLivraison) : 'Non définie'}
                 </p>
               </div>
@@ -540,19 +540,19 @@ export function OrderViewEditModal({
               if (displayOrder.groupDetails?.participants && displayOrder.groupDetails.participants.length > 0) {
                 return (
                   <div className="pt-3 border-t border-gray-300 mt-3">
-                    <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                    <span className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                       Pièces de tenue réservées & Statut de rendu
                     </span>
-                    <div className="space-y-4 pb-4">
+                    <div className="space-y-3 sm:space-y-4 pb-4">
                       {displayOrder.groupDetails.participants.map((participant, index) => (
-                    <div key={index} className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
-                      <div className="mb-2">
-                        <div className="font-semibold text-gray-800 text-left">
+                    <div key={index} className="bg-white rounded-lg p-2 sm:p-3 pb-4 sm:pb-6 pl-3 sm:pl-4 text-left border border-gray-200">
+                      <div className="mb-2 flex items-center justify-between">
+                        <div className="font-semibold text-gray-800 text-left text-sm sm:text-base">
                           {participant.prenom ? `${participant.nom} ${participant.prenom}` : participant.nom}
                         </div>
                         {onUpdateParticipantReturn && (
-                          <div className="flex items-center gap-3 mt-2">
-                            <span className={`text-sm font-medium ${
+                          <div className="flex items-center gap-3">
+                            <span className={`hidden sm:inline text-sm font-medium ${
                               (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'text-green-700' : 'text-gray-600'
                             }`}>
                               Article(s) rendu(s)
@@ -620,7 +620,7 @@ export function OrderViewEditModal({
 
                           return pieces.length > 0 ? (
                             pieces.map((piece, pieceIndex) => (
-                              <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
+                              <div key={pieceIndex} className="text-xs sm:text-sm text-gray-700 text-left pl-3">
                                 <span className="text-amber-600 font-medium">•</span>
                                 <span className="ml-2">
                                   {piece.text}
@@ -629,7 +629,7 @@ export function OrderViewEditModal({
                               </div>
                             ))
                           ) : (
-                            <div className="text-sm text-gray-400 text-left pl-3">
+                            <div className="text-xs sm:text-sm text-gray-400 text-left pl-3">
                               <span className="text-gray-400">•</span> <span className="ml-2">Aucune pièce spécifiée</span>
                             </div>
                           );
@@ -720,18 +720,18 @@ export function OrderViewEditModal({
 
                 return (
                   <div className="pt-3 border-t border-gray-300 mt-3">
-                    <span className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
+                    <span className="block text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 text-left">
                       Pièces de tenue réservées & Statut de rendu
                     </span>
-                    <div className="space-y-4 pb-4">
-                      <div className="bg-white rounded-lg p-3 pb-6 pl-4 text-left border border-gray-200">
-                        <div className="mb-2">
-                          <div className="font-semibold text-gray-800 text-left">
+                    <div className="space-y-3 sm:space-y-4 pb-4">
+                      <div className="bg-white rounded-lg p-2 sm:p-3 pb-4 sm:pb-6 pl-3 sm:pl-4 text-left border border-gray-200">
+                        <div className="mb-2 flex items-center justify-between">
+                          <div className="font-semibold text-gray-800 text-left text-sm sm:text-base">
                             {virtualParticipant.prenom ? `${virtualParticipant.nom} ${virtualParticipant.prenom}` : virtualParticipant.nom}
                           </div>
                           {onUpdateParticipantReturn && (
-                            <div className="flex items-center gap-3 mt-2">
-                              <span className={`text-sm font-medium ${
+                            <div className="flex items-center gap-3">
+                              <span className={`hidden sm:inline text-sm font-medium ${
                                 (displayOrder.status === 'rendu' || displayOrder.status === 'rendue') ? 'text-green-700' : 'text-gray-600'
                               }`}>
                                 Article(s) rendu(s)
@@ -805,7 +805,7 @@ export function OrderViewEditModal({
 
                             return pieces.length > 0 ? (
                               pieces.map((piece, pieceIndex) => (
-                                <div key={pieceIndex} className="text-sm text-gray-700 text-left pl-3">
+                                <div key={pieceIndex} className="text-xs sm:text-sm text-gray-700 text-left pl-3">
                                   <span className="text-amber-600 font-medium">•</span>
                                   <span className="ml-2">
                                     {piece.text}
@@ -814,7 +814,7 @@ export function OrderViewEditModal({
                                 </div>
                               ))
                             ) : (
-                              <div className="text-sm text-gray-400 text-left pl-3">
+                              <div className="text-xs sm:text-sm text-gray-400 text-left pl-3">
                                 <span className="text-gray-400">•</span> <span className="ml-2">Aucune pièce spécifiée</span>
                               </div>
                             );
@@ -838,23 +838,23 @@ export function OrderViewEditModal({
                 <Euro className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
                 Tarification
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {displayOrder.sousTotal && displayOrder.sousTotal > 0 && (
-                  <div className="flex justify-between text-left">
+                  <div className="flex justify-between text-left text-xs sm:text-sm">
                     <span className="text-gray-700 text-left">Sous-total:</span>
                     <span className="font-medium text-right">{formatPrice(displayOrder.sousTotal)}</span>
                   </div>
                 )}
                 {displayOrder.tva && displayOrder.tva > 0 && (
-                  <div className="flex justify-between text-left">
+                  <div className="flex justify-between text-left text-xs sm:text-sm">
                     <span className="text-gray-700 text-left">TVA:</span>
                     <span className="font-medium text-right">{formatPrice(displayOrder.tva)}</span>
                   </div>
                 )}
                 {displayOrder.total && displayOrder.total > 0 && (
-                  <div className="flex justify-between border-t border-gray-200 pt-2 text-left">
+                  <div className="flex justify-between border-t border-gray-200 pt-2 text-left text-xs sm:text-sm">
                     <span className="font-semibold text-gray-900 text-left">Total:</span>
-                    <span className="font-bold text-base text-amber-600 text-right">{formatPrice(displayOrder.total)}</span>
+                    <span className="font-bold text-sm sm:text-base text-amber-600 text-right">{formatPrice(displayOrder.total)}</span>
                   </div>
                 )}
               </div>

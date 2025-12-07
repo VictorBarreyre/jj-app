@@ -9,8 +9,7 @@ import {
   Trash2,
   Package,
   TrendingUp,
-  TrendingDown,
-  Euro
+  TrendingDown
 } from 'lucide-react';
 
 interface StockItemInGroup {
@@ -107,10 +106,9 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
             
             {/* Totaux alignés sous le titre - mobile seulement */}
             <div className="flex justify-between w-full sm:hidden mt-4">
-              <div className="text-center">
+              <div className="text-left">
                 <div className="text-sm text-gray-500 mb-2 font-medium">Prix</div>
-                <div className="flex items-center justify-center">
-                  <Euro className="w-4 h-4 text-green-600 mr-1" />
+                <div className="flex items-center">
                   <span className="font-bold text-green-600 text-lg">{group.prix ? `${group.prix}€` : '-'}</span>
                 </div>
               </div>
@@ -147,7 +145,6 @@ export function StockReferenceGroup({ group, onEditItem, onViewMovements, onDele
           <div className="text-center">
             <div className="text-xs text-gray-500 mb-1 font-medium">Prix</div>
             <div className="flex items-center justify-center">
-              <Euro className="w-4 h-4 text-green-600 mr-1" />
               <span className="font-bold text-green-600 text-base">{group.prix ? `${group.prix}€` : '-'}</span>
             </div>
           </div>
