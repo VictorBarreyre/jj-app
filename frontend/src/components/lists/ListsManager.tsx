@@ -275,58 +275,32 @@ export function ListsManager({ orders, onViewOrder, onEditOrder }: ListsManagerP
                             {listOrders.map((order) => (
                               <div
                                 key={order.id}
-                                className="flex items-center justify-between p-4 hover:bg-white transition-colors"
+                                className="p-4 hover:bg-white transition-colors cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onViewOrder(order);
+                                }}
                               >
-                                <div
-                                  className="flex-1 cursor-pointer"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onViewOrder(order);
-                                  }}
-                                >
-                                  <div className="flex items-center gap-3 mb-1">
-                                    <span className="font-semibold text-amber-600">
-                                      #{order.numero}
-                                    </span>
-                                    <span className="text-gray-400">•</span>
-                                    <span className="font-medium text-gray-900">
-                                      {order.client.prenom} {order.client.nom}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                                    {order.client.telephone && (
-                                      <div className="flex items-center gap-1">
-                                        <Phone className="w-3 h-3" />
-                                        <span>{order.client.telephone}</span>
-                                      </div>
-                                    )}
-                                    <div className="flex items-center gap-1">
-                                      <Calendar className="w-3 h-3" />
-                                      <span>{formatDate(order.dateEvenement || order.dateCreation)}</span>
-                                    </div>
-                                  </div>
+                                <div className="flex items-center gap-3 mb-1">
+                                  <span className="font-semibold text-amber-600 hover:underline">
+                                    #{order.numero}
+                                  </span>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="font-medium text-gray-900">
+                                    {order.client.prenom} {order.client.nom}
+                                  </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onViewOrder(order);
-                                    }}
-                                    className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => handleRemoveContract(list._id, order.id, e)}
-                                    className="text-gray-400 hover:text-red-500 hover:bg-red-50"
-                                    title="Retirer de la liste"
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </Button>
+                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                  {order.client.telephone && (
+                                    <div className="flex items-center gap-1">
+                                      <Phone className="w-3 h-3" />
+                                      <span>{order.client.telephone}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>{formatDate(order.dateEvenement || order.dateCreation)}</span>
+                                  </div>
                                 </div>
                               </div>
                             ))}
