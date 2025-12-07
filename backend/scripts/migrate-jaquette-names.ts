@@ -17,7 +17,7 @@ import path from 'path';
 // Charger les variables d'environnement
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
   throw new Error('MONGODB_URI environment variable is required. Set it in your .env file.');
