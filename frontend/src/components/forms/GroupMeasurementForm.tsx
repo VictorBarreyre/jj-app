@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { DynamicProductSelector } from '@/components/stock/DynamicProductSelector';
 import { StockIndicator } from '@/components/stock/StockIndicator';
 import { GroupRentalInfo, GroupClientInfo } from '@/types/group-rental';
-import { stockAPI } from '@/services/api';
 import { ArticleCategory } from '@/types/stock';
 import { TailleChaussure, TailleChapeau, ChaussuresType } from '@/types/measurement-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -39,26 +38,11 @@ const CHAUSSURES_OPTIONS = TAILLES_CHAUSSURES.flatMap(taille => [
 export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, isEditMode = false }: GroupMeasurementFormProps) {
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
-  const [vesteReferences, setVesteReferences] = useState<any[]>([]);
 
   // Mettre à jour updatedGroup quand groupData change (important en mode édition)
   useEffect(() => {
     setUpdatedGroup(groupData);
   }, [groupData]);
-
-  // Charger les références de veste au montage
-  useEffect(() => {
-    const fetchVesteReferences = async () => {
-      try {
-        const data = await stockAPI.getReferences('veste');
-        setVesteReferences(data.references || []);
-      } catch (error) {
-        console.warn('Erreur lors du chargement des références veste:', error);
-      }
-    };
-    fetchVesteReferences();
-  }, []);
-
 
   // Auto-sauvegarde désactivée - la sauvegarde se fait uniquement via le bouton
   // useEffect(() => {
@@ -70,15 +54,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
   //     return () => clearTimeout(timeoutId);
   //   }
   // }, [updatedGroup, onSave, groupData]);
-
-  // Fonction pour vérifier si la veste sélectionnée est un smoking
-  const isSmokingSelected = (clientIndex: number) => {
-    const vesteRef = updatedGroup.clients[clientIndex]?.tenue?.veste?.reference;
-    if (!vesteRef || vesteReferences.length === 0) return false;
-    
-    const reference = vesteReferences.find(ref => ref.id === vesteRef);
-    return reference?.subCategory === 'smoking';
-  };
 
   const updateClientTenue = (clientIndex: number, category: 'veste' | 'gilet' | 'pantalon' | 'ceinture', field: string, value: any) => {
     setUpdatedGroup(prev => {
@@ -115,18 +90,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
     updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'taille', '');
     updateClientTenue(clientIndex, formCategory as 'veste' | 'gilet' | 'pantalon' | 'ceinture', 'couleur', '');
     
-    // Si on sélectionne une veste qui est un smoking, réinitialiser le gilet
-    if (category === 'veste') {
-      const reference = vesteReferences.find(ref => ref.id === referenceId);
-      if (reference?.subCategory === 'smoking') {
-        setUpdatedGroup(prev => {
-          const newClients = [...prev.clients];
-          newClients[clientIndex].tenue.gilet = undefined;
-          return { ...prev, clients: newClients };
-        });
-      }
-      
-    }
   };
 
   const updateTenueSize = (clientIndex: number, category: ArticleCategory | 'ceinture', size: string) => {
@@ -375,9 +338,8 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
             )}
           </div>
 
-          {/* Gilet - Masqué si smoking sélectionné */}
-          {!isSmokingSelected(currentClientIndex) && (
-            <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
+          {/* Gilet */}
+          <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
             <h4 className="flex items-center gap-2 text-base sm:text-lg font-bold text-gray-800 mb-4">
               <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 text-sm font-bold">B</div>
               Gilet
@@ -409,8 +371,6 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
               </div>
             )}
           </div>
-          )}
-
 
           {/* Pantalon */}
           <div className="rounded-lg p-4 sm:p-6 bg-gray-50/50">
