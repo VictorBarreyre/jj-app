@@ -27,6 +27,17 @@ export class BackendPDFService {
       .join(' ');
   }
 
+  private formatPaymentMethod(method: string): string {
+    switch (method) {
+      case 'especes':
+        return 'espèces';
+      case 'cheque':
+        return 'chèque';
+      default:
+        return method;
+    }
+  }
+
   private generateHTMLContent(contract: RentalContract, type: PDFType, participantIndex?: number): string {
     // Déterminer le participant
     let participant = null;
@@ -275,9 +286,9 @@ export class BackendPDFService {
           </div>
 
           <div class="payment-methods-row">
-            <div>${contract.paiementSolde?.method ? `Payé en ${contract.paiementSolde.method}` : 'Non payé'}</div>
-            <div>${contract.paiementDepotGarantie?.method ? `Fait en ${contract.paiementDepotGarantie.method}` : 'Non versé'}</div>
-            <div>${contract.paiementArrhes?.method ? `Payées en ${contract.paiementArrhes.method}` : 'Non versées'}</div>
+            <div>${contract.paiementSolde?.method ? `Payé en ${this.formatPaymentMethod(contract.paiementSolde.method)}` : 'Non payé'}</div>
+            <div>${contract.paiementDepotGarantie?.method ? `Fait en ${this.formatPaymentMethod(contract.paiementDepotGarantie.method)}` : 'Non versé'}</div>
+            <div>${contract.paiementArrhes?.method ? `Payées en ${this.formatPaymentMethod(contract.paiementArrhes.method)}` : 'Non versées'}</div>
           </div>
 
         </body>

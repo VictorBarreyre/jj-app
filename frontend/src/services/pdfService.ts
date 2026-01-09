@@ -253,21 +253,33 @@ export class PDFService {
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
 
+    // Fonction pour formater les méthodes de paiement avec les bons accents
+    const formatPaymentMethod = (method: string): string => {
+      switch (method) {
+        case 'especes':
+          return 'espèces';
+        case 'cheque':
+          return 'chèque';
+        default:
+          return method;
+      }
+    };
+
     // Moyen de paiement du solde (tarif location)
     const paiementSoldeText = contract.paiementSolde?.method
-      ? `Payé en ${contract.paiementSolde.method}`
+      ? `Payé en ${formatPaymentMethod(contract.paiementSolde.method)}`
       : 'Non payé';
     doc.text(paiementSoldeText, 10, currentY);
 
     // Moyen de paiement du dépôt de garantie
     const paiementDepotText = contract.paiementDepotGarantie?.method
-      ? `Fait en ${contract.paiementDepotGarantie.method}`
+      ? `Fait en ${formatPaymentMethod(contract.paiementDepotGarantie.method)}`
       : 'Non versé';
     doc.text(paiementDepotText, 74, currentY, { align: 'center' });
 
     // Moyen de paiement des arrhes
     const paiementArrhesText = contract.paiementArrhes?.method
-      ? `Payées en ${contract.paiementArrhes.method}`
+      ? `Payées en ${formatPaymentMethod(contract.paiementArrhes.method)}`
       : 'Non versées';
     doc.text(paiementArrhesText, 138, currentY, { align: 'right' });
     currentY += 11;
@@ -323,7 +335,7 @@ export class PDFService {
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 20, currentY + 12);
 
     // Informations de paiement pour le vendeur uniquement
-    if (type === 'vendeur') {
+    if (_type === 'vendeur') {
       currentY += 20;
       doc.setFont('helvetica', 'normal');
 
