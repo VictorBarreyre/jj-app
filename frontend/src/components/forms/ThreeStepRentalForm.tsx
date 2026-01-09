@@ -266,6 +266,11 @@ export const ThreeStepRentalForm = forwardRef<
       depotGarantie: 400,
       arrhes: 50,
       
+      // Initialiser les paiements à undefined pour éviter l'affichage de méthodes non sélectionnées
+      paiementArrhes: undefined,
+      paiementSolde: undefined,
+      paiementDepotGarantie: undefined,
+      
       status: 'brouillon',
       rendu: false,
       
