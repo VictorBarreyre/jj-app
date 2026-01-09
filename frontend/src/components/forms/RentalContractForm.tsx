@@ -180,6 +180,12 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
         // Ajouter une date par défaut si on définit une méthode et qu'il n'y a pas de date
         ...(field === 'method' && value && !prev[paymentField]?.date && {
           date: new Date().toISOString().split('T')[0]
+        }),
+        // Ajouter le montant approprié si on définit une méthode et qu'il n'y a pas de montant
+        ...(field === 'method' && value && !prev[paymentField]?.amount && {
+          amount: type === 'arrhes' ? (prev.arrhes || 50) : 
+                  type === 'solde' ? (prev.tarifLocation || 0) : 
+                  (prev.depotGarantie || 400)
         })
       }
     }));
