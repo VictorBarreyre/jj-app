@@ -23,17 +23,24 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     }
   });
 
-  // Calculer les dates par défaut basées sur la date d'événement
+  // Calculer les dates par défaut basées sur la date d'événement (utilisées seulement si non définies)
   const eventDate = typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date();
   const defaultDates = calculateDefaultDates(eventDate);
+
+  // Helper pour convertir une date string ou Date en objet Date
+  const toDate = (value: string | Date | undefined, fallback: Date): Date => {
+    if (!value) return fallback;
+    if (value instanceof Date) return value;
+    return new Date(value);
+  };
 
   return {
     id: order.id,
     numero: order.numero,
     dateCreation: typeof order.dateCreation === 'string' ? new Date(order.dateCreation) : order.dateCreation || new Date(),
     dateEvenement: typeof order.dateLivraison === 'string' ? new Date(order.dateLivraison) : order.dateLivraison || new Date(),
-    dateRetrait: defaultDates.dateRetrait, // Jeudi avant l'événement
-    dateRetour: defaultDates.dateRetour, // Mardi après l'événement
+    dateRetrait: toDate(order.dateRetrait, defaultDates.dateRetrait), // Utiliser la date de l'order ou la date par défaut
+    dateRetour: toDate(order.dateRetour, defaultDates.dateRetour), // Utiliser la date de l'order ou la date par défaut
     client: {
       nom: order.client.nom,
       telephone: order.client.telephone || '',

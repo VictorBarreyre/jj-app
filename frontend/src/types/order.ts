@@ -97,6 +97,8 @@ export interface Order {
   client: ClientInfo;
   dateCreation: Date | string;
   dateLivraison?: Date | string;
+  dateRetrait?: Date | string; // Date à laquelle le client récupère la tenue
+  dateRetour?: Date | string; // Date à laquelle le client doit rendre la tenue
   items: OrderItem[];
   articleCount: number; // Nombre total d'articles (calculé correctement)
   sousTotal?: number;

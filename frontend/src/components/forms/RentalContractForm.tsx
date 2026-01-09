@@ -49,6 +49,20 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
   // État pour suivre si le prix a été modifié manuellement
   const [priceWasAutoSet, setPriceWasAutoSet] = useState(false);
 
+  // Helper pour convertir une date string ou Date en objet Date
+  const toDate = (value: string | Date | undefined): Date => {
+    if (!value) return new Date();
+    if (value instanceof Date) return value;
+    return new Date(value);
+  };
+
+  // Helper pour formater une date pour l'input type="date"
+  const formatDateForInput = (value: string | Date | undefined): string => {
+    if (!value) return '';
+    const date = value instanceof Date ? value : new Date(value);
+    return date.toISOString().split('T')[0];
+  };
+
   const [form, setForm] = useState<Partial<RentalContract>>(() => {
     const today = new Date();
     const defaultDates = calculateDefaultDates(today);
@@ -85,6 +99,11 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
     const mergedData = {
       ...defaultValues,
       ...initialData,
+      // Convertir les dates en objets Date pour s'assurer qu'elles sont valides
+      dateCreation: toDate(initialData?.dateCreation) || new Date(),
+      dateEvenement: toDate(initialData?.dateEvenement) || today,
+      dateRetrait: toDate(initialData?.dateRetrait) || defaultDates.dateRetrait,
+      dateRetour: toDate(initialData?.dateRetour) || defaultDates.dateRetour,
       // Fusionner le client correctement pour ne pas perdre le prénom
       client: {
         ...defaultValues.client,
@@ -200,7 +219,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Date de l'événement</Label>
             <Input
               type="date"
-              value={form.dateEvenement?.toISOString().split('T')[0] || ''}
+              value={formatDateForInput(form.dateEvenement)}
               onChange={(e) => updateForm('dateEvenement', new Date(e.target.value))}
               className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
             />
@@ -209,7 +228,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À prendre le</Label>
             <Input
               type="date"
-              value={form.dateRetrait?.toISOString().split('T')[0] || ''}
+              value={formatDateForInput(form.dateRetrait)}
               onChange={(e) => updateForm('dateRetrait', new Date(e.target.value))}
               className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
             />
@@ -218,7 +237,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">À rendre le</Label>
             <Input
               type="date"
-              value={form.dateRetour?.toISOString().split('T')[0] || ''}
+              value={formatDateForInput(form.dateRetour)}
               onChange={(e) => updateForm('dateRetour', new Date(e.target.value))}
               className="w-40 bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm pl-3 pr-1 text-left date-input-tight"
             />

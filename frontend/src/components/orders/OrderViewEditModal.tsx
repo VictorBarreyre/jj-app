@@ -442,13 +442,7 @@ export function OrderViewEditModal({
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
               Dates importantes
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="text-left">
-                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
-                  Date de création
-                </label>
-                <span className="text-base text-gray-900 block text-left">{formatDate(displayOrder.dateCreation)}</span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
                   Date de l'événement
@@ -459,11 +453,25 @@ export function OrderViewEditModal({
               </div>
               <div className="text-left">
                 <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
-                  Date de livraison
+                  À prendre le
                 </label>
                 <span className="text-base text-gray-900 block text-left">
-                  {displayOrder.dateLivraison ? formatDate(new Date(new Date(displayOrder.dateLivraison).getTime() - 24 * 60 * 60 * 1000)) : 'Veille de l\'événement'}
+                  {displayOrder.dateRetrait ? formatDate(displayOrder.dateRetrait) : 'Non définie'}
                 </span>
+              </div>
+              <div className="text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
+                  À rendre le
+                </label>
+                <span className="text-base text-gray-900 block text-left">
+                  {displayOrder.dateRetour ? formatDate(displayOrder.dateRetour) : 'Non définie'}
+                </span>
+              </div>
+              <div className="text-left">
+                <label className="block text-sm font-semibold text-gray-800 mb-3 text-left">
+                  Date de création
+                </label>
+                <span className="text-base text-gray-900 block text-left">{formatDate(displayOrder.dateCreation)}</span>
               </div>
             </div>
           </div>

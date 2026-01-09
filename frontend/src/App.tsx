@@ -378,12 +378,19 @@ function App() {
 
       console.log('🔍 handleRentalSaveDraft - forceStatus:', forceStatus, 'statusToUse:', statusToUse);
 
+      // Helper pour convertir une date string ou Date en objet Date
+      const toDate = (value: string | Date | undefined, fallback: Date): Date => {
+        if (!value) return fallback;
+        if (value instanceof Date) return value;
+        return new Date(value);
+      };
+
       // Convertir les données vers le format de contrat
       const contractData = {
         dateCreation: new Date(),
-        dateEvenement: contract?.dateEvenement || new Date(),
-        dateRetrait: contract?.dateRetrait || new Date(),
-        dateRetour: contract?.dateRetour || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        dateEvenement: toDate(contract?.dateEvenement, new Date()),
+        dateRetrait: toDate(contract?.dateRetrait, new Date()),
+        dateRetour: toDate(contract?.dateRetour, new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)),
         client: {
           nom: groupData?.clients?.[0]?.nom || '',
           prenom: groupData?.clients?.[0]?.prenom || '',
