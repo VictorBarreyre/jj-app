@@ -389,48 +389,50 @@ export class PDFService {
       participant = { tenue: contract.tenue };
     }
 
-    // Centre de la page A5 (largeur 148mm, marges 10mm de chaque côté)
-    const centerX = 74; // (10 + 138) / 2
+    // Position à gauche avec marge
+    const leftX = 15;
 
     // Informations JJ Cérémonies
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.text('JJ CÉRÉMONIE', centerX, currentY, { align: 'center' });
+    doc.text('JJ CÉRÉMONIE', leftX, currentY);
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('3 rue Nicolas Flamel - 75004 Paris - 01 43 54 25 56', centerX, currentY + 6, { align: 'center' });
+    doc.text('3 rue Nicolas Flamel - 75004 Paris - 01 43 54 25 56', leftX, currentY + 6);
 
     currentY += 14;
 
     // Numéro de réservation
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(`N° ${contract.numero}`, centerX, currentY, { align: 'center' });
+    doc.text(`N° ${contract.numero}`, leftX, currentY);
 
     // Nom du participant avec mention "à ne pas retirer de la housse"
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    const nameWithNote = `${personName}  `;
-    doc.text(nameWithNote, centerX - 2, currentY + 7, { align: 'right' });
+    doc.text(personName, leftX, currentY + 7);
+
+    // Calculer la largeur du nom pour positionner la note à côté
+    const nameWidth = doc.getTextWidth(personName);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(102, 102, 102); // #666
-    doc.text('(à ne pas retirer de la housse)', centerX - 2, currentY + 7, { align: 'left' });
+    doc.text('(à ne pas retirer de la housse)', leftX + nameWidth + 3, currentY + 7);
     doc.setTextColor(0, 0, 0); // Reset to black
 
     // Date de retour
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
     const dateRetour = this.formatDate(contract.dateRetour);
-    doc.text(`À rendre : ${dateRetour}`, centerX, currentY + 15, { align: 'center' });
+    doc.text(`À rendre : ${dateRetour}`, leftX, currentY + 15);
 
     // Taille du chapeau si présente
     const tailleChapeau = participant?.tenue?.tailleChapeau;
     if (tailleChapeau) {
       doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Chapeau: ${tailleChapeau}`, centerX, currentY + 22, { align: 'center' });
+      doc.text(`Chapeau: ${tailleChapeau}`, leftX, currentY + 22);
     }
 
     return currentY + 10;
