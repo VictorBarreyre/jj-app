@@ -375,21 +375,7 @@ export class PDFService {
 
     let currentY = y + 8;
 
-    // Section détachable - maintenant vide (montants supprimés)
-
-    // Ajouter une séparation verticale avec tirets - décalée vers la gauche pour plus d'espace à droite
-    const sectionWidth = 138 - 10; // Largeur utilisable (bords exclus)
-    const separationX = 10 + (sectionWidth * 0.55); // Position à 55% de la largeur
-
-    // Ligne verticale en tirets - de haut en bas de la section détachable
-    doc.setLineDashPattern([1, 1], 0);
-    doc.line(separationX, y + 3, separationX, 200); // Descend jusqu'en bas de la page A5
-    doc.setLineDashPattern([], 0); // Reset dash pattern
-
-    // Partie gauche - texte vertical
-    const leftSectionX = 15; // Position dans la partie gauche
-
-    // Récupérer les informations pour la partie gauche
+    // Récupérer les informations du participant
     let personName = '';
     let participant = null;
 
@@ -403,63 +389,52 @@ export class PDFService {
       participant = { tenue: contract.tenue };
     }
 
-    // Ajouter le numéro de réservation et le texte dans la partie droite
-    const rightSectionX = separationX + 5; // Position dans la partie droite
+    // Position de départ pour le contenu (centré sur toute la largeur)
+    const contentX = 15;
 
     // Informations JJ Cérémonies
-    doc.setFontSize(8);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('JJ CÉRÉMONIE', rightSectionX, currentY);
+    doc.text('JJ CÉRÉMONIE', contentX, currentY);
 
-    doc.setFontSize(7);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text('3 rue Nicolas Flamel - 75004 Paris', rightSectionX, currentY + 4);
-    doc.text('01 43 54 25 56', rightSectionX, currentY + 8);
+    doc.text('3 rue Nicolas Flamel - 75004 Paris - 01 43 54 25 56', contentX, currentY + 5);
 
-    currentY += 13;
+    currentY += 12;
 
     // Numéro de réservation
-    doc.setFontSize(9);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`N° ${contract.numero}`, rightSectionX, currentY);
+    doc.text(`N° ${contract.numero}`, contentX, currentY);
 
     // Nom du participant
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(personName, rightSectionX, currentY + 5);
+    doc.text(personName, contentX, currentY + 6);
 
     // Texte "à ne pas retirer de la housse"
-    doc.setFontSize(7);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(102, 102, 102); // #666
-    doc.text('(à ne pas retirer de la housse)', rightSectionX, currentY + 9);
+    doc.text('(à ne pas retirer de la housse)', contentX, currentY + 11);
     doc.setTextColor(0, 0, 0); // Reset to black
 
     // Date de retour
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('À rendre :', rightSectionX, currentY + 15);
-    doc.setFontSize(8);
+    doc.text('À rendre :', contentX, currentY + 18);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     const dateRetour = this.formatDate(contract.dateRetour);
-    doc.text(dateRetour, rightSectionX, currentY + 20);
+    doc.text(dateRetour, contentX, currentY + 24);
 
-    // Nom et prénom (texte vertical de haut en bas) - remonté
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text(personName, leftSectionX, currentY - 14, { angle: -90 });
-
-    // Date de sortie (texte vertical de haut en bas) - remonté
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    const dateRetrait = this.formatDate(contract.dateRetrait);
-    doc.text(`Sort le: ${dateRetrait}`, leftSectionX + 8, currentY - 14, { angle: -90 });
-
-    // Taille du chapeau si présente (texte vertical au niveau de la jointure) - remonté
+    // Taille du chapeau si présente
     const tailleChapeau = participant?.tenue?.tailleChapeau;
     if (tailleChapeau) {
-      doc.setFontSize(8);
-      doc.text(`Chapeau: ${tailleChapeau}`, separationX - 8, currentY - 14, { angle: -90 });
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Chapeau: ${tailleChapeau}`, contentX + 55, currentY + 24);
     }
 
     return currentY + 10;
