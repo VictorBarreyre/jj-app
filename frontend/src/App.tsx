@@ -16,9 +16,10 @@ import { Order } from './types/order'
 import { GroupRentalInfo } from './types/group-rental'
 import { rentalContractApi } from './services/rental-contract.api'
 import { useOrder, useSaveDraft } from './hooks/useOrders'
+import { DailyRevenuePage } from './pages/DailyRevenuePage'
 import './App.css'
 
-type AppView = 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
+type AppView = 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order' | 'daily-revenue';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('home');
@@ -453,6 +454,10 @@ function App() {
     setCurrentView('stock');
   };
 
+  const handleNavigateDailyRevenue = () => {
+    setCurrentView('daily-revenue');
+  };
+
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
     alert(`Affichage de la commande #${order.numero}`);
@@ -489,6 +494,7 @@ function App() {
                 onNavigateHome={handleNavigateHome}
                 onNavigateMeasurement={handleNavigateMeasurement}
                 onNavigateStock={handleNavigateStock}
+                onNavigateDailyRevenue={handleNavigateDailyRevenue}
                 ordersCount={0}
                 pendingOrdersCount={0}
               />
@@ -524,6 +530,10 @@ function App() {
 
                 {currentView === 'stock' && (
                   <StockManagement />
+                )}
+
+                {currentView === 'daily-revenue' && (
+                  <DailyRevenuePage onEditOrder={handleEditOrder} />
                 )}
               </main>
             </div>
