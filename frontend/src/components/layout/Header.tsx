@@ -6,19 +6,21 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
-  currentView: 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order';
+  currentView: 'home' | 'measurement' | 'stock' | 'view-order' | 'edit-order' | 'daily-revenue';
   onNavigateHome: () => void;
   onNavigateMeasurement: () => void;
   onNavigateStock: () => void;
+  onNavigateDailyRevenue: () => void;
   ordersCount?: number;
   pendingOrdersCount?: number;
 }
 
-export function Header({ 
-  currentView, 
-  onNavigateHome, 
+export function Header({
+  currentView,
+  onNavigateHome,
   onNavigateMeasurement,
   onNavigateStock,
+  onNavigateDailyRevenue,
   ordersCount = 0,
   pendingOrdersCount = 0
 }: HeaderProps) {
@@ -71,12 +73,23 @@ export function Header({
             <button
               onClick={onNavigateStock}
               className={`px-3 py-2 text-sm font-medium transition-all duration-200 hover:text-amber-600 ${
-                currentView === 'stock' 
-                  ? 'text-amber-600' 
+                currentView === 'stock'
+                  ? 'text-amber-600'
                   : 'text-gray-700 hover:text-amber-600'
               }`}
             >
               Stock
+            </button>
+
+            <button
+              onClick={onNavigateDailyRevenue}
+              className={`px-3 py-2 text-sm font-medium transition-all duration-200 hover:text-amber-600 ${
+                currentView === 'daily-revenue'
+                  ? 'text-amber-600'
+                  : 'text-gray-700 hover:text-amber-600'
+              }`}
+            >
+              Recettes
             </button>
           </nav>
 
@@ -146,12 +159,26 @@ export function Header({
                     setMobileMenuOpen(false);
                   }}
                   className={`text-center px-6 py-4 text-xl font-semibold rounded-xl transition-all duration-200 ${
-                    currentView === 'stock' 
-                      ? 'text-amber-600 bg-amber-50' 
+                    currentView === 'stock'
+                      ? 'text-amber-600 bg-amber-50'
                       : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
                   }`}
                 >
                   Stock
+                </button>
+
+                <button
+                  onClick={() => {
+                    onNavigateDailyRevenue();
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`text-center px-6 py-4 text-xl font-semibold rounded-xl transition-all duration-200 ${
+                    currentView === 'daily-revenue'
+                      ? 'text-amber-600 bg-amber-50'
+                      : 'text-gray-700 hover:text-amber-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Recettes
                 </button>
               </div>
 
