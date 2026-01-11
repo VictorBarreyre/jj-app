@@ -373,7 +373,7 @@ export class PDFService {
     doc.line(10, y, 138, y);
     doc.setLineDashPattern([], 0); // Reset dash pattern
 
-    let currentY = y + 8;
+    let currentY = y + 10;
 
     // Récupérer les informations du participant
     let personName = '';
@@ -389,52 +389,48 @@ export class PDFService {
       participant = { tenue: contract.tenue };
     }
 
-    // Position de départ pour le contenu (centré sur toute la largeur)
-    const contentX = 15;
+    // Centre de la page A5 (largeur 148mm, marges 10mm de chaque côté)
+    const centerX = 74; // (10 + 138) / 2
 
     // Informations JJ Cérémonies
-    doc.setFontSize(11);
+    doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.text('JJ CÉRÉMONIE', contentX, currentY);
+    doc.text('JJ CÉRÉMONIE', centerX, currentY, { align: 'center' });
 
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('3 rue Nicolas Flamel - 75004 Paris - 01 43 54 25 56', contentX, currentY + 5);
+    doc.text('3 rue Nicolas Flamel - 75004 Paris - 01 43 54 25 56', centerX, currentY + 6, { align: 'center' });
 
-    currentY += 12;
+    currentY += 14;
 
     // Numéro de réservation
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`N° ${contract.numero}`, centerX, currentY, { align: 'center' });
+
+    // Nom du participant avec mention "à ne pas retirer de la housse"
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`N° ${contract.numero}`, contentX, currentY);
-
-    // Nom du participant
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text(personName, contentX, currentY + 6);
-
-    // Texte "à ne pas retirer de la housse"
-    doc.setFontSize(8);
+    const nameWithNote = `${personName}  `;
+    doc.text(nameWithNote, centerX - 2, currentY + 7, { align: 'right' });
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(102, 102, 102); // #666
-    doc.text('(à ne pas retirer de la housse)', contentX, currentY + 11);
+    doc.text('(à ne pas retirer de la housse)', centerX - 2, currentY + 7, { align: 'left' });
     doc.setTextColor(0, 0, 0); // Reset to black
 
     // Date de retour
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('À rendre :', contentX, currentY + 18);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
     const dateRetour = this.formatDate(contract.dateRetour);
-    doc.text(dateRetour, contentX, currentY + 24);
+    doc.text(`À rendre : ${dateRetour}`, centerX, currentY + 15, { align: 'center' });
 
     // Taille du chapeau si présente
     const tailleChapeau = participant?.tenue?.tailleChapeau;
     if (tailleChapeau) {
-      doc.setFontSize(10);
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Chapeau: ${tailleChapeau}`, contentX + 55, currentY + 24);
+      doc.text(`Chapeau: ${tailleChapeau}`, centerX, currentY + 22, { align: 'center' });
     }
 
     return currentY + 10;
