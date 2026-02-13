@@ -23,6 +23,7 @@ interface GroupMeasurementFormProps {
   onSubmit: (updatedGroup: GroupRentalInfo) => void;
   onSave?: (updatedGroup: GroupRentalInfo) => void;
   onConfirm?: (updatedGroup: GroupRentalInfo) => void;
+  onChange?: (updatedGroup: GroupRentalInfo) => void;
   isEditMode?: boolean;
 }
 
@@ -35,7 +36,7 @@ const CHAUSSURES_OPTIONS = TAILLES_CHAUSSURES.flatMap(taille => [
   { value: `${taille}_NV`, label: `${taille} NV`, taille, type: 'NV' as const }
 ]);
 
-export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, isEditMode = false }: GroupMeasurementFormProps) {
+export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, onChange, isEditMode = false }: GroupMeasurementFormProps) {
   const [updatedGroup, setUpdatedGroup] = useState<GroupRentalInfo>(groupData);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
 
@@ -44,16 +45,12 @@ export function GroupMeasurementForm({ groupData, onSubmit, onSave, onConfirm, i
     setUpdatedGroup(groupData);
   }, [groupData]);
 
-  // Auto-sauvegarde désactivée - la sauvegarde se fait uniquement via le bouton
-  // useEffect(() => {
-  //   if (onSave && updatedGroup !== groupData) {
-  //     const timeoutId = setTimeout(() => {
-  //       onSave(updatedGroup);
-  //     }, 500); // Debounce de 500ms pour éviter trop d'appels
-
-  //     return () => clearTimeout(timeoutId);
-  //   }
-  // }, [updatedGroup, onSave, groupData]);
+  // Notifier le parent des changements pour préserver les données lors de la navigation
+  useEffect(() => {
+    if (onChange) {
+      onChange(updatedGroup);
+    }
+  }, [updatedGroup]);
 
   const updateClientTenue = (clientIndex: number, category: 'veste' | 'gilet' | 'pantalon' | 'ceinture', field: string, value: any) => {
     setUpdatedGroup(prev => {

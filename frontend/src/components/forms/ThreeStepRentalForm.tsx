@@ -161,8 +161,20 @@ export const ThreeStepRentalForm = forwardRef<
 
   // Étape 1 : Configuration du groupe
   const handleGroupSetupSubmit = (group: Omit<GroupRentalInfo, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => {
+    // Merger avec les données existantes pour préserver les tenues de l'étape 2
+    const existingClients = groupData?.clients || [];
+    const mergedClients = group.clients.map((client, index) => {
+      const existingClient = existingClients[index];
+      // Préserver la tenue si elle existe déjà et que le client correspond
+      if (existingClient && existingClient.nom === client.nom && existingClient.tenue && Object.keys(existingClient.tenue).length > 0) {
+        return { ...client, tenue: existingClient.tenue };
+      }
+      return client;
+    });
+
     const fullGroupData: GroupRentalInfo = {
       ...group,
+      clients: mergedClients,
       status: 'brouillon'
     };
     setGroupData(fullGroupData);
@@ -233,19 +245,16 @@ export const ThreeStepRentalForm = forwardRef<
   // Étape 2 : Sélection des tenues
   const handleMeasurementSubmit = (updatedGroup: GroupRentalInfo) => {
     setGroupData(updatedGroup);
-    
+
     // Pré-remplir les données du contrat avec les infos du groupe
     const mainClient = updatedGroup.clients[0];
-    
+
     // Calculer les dates par défaut basées sur la date d'événement
     const defaultDates = calculateDefaultDates(updatedGroup.dateEssai);
-    
-    const prefilledContract: Partial<RentalContract> = {
-      dateCreation: new Date(),
+
+    // Données de base à mettre à jour depuis l'étape 2
+    const groupDerivedData: Partial<RentalContract> = {
       dateEvenement: updatedGroup.dateEssai,
-      dateRetrait: defaultDates.dateRetrait, // Jeudi avant l'événement
-      dateRetour: defaultDates.dateRetour, // Mardi après l'événement
-      
       client: {
         nom: updatedGroup.clients.length === 1 ? mainClient.nom : updatedGroup.groupName,
         prenom: updatedGroup.clients.length === 1 ? mainClient.prenom : '',
@@ -254,30 +263,36 @@ export const ThreeStepRentalForm = forwardRef<
         isExistingClient: mainClient.isExistingClient,
         clientId: mainClient.clientId
       },
-      
       vendeur: updatedGroup.vendeur,
-      
-      // Pour les groupes, on prend la tenue du premier client comme référence
       tenue: mainClient.tenue,
       notes: updatedGroup.groupNotes || mainClient.notes,
-      
-      // Valeurs par défaut pour la tarification
-      tarifLocation: undefined,
-      depotGarantie: 400,
-      arrhes: 50,
-      
-      // Initialiser les paiements à undefined pour éviter l'affichage de méthodes non sélectionnées
-      paiementArrhes: undefined,
-      paiementSolde: undefined,
-      paiementDepotGarantie: undefined,
-      
-      status: 'brouillon',
-      rendu: false,
-      
-      ...initialContract
     };
-    
-    setContractData(prefilledContract);
+
+    // Si contractData existe déjà (retour depuis l'étape 3), préserver les données financières
+    if (contractData) {
+      setContractData(prev => ({
+        ...prev,
+        ...groupDerivedData,
+      }));
+    } else {
+      // Premier passage : créer le contrat avec les valeurs par défaut
+      const prefilledContract: Partial<RentalContract> = {
+        dateCreation: new Date(),
+        dateRetrait: defaultDates.dateRetrait,
+        dateRetour: defaultDates.dateRetour,
+        ...groupDerivedData,
+        tarifLocation: undefined,
+        depotGarantie: 400,
+        arrhes: 50,
+        paiementArrhes: undefined,
+        paiementSolde: undefined,
+        paiementDepotGarantie: undefined,
+        status: 'brouillon',
+        rendu: false,
+        ...initialContract
+      };
+      setContractData(prefilledContract);
+    }
     setCurrentStep(3);
   };
 
@@ -487,6 +502,7 @@ export const ThreeStepRentalForm = forwardRef<
             onSubmit={handleMeasurementSubmit}
             onSave={handleMeasurementSave}
             onConfirm={handleMeasurementConfirm}
+            onChange={(updated) => setGroupData(updated)}
             isEditMode={isEditMode}
           />
         )}
