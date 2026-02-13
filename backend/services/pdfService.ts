@@ -38,6 +38,16 @@ export class BackendPDFService {
     }
   }
 
+  private formatArticlesLabel(articles: string): string {
+    switch (articles) {
+      case 'chemise': return 'Chemise';
+      case 'chemise_bm': return 'Chemise + Bm';
+      case 'chemise_bm_ndpap': return 'Chemise + Bm + Nd pap';
+      case 'chemise_ndpap': return 'Chemise + Nd pap';
+      default: return articles;
+    }
+  }
+
   private generateHTMLContent(contract: RentalContract, type: PDFType, participantIndex?: number): string {
     // Déterminer le participant
     let participant = null;
@@ -125,6 +135,13 @@ export class BackendPDFService {
       if (text || type === 'client') {
         itemsHTML.push(`<div style="margin-bottom: 16px;"><span style="font-weight: bold;">• Chaussures${type === 'vendeur' ? ':' : ''}</span> ${text}</div>`);
       }
+    }
+
+    if (contract.journeesSupplementaires?.prix && contract.journeesSupplementaires.prix > 0) {
+      const js = contract.journeesSupplementaires;
+      const articlesLabel = this.formatArticlesLabel(js.articles);
+      const jourLabel = js.nombre > 1 ? `${js.nombre}j` : '1j';
+      itemsHTML.push(`<div style="margin-bottom: 16px; font-size: 10px;">• ${articlesLabel} (${jourLabel}): ${this.formatPrice(js.prix)}</div>`);
     }
 
     const itemsText = itemsHTML.length > 0 ? itemsHTML.join('') : '<div>• Aucun article</div>';
@@ -280,7 +297,7 @@ export class BackendPDFService {
           </div>
 
           <div class="prices-row">
-            <div>Prix: ${this.formatPrice(contract.tarifLocation || 0)}</div>
+            <div>Prix: ${this.formatPrice((contract.tarifLocation || 0) + (contract.journeesSupplementaires?.prix || 0))}</div>
             <div>Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}</div>
             <div>Arrhes: ${this.formatPrice(contract.arrhes)}</div>
           </div>

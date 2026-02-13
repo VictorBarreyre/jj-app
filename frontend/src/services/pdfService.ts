@@ -20,6 +20,16 @@ export class PDFService {
     return `${price.toFixed(2)} €`;
   }
 
+  private static formatArticlesLabel(articles: string): string {
+    switch (articles) {
+      case 'chemise': return 'Chemise';
+      case 'chemise_bm': return 'Chemise + Bm';
+      case 'chemise_bm_ndpap': return 'Chemise + Bm + Nd pap';
+      case 'chemise_ndpap': return 'Chemise + Nd pap';
+      default: return articles;
+    }
+  }
+
   private static addHeader(doc: jsPDF, _contract: RentalContract, _type: PDFType) {
     // Centre pour A5 : 148mm / 2 = 74mm
     const centerX = 74;
@@ -230,6 +240,18 @@ export class PDFService {
         currentY += 8;
       }
 
+      // Journées supplémentaires en plus petit sous les articles
+      if (contract.journeesSupplementaires?.prix && contract.journeesSupplementaires.prix > 0) {
+        const js = contract.journeesSupplementaires;
+        const articlesLabel = this.formatArticlesLabel(js.articles);
+        const jourLabel = js.nombre > 1 ? `${js.nombre}j` : '1j';
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`• ${articlesLabel} (${jourLabel}): ${this.formatPrice(js.prix)}`, 10, currentY);
+        doc.setFontSize(11);
+        currentY += 8;
+      }
+
       currentY += 10;
     }
 
@@ -244,7 +266,11 @@ export class PDFService {
     // Prix, caution et arrhes - A5 compact (en gras) - bien espacé sur toute la largeur
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Prix: ${this.formatPrice(contract.tarifLocation)}`, 10, currentY);
+
+    const totalPrix = (contract.tarifLocation || 0) + (contract.journeesSupplementaires?.prix || 0);
+
+    // Ligne 1 : Prix (total incluant journées supp.) | Dépôt de garantie | Arrhes
+    doc.text(`Prix: ${this.formatPrice(totalPrix)}`, 10, currentY);
     doc.text(`Dépôt de garantie: ${this.formatPrice(contract.depotGarantie)}`, 74, currentY, { align: 'center' });
     doc.text(`Arrhes: ${this.formatPrice(contract.arrhes)}`, 138, currentY, { align: 'right' });
     currentY += 6;

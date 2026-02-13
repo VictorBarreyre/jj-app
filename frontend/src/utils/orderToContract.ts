@@ -51,6 +51,7 @@ export const convertOrderToRentalContract = (order: Order): RentalContract => {
     tarifLocation: order.tarifLocation || order.total || undefined,
     depotGarantie: order.depotGarantie || 400, // Valeur par défaut
     arrhes: order.arrhes || 50, // Valeur par défaut
+    journeesSupplementaires: order.journeesSupplementaires,
     paiementArrhes: order.paiementArrhes,
     paiementSolde: order.paiementSolde,
     paiementDepotGarantie: order.paiementDepotGarantie,
