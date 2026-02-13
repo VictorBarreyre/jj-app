@@ -318,7 +318,7 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
 
               {/* Total */}
               <div className="col-span-1 font-medium text-sm text-gray-900">
-                {order.total ? formatPrice(order.total) : '-'}
+                {(order.tarifLocation || order.total) ? formatPrice((order.tarifLocation || order.total || 0) + (order.journeesSupplementaires?.prix || 0)) : '-'}
               </div>
 
               {/* Actions */}
@@ -380,8 +380,8 @@ export function OrdersList({ orders, onView, onEdit, onCreateNew, hideHeader, ac
 
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">{order.articleCount || order.items.length} article{(order.articleCount || order.items.length) > 1 ? 's' : ''}</span>
-                  {(order.total !== undefined && order.total !== null && order.total > 0) && (
-                    <span className="font-medium text-sm text-gray-900">{formatPrice(order.total)}</span>
+                  {((order.tarifLocation || order.total || 0) + (order.journeesSupplementaires?.prix || 0) > 0) && (
+                    <span className="font-medium text-sm text-gray-900">{formatPrice((order.tarifLocation || order.total || 0) + (order.journeesSupplementaires?.prix || 0))}</span>
                   )}
                 </div>
               </div>

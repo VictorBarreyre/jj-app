@@ -831,29 +831,78 @@ export function OrderViewEditModal({
 
 
           {/* Tarification */}
-          {((displayOrder.sousTotal && displayOrder.sousTotal > 0) || (displayOrder.tva && displayOrder.tva > 0) || (displayOrder.total && displayOrder.total > 0)) && (
+          {(displayOrder.tarifLocation || displayOrder.total || displayOrder.depotGarantie || displayOrder.arrhes) && (
             <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
               <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-left">
                 <Euro className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
                 Tarification
               </h2>
               <div className="space-y-2 sm:space-y-3">
-                {displayOrder.sousTotal && displayOrder.sousTotal > 0 && (
+                {/* Tarif de location */}
+                {(displayOrder.tarifLocation || displayOrder.total) && (
                   <div className="flex justify-between text-left text-xs sm:text-sm">
-                    <span className="text-gray-700 text-left">Sous-total:</span>
-                    <span className="font-medium text-right">{formatPrice(displayOrder.sousTotal)}</span>
+                    <span className="text-gray-700 text-left">Tarif location:</span>
+                    <span className="font-medium text-right">{formatPrice(displayOrder.tarifLocation || displayOrder.total)}</span>
                   </div>
                 )}
-                {displayOrder.tva && displayOrder.tva > 0 && (
+                {/* Journées supplémentaires */}
+                {displayOrder.journeesSupplementaires?.prix && displayOrder.journeesSupplementaires.prix > 0 && (
                   <div className="flex justify-between text-left text-xs sm:text-sm">
-                    <span className="text-gray-700 text-left">TVA:</span>
-                    <span className="font-medium text-right">{formatPrice(displayOrder.tva)}</span>
+                    <span className="text-gray-700 text-left">
+                      Journées supp. ({displayOrder.journeesSupplementaires.nombre > 1 ? `${displayOrder.journeesSupplementaires.nombre}j` : '1j'} — {
+                        displayOrder.journeesSupplementaires.articles === 'chemise' ? 'Chemise' :
+                        displayOrder.journeesSupplementaires.articles === 'chemise_bm' ? 'Chemise + Bm' :
+                        displayOrder.journeesSupplementaires.articles === 'chemise_bm_ndpap' ? 'Chemise + Bm + Nd pap' :
+                        displayOrder.journeesSupplementaires.articles === 'chemise_ndpap' ? 'Chemise + Nd pap' :
+                        displayOrder.journeesSupplementaires.articles
+                      }):
+                    </span>
+                    <span className="font-medium text-right">{formatPrice(displayOrder.journeesSupplementaires.prix)}</span>
                   </div>
                 )}
-                {displayOrder.total && displayOrder.total > 0 && (
-                  <div className="flex justify-between border-t border-gray-200 pt-2 text-left text-xs sm:text-sm">
-                    <span className="font-semibold text-gray-900 text-left">Total:</span>
-                    <span className="font-bold text-sm sm:text-base text-amber-600 text-right">{formatPrice(displayOrder.total)}</span>
+                {/* Total */}
+                <div className="flex justify-between border-t border-gray-200 pt-2 text-left text-xs sm:text-sm">
+                  <span className="font-semibold text-gray-900 text-left">Total:</span>
+                  <span className="font-bold text-sm sm:text-base text-amber-600 text-right">
+                    {formatPrice((displayOrder.tarifLocation || displayOrder.total || 0) + (displayOrder.journeesSupplementaires?.prix || 0))}
+                  </span>
+                </div>
+                {/* Dépôt de garantie */}
+                {displayOrder.depotGarantie != null && displayOrder.depotGarantie > 0 && (
+                  <div className="flex justify-between text-left text-xs sm:text-sm">
+                    <span className="text-gray-700 text-left">Dépôt de garantie:</span>
+                    <span className="font-medium text-right">{formatPrice(displayOrder.depotGarantie)}</span>
+                  </div>
+                )}
+                {/* Arrhes */}
+                {displayOrder.arrhes != null && displayOrder.arrhes > 0 && (
+                  <div className="flex justify-between text-left text-xs sm:text-sm">
+                    <span className="text-gray-700 text-left">Arrhes:</span>
+                    <span className="font-medium text-right">{formatPrice(displayOrder.arrhes)}</span>
+                  </div>
+                )}
+                {/* Paiements */}
+                {(displayOrder.paiementArrhes?.method || displayOrder.paiementSolde?.method || displayOrder.paiementDepotGarantie?.method) && (
+                  <div className="border-t border-gray-200 pt-2 mt-2 space-y-1">
+                    <span className="text-xs font-medium text-gray-500">Paiements</span>
+                    {displayOrder.paiementArrhes?.method && (
+                      <div className="flex justify-between text-left text-xs sm:text-sm">
+                        <span className="text-gray-600">Arrhes ({displayOrder.paiementArrhes.method}):</span>
+                        <span className="text-right">{displayOrder.paiementArrhes.amount ? formatPrice(displayOrder.paiementArrhes.amount) : '—'}</span>
+                      </div>
+                    )}
+                    {displayOrder.paiementSolde?.method && (
+                      <div className="flex justify-between text-left text-xs sm:text-sm">
+                        <span className="text-gray-600">Solde ({displayOrder.paiementSolde.method}):</span>
+                        <span className="text-right">{displayOrder.paiementSolde.amount ? formatPrice(displayOrder.paiementSolde.amount) : '—'}</span>
+                      </div>
+                    )}
+                    {displayOrder.paiementDepotGarantie?.method && (
+                      <div className="flex justify-between text-left text-xs sm:text-sm">
+                        <span className="text-gray-600">Dépôt ({displayOrder.paiementDepotGarantie.method}):</span>
+                        <span className="text-right">{displayOrder.paiementDepotGarantie.amount ? formatPrice(displayOrder.paiementDepotGarantie.amount) : '—'}</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
