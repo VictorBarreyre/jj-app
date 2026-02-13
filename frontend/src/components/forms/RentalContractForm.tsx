@@ -259,7 +259,7 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
           </div>
           2. Tarification
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
           {/* Tarif de location */}
           <div>
             <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">
@@ -359,7 +359,80 @@ export function RentalContractForm({ onSubmit, onSaveDraft, onAutoSave, onPrint,
               </Select>
             </div>
           </div>
+
+          {/* Journées supplémentaires */}
+          <div>
+            <Label className="block text-left text-xs sm:text-sm font-semibold text-gray-700 mb-2">Journées supp.</Label>
+            <Input
+              type="number"
+              min="0"
+              placeholder="Nombre de jours"
+              value={form.journeesSupplementaires?.nombre || ''}
+              onChange={(e) => {
+                const nombre = e.target.value ? parseInt(e.target.value) : 0;
+                updateForm('journeesSupplementaires', {
+                  ...form.journeesSupplementaires,
+                  nombre,
+                  articles: form.journeesSupplementaires?.articles || '',
+                  prix: form.journeesSupplementaires?.prix || 0
+                });
+              }}
+              className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+            />
+            <div className="mt-2">
+              <Select
+                value={form.journeesSupplementaires?.articles || 'none'}
+                onValueChange={(value) => {
+                  updateForm('journeesSupplementaires', {
+                    ...form.journeesSupplementaires,
+                    nombre: form.journeesSupplementaires?.nombre || 0,
+                    articles: value === 'none' ? '' : value,
+                    prix: form.journeesSupplementaires?.prix || 0
+                  });
+                }}
+              >
+                <SelectTrigger className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 hover:bg-white/90 transition-all shadow-sm rounded-xl">
+                  <SelectValue placeholder="Articles inclus" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-300 text-gray-900">
+                  <SelectItem value="none">Articles inclus</SelectItem>
+                  <SelectItem value="chemise">Chemise</SelectItem>
+                  <SelectItem value="chemise_bm">Chemise + Bm</SelectItem>
+                  <SelectItem value="chemise_bm_ndpap">Chemise + Bm + Nd pap</SelectItem>
+                  <SelectItem value="chemise_ndpap">Chemise + Nd pap</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="mt-2">
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Prix €"
+                value={form.journeesSupplementaires?.prix || ''}
+                onChange={(e) => {
+                  updateForm('journeesSupplementaires', {
+                    ...form.journeesSupplementaires,
+                    nombre: form.journeesSupplementaires?.nombre || 0,
+                    articles: form.journeesSupplementaires?.articles || '',
+                    prix: e.target.value ? parseFloat(e.target.value) : 0
+                  });
+                }}
+                className="bg-white/70 border-gray-300 text-gray-900 focus:border-amber-500 focus:ring-amber-500/20 rounded-xl transition-all shadow-sm"
+              />
+            </div>
+          </div>
         </div>
+
+        {/* Total calculé */}
+        {((form.tarifLocation || 0) > 0 || (form.journeesSupplementaires?.prix || 0) > 0) && (
+          <div className="mt-4 flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <span className="text-sm font-semibold text-gray-700">Total</span>
+            <span className="text-lg font-bold text-amber-700">
+              {((form.tarifLocation || 0) + (form.journeesSupplementaires?.prix || 0)).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Actions */}

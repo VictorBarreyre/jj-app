@@ -55,17 +55,12 @@ export function DailyRevenuePage({ onBack, onEditOrder }: DailyRevenuePageProps)
   const deleteOrderMutation = useDeleteOrder();
   const queryClient = useQueryClient();
 
-  // Calculer les dates de début et fin pour le jour sélectionné
-  const dateStart = `${selectedDate}T00:00:00.000Z`;
-  const dateEnd = `${selectedDate}T23:59:59.999Z`;
-
-  // Fetch contracts for the selected day
+  // Fetch contracts that have a payment on the selected day
   const { data: contractsData, isLoading } = useQuery({
     queryKey: ['daily-revenue', selectedDate],
     queryFn: async () => {
       const response = await contractsAPI.getAll({
-        dateStart,
-        dateEnd,
+        paymentDate: selectedDate,
         limit: 100
       });
       return response;
@@ -351,6 +346,7 @@ export function DailyRevenuePage({ onBack, onEditOrder }: DailyRevenuePageProps)
         paiementArrhes: contract.paiementArrhes,
         paiementSolde: contract.paiementSolde,
         paiementDepotGarantie: contract.paiementDepotGarantie,
+        journeesSupplementaires: contract.journeesSupplementaires,
         groupDetails: contract.groupDetails,
         tenue: contract.tenue,
         total: contract.tarifLocation,

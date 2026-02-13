@@ -98,7 +98,7 @@ export const measurementsAPI = {
 
 // Rental Contracts API
 export const contractsAPI = {
-  getAll: async (params?: { status?: string; search?: string; dateStart?: string; dateEnd?: string; page?: number; limit?: number }): Promise<ContractsResponse> => {
+  getAll: async (params?: { status?: string; search?: string; dateStart?: string; dateEnd?: string; paymentDate?: string; page?: number; limit?: number }): Promise<ContractsResponse> => {
     const response: AxiosResponse<ContractsResponse> = await api.get('/contracts', { params });
     return response.data;
   },

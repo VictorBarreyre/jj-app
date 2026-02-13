@@ -177,9 +177,10 @@ function App() {
         quantiteReservee: item.quantity,
         prix: item.unitPrice || 0
       })),
+      journeesSupplementaires: order.journeesSupplementaires,
       status: order.status || 'brouillon',
       rendu: order.rendu || false,
-      
+
       // Informations de groupe si disponibles
       isGroup: order.type === 'groupe',
       participantCount: order.participantCount || (order.type === 'groupe' ? 1 : undefined),

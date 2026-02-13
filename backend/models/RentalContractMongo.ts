@@ -24,6 +24,13 @@ export interface IRentalContractDocument extends Document {
   tarifLocation: number;
   depotGarantie: number;
   arrhes: number;
+
+  // Journées supplémentaires
+  journeesSupplementaires?: {
+    nombre: number;
+    articles: string;
+    prix: number;
+  };
   
   // Paiements
   paiementArrhes?: PaymentInfo;
@@ -141,6 +148,16 @@ const rentalContractSchema = new Schema<IRentalContractDocument>({
   tarifLocation: { type: Number, required: false, min: 0 },
   depotGarantie: { type: Number, required: false, min: 0, default: 400 },
   arrhes: { type: Number, required: false, min: 0, default: 50 },
+
+  // Journées supplémentaires
+  journeesSupplementaires: {
+    nombre: { type: Number },
+    articles: {
+      type: String,
+      enum: ['chemise', 'chemise_bm', 'chemise_bm_ndpap', 'chemise_ndpap']
+    },
+    prix: { type: Number }
+  },
   
   // Paiements
   paiementArrhes: paymentInfoSchema,

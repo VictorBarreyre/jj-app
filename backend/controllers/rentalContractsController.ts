@@ -67,28 +67,47 @@ export const rentalContractsController = {
   // GET /api/contracts
   getAllContracts: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { status, search, dateStart, dateEnd, page = 1, limit = 50 } = req.query;
-      
+      const { status, search, dateStart, dateEnd, paymentDate, page = 1, limit = 50 } = req.query;
+
       // Construire la query MongoDB
       const query: any = {};
-      
+
       // Filtrer par statut
       if (status && status !== 'all') {
         query.status = status;
       }
-      
+
       // Filtrer par recherche (nom, numéro, téléphone)
       if (search) {
         const searchTerm = search.toString();
-        query.$or = [
-          { numero: { $regex: searchTerm, $options: 'i' } },
-          { 'client.nom': { $regex: searchTerm, $options: 'i' } },
-          { 'client.telephone': { $regex: searchTerm, $options: 'i' } }
-        ];
+        const searchCondition = {
+          $or: [
+            { numero: { $regex: searchTerm, $options: 'i' } },
+            { 'client.nom': { $regex: searchTerm, $options: 'i' } },
+            { 'client.telephone': { $regex: searchTerm, $options: 'i' } }
+          ]
+        };
+        if (!query.$and) query.$and = [];
+        query.$and.push(searchCondition);
       }
-      
-      // Filtrer par période
-      if (dateStart || dateEnd) {
+
+      // Filtrer par date de paiement (arrhes, solde ou dépôt de garantie)
+      if (paymentDate) {
+        const paymentDateStr = paymentDate.toString();
+        const dayStart = new Date(`${paymentDateStr}T00:00:00.000Z`);
+        const dayEnd = new Date(`${paymentDateStr}T23:59:59.999Z`);
+        const paymentCondition = {
+          $or: [
+            { 'paiementArrhes.date': { $gte: dayStart, $lte: dayEnd } },
+            { 'paiementSolde.date': { $gte: dayStart, $lte: dayEnd } },
+            { 'paiementDepotGarantie.date': { $gte: dayStart, $lte: dayEnd } }
+          ]
+        };
+        if (!query.$and) query.$and = [];
+        query.$and.push(paymentCondition);
+      }
+      // Filtrer par période (dateEvenement)
+      else if (dateStart || dateEnd) {
         query.dateEvenement = {};
         if (dateStart) {
           query.dateEvenement.$gte = new Date(dateStart.toString());

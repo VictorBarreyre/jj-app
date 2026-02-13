@@ -88,6 +88,13 @@ export interface RentalContract {
   tarifLocation: number;
   depotGarantie: number;
   arrhes: number;
+
+  // Journées supplémentaires
+  journeesSupplementaires?: {
+    nombre: number;
+    articles: string;  // 'chemise' | 'chemise_bm' | 'chemise_bm_ndpap' | 'chemise_ndpap'
+    prix: number;
+  };
   
   // Paiements
   paiementArrhes?: PaymentInfo;

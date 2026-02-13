@@ -59,6 +59,13 @@ export interface RentalContract {
   depotGarantie: number;       // Dépôt de garantie en euros
   arrhes: number;              // Arrhes en euros
 
+  // Journées supplémentaires
+  journeesSupplementaires?: {
+    nombre: number;
+    articles: string;  // 'chemise' | 'chemise_bm' | 'chemise_bm_ndpap' | 'chemise_ndpap'
+    prix: number;
+  };
+
   // Suivi des paiements
   paiementArrhes?: PaymentInfo;    // Paiement des arrhes
   paiementSolde?: PaymentInfo;     // Paiement du solde

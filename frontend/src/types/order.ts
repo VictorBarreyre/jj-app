@@ -122,6 +122,13 @@ export interface Order {
   paiementSolde?: PaymentInfo;
   paiementDepotGarantie?: PaymentInfo;
 
+  // Journées supplémentaires
+  journeesSupplementaires?: {
+    nombre: number;
+    articles: string;
+    prix: number;
+  };
+
   // Informations supplémentaires pour les groupes
   participantCount?: number; // Nombre de participants dans le groupe
   groupDetails?: {
