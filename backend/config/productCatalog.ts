@@ -67,8 +67,8 @@ export const GILET_SIZES_BLANC_HABIT = [
   '38', '40', '42', '44', '46', '48', '50'
 ];
 
-// Tailles pour ceinture scratch (flexible - saisie libre)
-export const CEINTURE_SIZES_FLEXIBLE: string[] = [];
+// Tailles pour ceinture scratch (taille unique à scratch)
+export const CEINTURE_SIZES_FLEXIBLE: string[] = ['Scratch'];
 
 // Tailles pour ceintures
 export const CEINTURE_SIZES = [

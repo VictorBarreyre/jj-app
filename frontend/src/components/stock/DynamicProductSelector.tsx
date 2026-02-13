@@ -100,7 +100,7 @@ export function DynamicProductSelector({
   const isCeintureScratched = () => {
     if (!selectedReference) return false;
     const reference = references.find(ref => ref.id === selectedReference);
-    return reference?.id === 'ceinture-scratch';
+    return reference?.id === 'Ceinture Scratch';
   };
 
   return (
